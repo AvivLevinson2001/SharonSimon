@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "312964010843",
+    "firebase_url": "https://sharon-simon.firebaseio.com",
+    "project_id": "sharon-simon",
+    "storage_bucket": "sharon-simon.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:312964010843:android:30392f9b2be11dc927007e",
+        "android_client_info": {
+          "package_name": "com.example.sharonsimon"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "312964010843-eejolrihipes3goacdeint0oa28gc2mp.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.sharonsimon",
+            "certificate_hash": "3d20c18cf84baafb8074e4fc4441a008c489c5b3"
+          }
+        },
+        {
+          "client_id": "312964010843-mg78tvkbtd9vov4ltssuqll8msbqbec5.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBKCrnZLZ5ubotmJSaUOHHc_9J83esLD2Q"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "312964010843-mg78tvkbtd9vov4ltssuqll8msbqbec5.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

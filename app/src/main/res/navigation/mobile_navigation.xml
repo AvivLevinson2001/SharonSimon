@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/mobile_navigation"
+    app:startDestination="@+id/nav_my_ken">
+
+    <fragment
+        android:id="@+id/nav_my_ken"
+        android:name="com.example.sharonsimon.Fragments.MyKenFragment"
+        android:label="@string/menu_home"
+        tools:layout="@layout/my_ken_fragment" >
+
+        <action
+            android:id="@+id/action_HomeFragment_to_HomeSecondFragment"
+            app:destination="@id/nav_home_second" />
+    </fragment>
+    <fragment
+        android:id="@+id/nav_home_second"
+        android:name="com.example.sharonsimon.Fragments.HomeSecondFragment"
+        android:label="@string/home_second"
+        tools:layout="@layout/fragment_home_second">
+        <action
+            android:id="@+id/action_HomeSecondFragment_to_HomeFragment"
+            app:destination="@id/nav_my_ken" />
+
+        <argument
+            android:name="myArg"
+            app:argType="string" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/nav_todays_tasks"
+        android:name="com.example.sharonsimon.Fragments.TodaysTasksFragment"
+        android:label="@string/menu_gallery"
+        tools:layout="@layout/todays_tasks_fragment" />
+
+    <fragment
+        android:id="@+id/nav_leaderboard"
+        android:name="com.example.sharonsimon.Fragments.LeaderboardFragment"
+        android:label="@string/menu_slideshow"
+        tools:layout="@layout/leaderboard_fragment" />
+
+    <fragment
+        android:id="@+id/nav_highlights"
+        android:name="com.example.sharonsimon.Fragments.HighlightsFragment"
+        android:label="@string/menu_slideshow"
+        tools:layout="@layout/highlights_fragment" />
+</navigation>

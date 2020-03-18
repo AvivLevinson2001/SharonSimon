@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    android:id="@+id/register_root_layout"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center_horizontal"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:background="@drawable/home_background">
+
+    <ImageView
+        android:layout_width="170dp"
+        android:layout_height="170dp"
+        android:layout_marginTop="30dp"
+        android:src="@drawable/semel_hash"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="25sp"
+        android:text="@string/app_name"
+        android:gravity="center"
+        android:fontFamily="monospace"
+        android:textColor="@color/home_text_color"/>
+
+    <EditText
+        android:layout_width="250dp"
+        android:layout_height="45dp"
+        android:layout_marginTop="35dp"
+        android:background="@drawable/edit_text_shape"
+        android:textAlignment="center"
+        android:hint="שם"
+        android:textSize="20sp"
+        android:fontFamily="serif"
+        android:id="@+id/login_name_et"
+        android:padding="10dp"/>
+
+    <Spinner
+        android:id="@+id/login_ken_spinner"
+        android:background="@drawable/edit_text_shape"
+        android:layout_width="250dp"
+        android:layout_height="45dp"
+        android:layout_marginTop="10dp"
+        android:textAlignment="center"
+        android:spinnerMode="dropdown"/>
+
+    <Button
+        android:layout_width="250dp"
+        android:layout_height="50dp"
+        android:layout_marginTop="20dp"
+        android:background="@drawable/login_btn_shape"
+        android:textSize="24sp"
+        android:fontFamily="serif"
+        android:textAllCaps="false"
+        android:text="היכנס"
+        android:textColor="#fff"
+        android:id="@+id/login_btn" />
+
+
+</LinearLayout>

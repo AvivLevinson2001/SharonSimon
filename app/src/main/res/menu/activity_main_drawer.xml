@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:showIn="navigation_view">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_my_ken"
+            android:icon="@drawable/ic_menu_camera"
+            android:title="הקן שלי" />
+        <item
+            android:id="@+id/nav_todays_tasks"
+            android:icon="@drawable/ic_menu_gallery"
+            android:title="המשימות היומיות" />
+        <item
+            android:id="@+id/nav_leaderboard"
+            android:icon="@drawable/ic_menu_slideshow"
+            android:title="קני האזור" />
+        <item
+            android:id="@+id/nav_highlights"
+            android:icon="@drawable/ic_menu_slideshow"
+            android:title="קטעים חמים" />
+    </group>
+</menu>
