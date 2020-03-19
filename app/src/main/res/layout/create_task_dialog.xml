@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:layout_centerHorizontal="true"
+    android:padding="16dp"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="5dp"
+        android:textSize="20sp"
+        android:text="Create a Task"
+        android:gravity="center"/>
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="3dp"
+        android:textSize="18sp"
+        android:hint="Description"
+        android:gravity="center"
+        android:id="@+id/create_task_dialog_desc_et"/>
+    <EditText
+        android:layout_marginTop="16dp"
+        android:layout_width="100dp"
+        android:layout_height="wrap_content"
+        android:textSize="17sp"
+        android:hint="Points"
+        android:layout_gravity="center_horizontal"
+        android:gravity="center"
+        android:inputType="number"
+        android:id="@+id/create_task_dialog_points_et"/>
+
+</LinearLayout>

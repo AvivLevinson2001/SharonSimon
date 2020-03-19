@@ -14,7 +14,7 @@ import androidx.navigation.ui.NavigationUI;
 import com.example.sharonsimon.R;
 import com.google.android.material.navigation.NavigationView;
 
-public class MainActivity extends AppCompatActivity {
+public class  MainActivity extends AppCompatActivity {
 
     private AppBarConfiguration mAppBarConfiguration;
 
