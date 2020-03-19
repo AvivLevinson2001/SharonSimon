@@ -40,7 +40,7 @@ public class  MainActivity extends AppCompatActivity {
 
     FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
     DatabaseReference reference = firebaseDatabase.getReference();
-    com.example.sharonsimon.Classes.Ken myKen;
+    Ken myKen;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

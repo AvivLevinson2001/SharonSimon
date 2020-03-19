@@ -10,6 +10,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.sharonsimon.R;
 import com.example.sharonsimon.Classes.Ken;
 
+import java.lang.reflect.Array;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -19,7 +21,7 @@ import java.util.List;
 public class KenAdapter extends RecyclerView.Adapter<KenAdapter.CreateKenViewHolder>
 {
 
-    private List<Ken> kens;
+    private ArrayList<Ken> kens;
     private myKenAdapterListener listener;
 
     public interface myKenAdapterListener
@@ -32,7 +34,7 @@ public class KenAdapter extends RecyclerView.Adapter<KenAdapter.CreateKenViewHol
         this.listener = listener;
     }
 
-    public KenAdapter(List<Ken> kens)
+    public KenAdapter(ArrayList<Ken> kens)
     {
         this.kens = kens;
     }
@@ -83,5 +85,9 @@ public class KenAdapter extends RecyclerView.Adapter<KenAdapter.CreateKenViewHol
         holder.pointsTv.setText(ken.getPoints());
 
 
+    }
+
+    public void setKens(ArrayList<Ken> kens) {
+        this.kens = kens;
     }
 }
