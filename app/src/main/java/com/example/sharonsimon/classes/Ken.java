@@ -5,14 +5,14 @@ import java.util.ArrayList;
 public class Ken {
 
     String name;
-    ArrayList<String> tasks;
-    ArrayList<String> completedTasks;
+    ArrayList<Task> tasks;
+    ArrayList<Task> completedTasks;
     int points;
 
     public Ken() {
     }
 
-    public Ken(String name, ArrayList<String> tasks, ArrayList<String> completedTasks, int points) {
+    public Ken(String name, ArrayList<Task> tasks, ArrayList<Task> completedTasks, int points) {
         this.name = name;
         this.tasks = tasks;
         this.completedTasks = completedTasks;
@@ -27,19 +27,19 @@ public class Ken {
         this.name = name;
     }
 
-    public ArrayList<String> getTasks() {
+    public ArrayList<Task> getTasks() {
         return tasks;
     }
 
-    public void setTasks(ArrayList<String> tasks) {
+    public void setTasks(ArrayList<Task> tasks) {
         this.tasks = tasks;
     }
 
-    public ArrayList<String> getCompletedTasks() {
+    public ArrayList<Task> getCompletedTasks() {
         return completedTasks;
     }
 
-    public void setCompletedTasks(ArrayList<String> completedTasks) {
+    public void setCompletedTasks(ArrayList<Task> completedTasks) {
         this.completedTasks = completedTasks;
     }
 

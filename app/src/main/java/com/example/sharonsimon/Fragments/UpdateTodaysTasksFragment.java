@@ -13,14 +13,23 @@ import android.widget.EditText;
 import android.widget.PopupMenu;
 
 import com.example.sharonsimon.Adapters.TaskAdapter;
+import com.example.sharonsimon.Dialogs.LoadingDialogBuilder;
 import com.example.sharonsimon.R;
+import com.example.sharonsimon.classes.Ken;
 import com.example.sharonsimon.classes.Task;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.fragment.app.Fragment;
@@ -32,8 +41,10 @@ import androidx.recyclerview.widget.RecyclerView;
  * Created by ronto on 27-Nov-18.
  */
 
-public class UpdateDailyTasksFragment extends Fragment
+public class UpdateTodaysTasksFragment extends Fragment
 {
+
+    FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
 
     RecyclerView recyclerView;
     FloatingActionButton addTaskFab;
@@ -118,7 +129,7 @@ public class UpdateDailyTasksFragment extends Fragment
                             EditText pointsEt = v.findViewById(R.id.create_task_dialog_points_et);
 
                             descEt.setText(tasks.get(position).getDesc());
-                            pointsEt.setText(tasks.get(position).getPoints());
+                            pointsEt.setText(tasks.get(position).getPoints() + "");
 
                         }
 
@@ -187,58 +198,29 @@ public class UpdateDailyTasksFragment extends Fragment
             public void onClick(View view)
             {
 
-                //TODO modify the firebase to the Project
-
-                /*final Dialog loadingDialog = LoadingDialogBuilder.createLoadingDialog(getActivity());
+                final Dialog loadingDialog = LoadingDialogBuilder.createLoadingDialog(getActivity());
                 loadingDialog.show();
 
-                myRef.child(UID).child("mainTasks").child(title).addListenerForSingleValueEvent(new ValueEventListener()
-                {
+                DatabaseReference reference = firebaseDatabase.getReference().child("kens");
+
+                reference.addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot)
-                    {
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        ArrayList<Ken> kens = dataSnapshot.getValue()
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+
+                reference.setValue(tasks).addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull com.google.android.gms.tasks.Task<Void> task) {
                         loadingDialog.dismiss();
-
-                        if (title.equals("") || desc.equals(""))
-                        {
-                            Snackbar.make(coordinatorLayout, "Please fill all fields", Snackbar.LENGTH_SHORT).show();
-                        }
-                        else if (dataSnapshot.getValue() != null) //If it exists
-                        {
-                            Snackbar.make(coordinatorLayout, "Task "+title+" Already exists", Snackbar.LENGTH_SHORT).show();
-                        }
-                        else if (subTasks.isEmpty()) //If there are no subTasks
-                        {
-                            Snackbar.make(coordinatorLayout, "No sub tasks", Snackbar.LENGTH_SHORT).show();
-                        }
-                        else
-                        {
-                            int logoNum = Integer.parseInt(logoNumTv.getText().toString());
-
-
-                            MainTask task = new MainTask(title, desc, subTasks, logoNum, currDate);
-                            final Dialog dialog = LoadingDialogBuilder.createLoadingDialog(getActivity());
-                            dialog.show();
-                            myRef.child(UID).child("mainTasks").child(titleEt.getText().toString()).setValue(task)
-                                    .addOnCompleteListener(new OnCompleteListener<Void>()
-                                    {
-                                        @Override
-                                        public void onComplete(@NonNull com.google.android.gms.tasks.Task<Void> task)
-                                        {
-                                            dialog.dismiss();
-                                            Snackbar.make(coordinatorLayout, "Task successfully added!", Snackbar.LENGTH_SHORT).show();
-                                            getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.main_fragment_container, new HomeFragment()).commit();
-                                        }
-                                    });
-                        }
                     }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError)
-                    {
-
-                    }
-                });*/
+                });
             }
         });
 

@@ -92,7 +92,7 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.CreateTaskView
         Task task = tasks.get(position);
         holder.isCompletedCB.setChecked(task.isCompleted());
         holder.descTV.setText(task.getDesc());
-        holder.pointsTV.setText(task.getPoints());
+        holder.pointsTV.setText(task.getPoints() + "");
 
         //Todo change opacity if completed
     }
