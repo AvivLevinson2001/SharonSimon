@@ -1,12 +1,14 @@
 package com.example.sharonsimon.Activities;
 
 
+import android.app.Dialog;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.Menu;
 
 import com.example.sharonsimon.Classes.Ken;
 import com.example.sharonsimon.Classes.Task;
+import com.example.sharonsimon.Dialogs.LoadingDialogBuilder;
 import com.example.sharonsimon.R;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.database.DataSnapshot;
@@ -40,7 +42,6 @@ public class  MainActivity extends AppCompatActivity {
 
     FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
     DatabaseReference reference = firebaseDatabase.getReference();
-    com.example.sharonsimon.Classes.Ken myKen;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,8 +65,6 @@ public class  MainActivity extends AppCompatActivity {
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
         NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
         NavigationUI.setupWithNavController(navigationView, navController);
-
-        getMyKenFromFirebase();
     }
 
     @Override
@@ -80,44 +79,6 @@ public class  MainActivity extends AppCompatActivity {
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
         return NavigationUI.navigateUp(navController, mAppBarConfiguration)
                 || super.onSupportNavigateUp();
-    }
-
-    private void getMyKenFromFirebase(){
-        final String myKenName = sp.getString("ken","");
-        reference.child("kens").addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if(!dataSnapshot.exists()){
-                    final String[] kensNames = new String[]
-                            {"מקורות", "המעפיל", "מעיין", "העוגן", "רמות חפר", "יקום", "געש", "גן שמואל",
-                                    "להבות חביבה", "מבואות עירון", "כרכור", "כפס מרום", "הרצליה", "חריש"};
-
-                    ArrayList<Ken> kens = new ArrayList<>();
-                    for(String kenName : kensNames){
-                        Ken newKen = new Ken(kenName, new ArrayList<Task>(), new ArrayList<Task>(), 0);
-                        kens.add(newKen);
-                        if(kenName.equals(myKenName))
-                            myKen = newKen;
-                    }
-
-                    reference.child("kens").setValue(kens);
-                }
-                else{
-                    GenericTypeIndicator<ArrayList<Ken>> genericTypeIndicator = new GenericTypeIndicator<ArrayList<Ken>>() {};
-                    ArrayList<Ken> kens = dataSnapshot.getValue(genericTypeIndicator);
-                    for(Ken ken : kens){
-                        if(ken.getName().equals(myKenName)){
-                            myKen = ken;
-                        }
-                    }
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
     }
 
 
