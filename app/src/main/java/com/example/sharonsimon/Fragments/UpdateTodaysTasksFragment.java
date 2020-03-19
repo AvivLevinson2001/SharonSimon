@@ -13,17 +13,19 @@ import android.widget.EditText;
 import android.widget.PopupMenu;
 
 import com.example.sharonsimon.Adapters.TaskAdapter;
+import com.example.sharonsimon.Classes.Ken;
 import com.example.sharonsimon.Dialogs.LoadingDialogBuilder;
 import com.example.sharonsimon.R;
-import com.example.sharonsimon.classes.Ken;
-import com.example.sharonsimon.classes.Task;
+
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.GenericTypeIndicator;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
@@ -50,7 +52,7 @@ public class UpdateTodaysTasksFragment extends Fragment
     FloatingActionButton addTaskFab;
     FloatingActionButton confirmFab;
 
-    List<Task> tasks;
+    ArrayList<com.example.sharonsimon.Classes.Task> tasks;
 
     @Nullable
     @Override
@@ -112,7 +114,7 @@ public class UpdateTodaysTasksFragment extends Fragment
                                     }
                                     else
                                     {
-                                        Task task = tasks.get(position);
+                                        com.example.sharonsimon.Classes.Task task = tasks.get(position);
                                         task.setPoints(Integer.parseInt(points));
                                         task.setDesc(desc);
                                         adapter.notifyDataSetChanged();//Updates the recycler
@@ -129,7 +131,7 @@ public class UpdateTodaysTasksFragment extends Fragment
                             EditText pointsEt = v.findViewById(R.id.create_task_dialog_points_et);
 
                             descEt.setText(tasks.get(position).getDesc());
-                            pointsEt.setText(tasks.get(position).getPoints() + "");
+                            pointsEt.setText(tasks.get(position).getPoints());
 
                         }
 
@@ -176,7 +178,7 @@ public class UpdateTodaysTasksFragment extends Fragment
                         }
                         else
                         {
-                            Task newTask = new Task(desc, Integer.parseInt(points), false);
+                            com.example.sharonsimon.Classes.Task newTask = new com.example.sharonsimon.Classes.Task(desc, Integer.parseInt(points), false);
                             tasks.add(newTask);
                             adapter.notifyDataSetChanged();//Updates the recycler
 
@@ -198,27 +200,30 @@ public class UpdateTodaysTasksFragment extends Fragment
             public void onClick(View view)
             {
 
+                //TODO modify the firebase to the Project
+
                 final Dialog loadingDialog = LoadingDialogBuilder.createLoadingDialog(getActivity());
                 loadingDialog.show();
 
-                DatabaseReference reference = firebaseDatabase.getReference().child("kens");
-
-                reference.addListenerForSingleValueEvent(new ValueEventListener() {
+                final DatabaseReference databaseReference = firebaseDatabase.getReference();
+                databaseReference.child("kens").addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        ArrayList<Ken> kens = dataSnapshot.getValue()
+                        if(dataSnapshot.exists()){
+                            GenericTypeIndicator<ArrayList<Ken>> genericTypeIndicator = new GenericTypeIndicator<ArrayList<Ken>>() {};
+                            ArrayList<Ken> kens = dataSnapshot.getValue(genericTypeIndicator);
+                            for(Ken ken : kens){
+                                ken.setTasks(tasks);
+                            }
+                            databaseReference.child("kens").setValue(kens);
+                            databaseReference.child("todays-tasks").setValue(tasks);
+                            loadingDialog.dismiss();
+                        }
                     }
 
                     @Override
                     public void onCancelled(@NonNull DatabaseError databaseError) {
 
-                    }
-                });
-
-                reference.setValue(tasks).addOnCompleteListener(new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull com.google.android.gms.tasks.Task<Void> task) {
-                        loadingDialog.dismiss();
                     }
                 });
             }

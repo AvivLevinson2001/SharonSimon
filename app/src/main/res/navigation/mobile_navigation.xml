@@ -11,11 +11,11 @@
         android:label="My Ken"
         tools:layout="@layout/my_ken_fragment" >
 
-        <action
+        <!--<action
             android:id="@+id/action_HomeFragment_to_HomeSecondFragment"
-            app:destination="@id/nav_home_second" />
+            app:destination="@id/nav_home_second" />-->
     </fragment>
-    <fragment
+    <!--<fragment
         android:id="@+id/nav_home_second"
         android:name="com.example.sharonsimon.Fragments.HomeSecondFragment"
         android:label="@string/home_second"
@@ -27,7 +27,7 @@
         <argument
             android:name="myArg"
             app:argType="string" />
-    </fragment>
+    </fragment>-->
 
     <fragment
         android:id="@+id/nav_todays_tasks"
@@ -52,4 +52,11 @@
         android:name="com.example.sharonsimon.Fragments.UpdateTodaysTasksFragment"
         android:label="Update Tasks"
         tools:layout="@layout/update_todays_tasks_fragment"/>
+
+    <activity
+        android:id="@+id/nav_register_activity"
+        android:name="com.example.sharonsimon.Activities.RegisterActivity"
+        android:label="RegisterActivity"
+        tools:layout="@layout/register_activity"/>
+
 </navigation>

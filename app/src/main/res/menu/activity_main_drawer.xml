@@ -9,7 +9,8 @@
         <item
             android:id="@+id/nav_my_ken"
             android:icon="@drawable/ic_menu_camera"
-            android:title="הקן שלי" />
+            android:title="הקן שלי"
+            android:checked="true"/>
         <item
             android:id="@+id/nav_todays_tasks"
             android:icon="@drawable/ic_menu_gallery"
@@ -22,6 +23,16 @@
             android:id="@+id/nav_highlights"
             android:icon="@drawable/ic_menu_slideshow"
             android:title="קטעים חמים" />
+
+    </group>
+
+    <group android:checkableBehavior="none"
+        android:id="@+id/non_flow_control_items">
+
+        <item
+            android:id="@+id/nav_register_activity"
+            android:title="התנתק" />
+
     </group>
 
     <group android:checkableBehavior="single"

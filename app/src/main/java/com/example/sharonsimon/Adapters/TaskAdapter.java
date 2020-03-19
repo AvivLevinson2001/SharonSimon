@@ -11,6 +11,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.sharonsimon.R;
 import com.example.sharonsimon.Classes.Task;
 
+import java.lang.reflect.Array;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -20,7 +22,7 @@ import java.util.List;
 public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.CreateTaskViewHolder>
 {
 
-    private List<Task> tasks;
+    private ArrayList<Task> tasks;
     private myTaskAdapterListener listener;
 
     public interface myTaskAdapterListener
@@ -34,7 +36,7 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.CreateTaskView
         this.listener = listener;
     }
 
-    public TaskAdapter(List<Task> tasks)
+    public TaskAdapter(ArrayList<Task> tasks)
     {
         this.tasks = tasks;
     }
