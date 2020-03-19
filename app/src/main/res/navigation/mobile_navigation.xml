@@ -10,24 +10,7 @@
         android:name="com.example.sharonsimon.Fragments.MyKenFragment"
         android:label="My Ken"
         tools:layout="@layout/my_ken_fragment" >
-
-        <!--<action
-            android:id="@+id/action_HomeFragment_to_HomeSecondFragment"
-            app:destination="@id/nav_home_second" />-->
     </fragment>
-    <!--<fragment
-        android:id="@+id/nav_home_second"
-        android:name="com.example.sharonsimon.Fragments.HomeSecondFragment"
-        android:label="@string/home_second"
-        tools:layout="@layout/fragment_home_second">
-        <action
-            android:id="@+id/action_HomeSecondFragment_to_HomeFragment"
-            app:destination="@id/nav_my_ken" />
-
-        <argument
-            android:name="myArg"
-            app:argType="string" />
-    </fragment>-->
 
     <fragment
         android:id="@+id/nav_todays_tasks"
@@ -51,7 +34,8 @@
         android:id="@+id/nav_update_todays_tasks"
         android:name="com.example.sharonsimon.Fragments.UpdateTodaysTasksFragment"
         android:label="Update Tasks"
-        tools:layout="@layout/update_todays_tasks_fragment"/>
+        tools:layout="@layout/update_todays_tasks_fragment">
+    </fragment>
 
     <activity
         android:id="@+id/nav_register_activity"
