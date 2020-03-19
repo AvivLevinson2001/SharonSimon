@@ -8,7 +8,7 @@ import android.widget.TextView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.sharonsimon.R;
-import com.example.sharonsimon.classes.Ken;
+import com.example.sharonsimon.Classes.Ken;
 
 import java.util.List;
 

@@ -1,4 +1,4 @@
-package com.example.sharonsimon.classes;
+package com.example.sharonsimon.Classes;
 
 import java.util.ArrayList;
 
