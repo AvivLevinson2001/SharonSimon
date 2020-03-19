@@ -32,8 +32,6 @@ public class  MainActivity extends AppCompatActivity {
 
     static MainActivity MainActivityInstance;
 
-    FragmentManager fragmentManager = getSupportFragmentManager();
-
     private AppBarConfiguration mAppBarConfiguration;
 
     SharedPreferences sp;
