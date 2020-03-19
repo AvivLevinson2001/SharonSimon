@@ -82,7 +82,7 @@ public class KenAdapter extends RecyclerView.Adapter<KenAdapter.CreateKenViewHol
     {
         Ken ken = kens.get(position);
         holder.nameTv.setText(ken.getName());
-        holder.pointsTv.setText(ken.getPoints());
+        holder.pointsTv.setText(ken.getPoints() + "");
 
 
     }

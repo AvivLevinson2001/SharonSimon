@@ -1,6 +1,7 @@
 package com.example.sharonsimon.Fragments;
 
 import android.app.Dialog;
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -49,6 +50,8 @@ public class MyKenFragment extends Fragment {
 
         ViewGroup viewGroup = (ViewGroup) inflater.inflate(R.layout.my_ken_fragment,container,false);
 
+        sp = getActivity().getSharedPreferences("login", Context.MODE_PRIVATE);
+
         myKenImage = viewGroup.findViewById(R.id.my_ken_image);
         myKenPointsTV = viewGroup.findViewById(R.id.my_ken_points_tv);
         myKenNameTv = viewGroup.findViewById(R.id.my_ken_name_tv);
@@ -60,13 +63,13 @@ public class MyKenFragment extends Fragment {
     }
 
     private void getMyKenFromFirebase(){
+        loadingDialog = LoadingDialogBuilder.createLoadingDialog(getActivity());
+        loadingDialog.show();
+
         final String myKenName = sp.getString("ken","");
         reference.child("kens").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-
-                loadingDialog = LoadingDialogBuilder.createLoadingDialog(getActivity());
-                loadingDialog.show();
 
                 if(!dataSnapshot.exists()){
                     final String[] kensNames = new String[]
@@ -105,7 +108,7 @@ public class MyKenFragment extends Fragment {
     private void updateKenInfo()
     {
         myKenNameTv.setText(myKen.getName());
-        myKenPointsTV.setText(myKen.getPoints());
+        myKenPointsTV.setText(myKen.getPoints() + "");
         //Todo Add Image
 
         loadingDialog.dismiss();
