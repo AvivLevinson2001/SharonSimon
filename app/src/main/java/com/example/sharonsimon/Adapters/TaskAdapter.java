@@ -9,7 +9,7 @@ import android.widget.TextView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.sharonsimon.R;
-import com.example.sharonsimon.classes.Task;
+import com.example.sharonsimon.Classes.Task;
 
 import java.util.List;
 

@@ -14,7 +14,7 @@ import android.widget.PopupMenu;
 
 import com.example.sharonsimon.Adapters.TaskAdapter;
 import com.example.sharonsimon.R;
-import com.example.sharonsimon.classes.Task;
+import com.example.sharonsimon.Classes.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
