@@ -17,8 +17,6 @@ import com.example.sharonsimon.Classes.Ken;
 import com.example.sharonsimon.Dialogs.LoadingDialogBuilder;
 import com.example.sharonsimon.R;
 
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.database.DataSnapshot;
@@ -29,7 +27,6 @@ import com.google.firebase.database.GenericTypeIndicator;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -213,7 +210,7 @@ public class UpdateTodaysTasksFragment extends Fragment
                             GenericTypeIndicator<ArrayList<Ken>> genericTypeIndicator = new GenericTypeIndicator<ArrayList<Ken>>() {};
                             ArrayList<Ken> kens = dataSnapshot.getValue(genericTypeIndicator);
                             for(Ken ken : kens){
-                                ken.setTasks(tasks);
+                                ken.setTodaysTasks(tasks);
                             }
                             databaseReference.child("kens").setValue(kens);
                             databaseReference.child("todays-tasks").setValue(tasks);

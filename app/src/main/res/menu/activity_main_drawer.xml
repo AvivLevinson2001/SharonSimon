@@ -7,20 +7,20 @@
     <group android:checkableBehavior="single"
         android:id="@+id/user_items_group">
         <item
-            android:id="@+id/nav_my_ken"
+            android:id="@+id/action_my_ken"
             android:icon="@drawable/ic_menu_camera"
             android:title="הקן שלי"
             android:checked="true"/>
         <item
-            android:id="@+id/nav_todays_tasks"
+            android:id="@+id/action_todays_tasks"
             android:icon="@drawable/ic_menu_gallery"
             android:title="המשימות היומיות" />
         <item
-            android:id="@+id/nav_leaderboard"
+            android:id="@+id/action_leaderboard"
             android:icon="@drawable/ic_menu_slideshow"
             android:title="קני האזור" />
         <item
-            android:id="@+id/nav_highlights"
+            android:id="@+id/action_highlights"
             android:icon="@drawable/ic_menu_slideshow"
             android:title="קטעים חמים" />
 
@@ -30,7 +30,7 @@
         android:id="@+id/non_flow_control_items">
 
         <item
-            android:id="@+id/nav_register_activity"
+            android:id="@+id/action_log_out"
             android:title="התנתק" />
 
     </group>
@@ -39,7 +39,7 @@
         android:id="@+id/admin_items_group">
 
         <item
-            android:id="@+id/nav_update_todays_tasks"
+            android:id="@+id/action_update_todays_tasks"
             android:title="עדכן משימות"/>
 
     </group>

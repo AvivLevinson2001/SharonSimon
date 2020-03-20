@@ -1,21 +1,22 @@
 package com.example.sharonsimon.Classes;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class Ken {
+public class Ken implements Serializable {
 
     String name;
-    ArrayList<Task> tasks;
-    ArrayList<Task> completedTasks;
+    ArrayList<Task> todaysTasks;
+    ArrayList<Task> allTasks;
     int points;
 
     public Ken() {
     }
 
-    public Ken(String name, ArrayList<Task> tasks, ArrayList<Task> completedTasks, int points) {
+    public Ken(String name, ArrayList<Task> todaysTasks, ArrayList<Task> allTasks, int points) {
         this.name = name;
-        this.tasks = tasks;
-        this.completedTasks = completedTasks;
+        this.todaysTasks = todaysTasks;
+        this.allTasks = allTasks;
         this.points = points;
     }
 
@@ -27,20 +28,20 @@ public class Ken {
         this.name = name;
     }
 
-    public ArrayList<Task> getTasks() {
-        return tasks;
+    public ArrayList<Task> getTodaysTasks() {
+        return todaysTasks;
     }
 
-    public void setTasks(ArrayList<Task> tasks) {
-        this.tasks = tasks;
+    public void setTodaysTasks(ArrayList<Task> todaysTasks) {
+        this.todaysTasks = todaysTasks;
     }
 
-    public ArrayList<Task> getCompletedTasks() {
-        return completedTasks;
+    public ArrayList<Task> getAllTasks() {
+        return allTasks;
     }
 
-    public void setCompletedTasks(ArrayList<Task> completedTasks) {
-        this.completedTasks = completedTasks;
+    public void setAllTasks(ArrayList<Task> allTasks) {
+        this.allTasks = allTasks;
     }
 
     public int getPoints() {
@@ -55,8 +56,8 @@ public class Ken {
     public String toString() {
         return "Ken{" +
                 "name='" + name + '\'' +
-                ", tasks=" + tasks +
-                ", completedTasks=" + completedTasks +
+                ", tasks=" + todaysTasks +
+                ", completedTasks=" + allTasks +
                 ", points=" + points +
                 '}';
     }

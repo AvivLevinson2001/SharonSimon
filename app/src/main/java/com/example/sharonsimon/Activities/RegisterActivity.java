@@ -34,15 +34,6 @@ public class RegisterActivity extends AppCompatActivity
 
         sp = getSharedPreferences("login", MODE_PRIVATE);
 
-        // logged out. reset shared preferences and finish MainActivity
-        if(MainActivity.MainActivityInstance != null){
-            sp.edit().putBoolean("isLoggedIn", false)
-                    .putString("name", "")
-                    .putString("ken","")
-                    .apply();
-            MainActivity.MainActivityInstance.finish();
-        }
-
         if (sp.getBoolean("isLoggedIn", false))
         {
             login();

@@ -66,7 +66,8 @@ public class KenAdapter extends RecyclerView.Adapter<KenAdapter.CreateKenViewHol
                 @Override
                 public void onClick(View view)
                 {
-                    listener.onKenClick(getAdapterPosition(), view);
+                    if(listener != null)
+                        listener.onKenClick(getAdapterPosition(), view);
                 }
             });
         }

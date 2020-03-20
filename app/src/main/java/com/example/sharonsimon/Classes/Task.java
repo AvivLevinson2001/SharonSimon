@@ -1,6 +1,8 @@
 package com.example.sharonsimon.Classes;
 
-public class Task {
+import java.io.Serializable;
+
+public class Task implements Serializable {
 
     String desc;
     int points;
@@ -48,5 +50,7 @@ public class Task {
                 '}';
     }
 
-
+    public boolean isSameTask(Task t){
+        return (this.desc.equals(t.desc) && this.points == t.points);
+    }
 }

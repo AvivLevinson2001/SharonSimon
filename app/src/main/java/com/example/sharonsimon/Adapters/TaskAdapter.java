@@ -70,14 +70,16 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.CreateTaskView
                 @Override
                 public void onClick(View view)
                 {
-                    listener.onTaskClick(getAdapterPosition(), view);
+                    if(listener!=null)
+                        listener.onTaskClick(getAdapterPosition(), view);
                 }
             });
 
             itemView.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
                 public boolean onLongClick(View view) {
-                    listener.onTaskLongClick(getAdapterPosition(), view);
+                    if(listener!=null)
+                        listener.onTaskLongClick(getAdapterPosition(), view);
                     return false;
                 }
             });
