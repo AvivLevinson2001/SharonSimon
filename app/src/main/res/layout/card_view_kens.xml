@@ -8,27 +8,216 @@
     android:elevation="4dp"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:foreground="?android:selectableItemBackground">
+    android:foreground="?android:selectableItemBackground"
+    android:layoutDirection="rtl">
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
 
-        <TextView
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textAlignment="center"
-            android:text="name"
-            android:id="@+id/card_view_ken_name_tv"/>
+            android:orientation="horizontal"
+            android:padding="16dp"
+            android:layout_weight="5">
 
-        <TextView
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:layout_width="70dp"
+                android:layout_height="70dp"
+                android:id="@+id/card_view_ken_image"
+                android:src="@drawable/semel_hash"
+                app:civ_border_width="1dp"
+                app:civ_border_color="#686868"/>
+
+            <View
+                android:layout_width="1dp"
+                android:layout_height="match_parent"
+                android:background="@color/home_text_color"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="8dp" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:textSize="24sp"
+                android:gravity="center"
+                android:fontFamily="serif"
+                android:id="@+id/card_view_ken_name_tv"
+                android:textColor="@color/home_text_color"/>
+
+        </LinearLayout>
+
+        <View
+            android:layout_width="1dp"
+            android:layout_height="match_parent"
+            android:background="@color/home_text_color"/>
+
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textAlignment="center"
-            android:text="points"
-            android:id="@+id/card_view_ken_points_tv"/>
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:background="@color/colorPrimary"
+            android:padding="16dp"
+            android:layout_weight="10">
 
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:textSize="20sp"
+                android:text="0"
+                android:gravity="center"
+                android:layout_weight="1"
+                android:id="@+id/card_view_ken_points_tv"
+                android:textColor="@color/home_text_color"/>
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="end"
+                android:layout_weight="1"
+                android:src="@drawable/trophy"/>
+
+        </LinearLayout>
     </LinearLayout>
 
+
 </androidx.cardview.widget.CardView>
+
+    <!--
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:cardUseCompatPadding="true"
+        app:cardCornerRadius="8dp"
+        android:elevation="4dp"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:foreground="?android:selectableItemBackground">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="15dp"
+                android:id="@+id/card_main_task_layout_a">
+
+                <de.hdodenhof.circleimageview.CircleImageView
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:id="@+id/card_main_task_logo_civ"
+                    android:layout_centerVertical="true"
+                    android:src="@drawable/task_logo_temp"
+                    app:civ_border_width="1dp"
+                    app:civ_border_color="#686868"/>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="30sp"
+                    android:textSize="20sp"
+                    android:layout_marginEnd="40dp"
+                    android:layout_marginStart="15dp"
+                    android:text="Title"
+                    android:gravity="left"
+                    android:fontFamily="sans-serif"
+                    android:textStyle="bold"
+                    android:layout_toEndOf="@id/card_main_task_logo_civ"
+                    android:id="@+id/card_main_task_title_tv"/>
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="20sp"
+                    android:layout_marginEnd="40dp"
+                    android:layout_marginStart="15dp"
+                    android:textSize="15sp"
+                    android:text="Date"
+                    android:layout_marginTop="5dp"
+                    android:gravity="center_vertical"
+                    android:id="@+id/card_main_task_date_tv"
+                    android:layout_toEndOf="@id/card_main_task_logo_civ"
+                    android:layout_below="@id/card_main_task_title_tv"/>
+
+                <ImageView
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:src="@drawable/ic_more_vert_black_24dp"
+                    android:layout_alignParentEnd="true"
+                    android:id="@+id/card_main_task_more_btn"
+                    android:tint="#686868" />
+            </RelativeLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_below="@id/card_main_task_layout_a"
+                android:background="@color/home_text_color"
+                android:id="@+id/card_main_task_divider_a"
+                android:layout_marginStart="5dp"
+                android:layout_marginEnd="5dp"/>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/card_main_task_divider_a"
+                android:padding="10dp"
+                android:id="@+id/card_main_task_layout_b">
+
+                <ProgressBar
+                    android:layout_width="225dp"
+                    android:layout_height="wrap_content"
+                    style="@style/Base.Widget.AppCompat.ProgressBar.Horizontal"
+                    android:max="100"
+                    android:progress="75"
+                    android:id="@+id/card_main_task_percent_pb"
+                    android:layout_centerVertical="true"/>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_toEndOf="@id/card_main_task_percent_pb"
+                    android:layout_marginStart="10dp"
+                    android:text="75%"
+                    android:textSize="20sp"
+                    android:id="@+id/card_main_task_percent_tv"
+                    android:gravity="center"/>
+            </RelativeLayout>
+        </RelativeLayout>
+
+    </androidx.cardview.widget.CardView>-->
+
+    <!--
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:cardUseCompatPadding="true"
+        app:cardCornerRadius="8dp"
+        android:elevation="4dp"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:foreground="?android:selectableItemBackground">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAlignment="center"
+                android:text="name"
+                android:id="@+id/card_view_ken_name_tv"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAlignment="center"
+                android:text="points"
+                android:id="@+id/card_view_ken_points_tv"/>
+
+        </LinearLayout>
+
+    </androidx.cardview.widget.CardView>-->
