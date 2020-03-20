@@ -1,7 +1,9 @@
 package com.example.sharonsimon.Fragments;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 
@@ -14,6 +16,7 @@ import android.widget.PopupMenu;
 
 import com.example.sharonsimon.Adapters.TaskAdapter;
 import com.example.sharonsimon.Classes.Ken;
+import com.example.sharonsimon.Classes.Task;
 import com.example.sharonsimon.Dialogs.LoadingDialogBuilder;
 import com.example.sharonsimon.R;
 
@@ -49,7 +52,24 @@ public class UpdateTodaysTasksFragment extends Fragment
     FloatingActionButton addTaskFab;
     FloatingActionButton confirmFab;
 
-    ArrayList<com.example.sharonsimon.Classes.Task> tasks;
+    ArrayList<Task> tasks;
+
+    FirebaseChangesListener listener;
+
+    public interface FirebaseChangesListener {
+        void reloadInfoFromFirebase();
+    }
+
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+        Activity activity = (Activity)context;
+        try{
+            listener = (FirebaseChangesListener) activity;
+        }catch (ClassCastException e){
+            throw new ClassCastException("Activity: " + activity.toString() + " must implement KensRecyclerViewFragmentListener");
+        }
+    }
 
     @Nullable
     @Override
@@ -197,8 +217,6 @@ public class UpdateTodaysTasksFragment extends Fragment
             public void onClick(View view)
             {
 
-                //TODO modify the firebase to the Project
-
                 final Dialog loadingDialog = LoadingDialogBuilder.createLoadingDialog(getActivity());
                 loadingDialog.show();
 
@@ -210,12 +228,13 @@ public class UpdateTodaysTasksFragment extends Fragment
                             GenericTypeIndicator<ArrayList<Ken>> genericTypeIndicator = new GenericTypeIndicator<ArrayList<Ken>>() {};
                             ArrayList<Ken> kens = dataSnapshot.getValue(genericTypeIndicator);
                             for(Ken ken : kens){
-                                ken.setTodaysTasks(tasks);
+                                ken.addTasks(tasks);
                             }
                             databaseReference.child("kens").setValue(kens);
                             databaseReference.child("todays-tasks").setValue(tasks);
                             loadingDialog.dismiss();
                         }
+                        listener.reloadInfoFromFirebase();
                     }
 
                     @Override

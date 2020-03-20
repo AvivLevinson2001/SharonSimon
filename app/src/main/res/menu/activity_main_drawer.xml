@@ -12,10 +12,6 @@
             android:title="הקן שלי"
             android:checked="true"/>
         <item
-            android:id="@+id/action_todays_tasks"
-            android:icon="@drawable/ic_tasks"
-            android:title="המשימות היומיות" />
-        <item
             android:id="@+id/action_leaderboard"
             android:icon="@drawable/ic_bull"
             android:title="קני האזור" />

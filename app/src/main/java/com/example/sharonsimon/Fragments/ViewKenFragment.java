@@ -16,13 +16,13 @@ import com.example.sharonsimon.Adapters.TaskAdapter;
 import com.example.sharonsimon.Classes.Ken;
 import com.example.sharonsimon.Classes.Task;
 import com.example.sharonsimon.R;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
+
 import java.util.ArrayList;
 
 public class ViewKenFragment extends Fragment {
 
     Ken ken;
+    boolean isAdmin;
 
     ImageView myKenImage;
     TextView myKenPointsTV;
@@ -30,10 +30,11 @@ public class ViewKenFragment extends Fragment {
     RecyclerView recycler;
     TaskAdapter adapter;
 
-    public static ViewKenFragment newInstance(Ken ken){
+    public static ViewKenFragment newInstance(Ken ken, boolean isAdmin){
         ViewKenFragment fragment = new ViewKenFragment();
         Bundle arguments = new Bundle();
         arguments.putSerializable("ken",ken);
+        arguments.putBoolean("isAdmin",isAdmin);
         fragment.setArguments(arguments);
         return fragment;
     }
@@ -44,21 +45,16 @@ public class ViewKenFragment extends Fragment {
         ViewGroup viewGroup = (ViewGroup) inflater.inflate(R.layout.view_ken_fragment,container,false);
 
         ken = (Ken)getArguments().getSerializable("ken");
+        isAdmin = getArguments().getBoolean("isAdmin");
 
         myKenImage = viewGroup.findViewById(R.id.my_ken_image);
         myKenPointsTV = viewGroup.findViewById(R.id.my_ken_points_tv);
         myKenNameTv = viewGroup.findViewById(R.id.my_ken_name_tv);
         recycler = viewGroup.findViewById(R.id.tasks_rv);
 
-        ArrayList<Task> allTasks = ken.getAllTasks();
-        ArrayList<Task> completedTasks = new ArrayList<>();
-        if(allTasks != null) {
-            for (Task task : allTasks) {
-                if (task.isCompleted()) completedTasks.add(task);
-            }
-        }
+        ArrayList<Task> tasks = ken.getTasks();
+        adapter = new TaskAdapter(tasks);
 
-        adapter = new TaskAdapter(completedTasks);
         recycler.setAdapter(adapter);
         recycler.setLayoutManager(new LinearLayoutManager(getActivity()));
 

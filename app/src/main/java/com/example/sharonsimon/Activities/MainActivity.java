@@ -36,11 +36,10 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
-public class  MainActivity extends AppCompatActivity implements KensRecyclerViewFragment.KensRecyclerViewFragmentListener {
+public class  MainActivity extends AppCompatActivity implements KensRecyclerViewFragment.KensRecyclerViewFragmentListener, UpdateTodaysTasksFragment.FirebaseChangesListener {
 
     ArrayList<Ken> kensList;
     Ken myKen;
-    ArrayList<Task> todaysTasks;
 
     SharedPreferences sp;
 
@@ -50,6 +49,7 @@ public class  MainActivity extends AppCompatActivity implements KensRecyclerView
     Fragment currentFragment;
 
     DrawerLayout drawer;
+    NavigationView navigationView;
 
     Dialog loadingDialog;
 
@@ -60,29 +60,30 @@ public class  MainActivity extends AppCompatActivity implements KensRecyclerView
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        loadingDialog = LoadingDialogBuilder.createLoadingDialog(this);
-        loadingDialog.show();
+        sp = getSharedPreferences("login",MODE_PRIVATE);
 
         getInfoFromFirebase();
 
         drawer = findViewById(R.id.drawer_layout);
-        final NavigationView navigationView = findViewById(R.id.nav_view);
+        navigationView = findViewById(R.id.nav_view);
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setHomeAsUpIndicator(R.drawable.ic_menu_white_24dp);
+
+        navigationView.getMenu().setGroupVisible(R.id.admin_items_group,sp.getString("name","").equals("barvaz15"));
 
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 String fragmentTag = "";
                 if(item.getItemId() == R.id.action_my_ken){
-                    currentFragment = ViewKenFragment.newInstance(myKen);
+                    currentFragment = ViewKenFragment.newInstance(myKen,sp.getString("name","").equals("barvaz15"));
                     fragmentTag = "MyKen";
                 }
-                else if(item.getItemId() == R.id.action_todays_tasks){
+                /*else if(item.getItemId() == R.id.action_todays_tasks){
                     currentFragment = TasksRecyclerViewFragment.newInstance(todaysTasks);
                     fragmentTag = "TodaysTasks";
-                }
+                }*/
                 else if(item.getItemId() == R.id.action_leaderboard){
                     currentFragment = KensRecyclerViewFragment.newInstance(kensList);
                     fragmentTag = "Leaderboard";
@@ -129,7 +130,8 @@ public class  MainActivity extends AppCompatActivity implements KensRecyclerView
     }
 
     public void getInfoFromFirebase(){
-        sp = getSharedPreferences("login",MODE_PRIVATE);
+        loadingDialog = LoadingDialogBuilder.createLoadingDialog(this);
+        loadingDialog.show();
         final String myKenName = sp.getString("ken","");
         reference.child("kens").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -141,14 +143,13 @@ public class  MainActivity extends AppCompatActivity implements KensRecyclerView
 
                     ArrayList<Ken> newKens = new ArrayList<>();
                     for(String kenName : kensNames){
-                        Ken newKen = new Ken(kenName, new ArrayList<Task>(), new ArrayList<Task>(), 0);
+                        Ken newKen = new Ken(kenName, new ArrayList<Task>(), 0);
                         newKens.add(newKen);
                         if(kenName.equals(myKenName))
                             myKen = newKen;
                     }
                     kensList = newKens;
                     reference.child("kens").setValue(newKens);
-                    todaysTasks = new ArrayList<>();
                     loadingDialog.dismiss();
                 }
                 else{
@@ -159,27 +160,12 @@ public class  MainActivity extends AppCompatActivity implements KensRecyclerView
                             myKen = ken;
                         }
                     }
-                    reference.child("todays-tasks").addListenerForSingleValueEvent(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                            if(dataSnapshot.exists()){
-                                GenericTypeIndicator<ArrayList<Task>> genericTypeIndicator = new GenericTypeIndicator<ArrayList<Task>>() {};
-                                todaysTasks = dataSnapshot.getValue(genericTypeIndicator);
-                            }
-                            else{
-                                todaysTasks = new ArrayList<>();
-                            }
-                           loadingDialog.dismiss();
-                        }
-
-                        @Override
-                        public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                        }
-                    });
+                    loadingDialog.dismiss();
                 }
-                currentFragment = ViewKenFragment.newInstance(myKen);
-                fragmentManager.beginTransaction().replace(R.id.main_fragments_holder,currentFragment,"MyKen").commit();
+                if(navigationView.getCheckedItem().getItemId() == R.id.action_my_ken) {
+                    currentFragment = ViewKenFragment.newInstance(myKen, sp.getString("name", "").equals("barvaz15"));
+                    fragmentManager.beginTransaction().replace(R.id.main_fragments_holder, currentFragment, "MyKen").commit();
+                }
             }
 
             @Override
@@ -191,12 +177,17 @@ public class  MainActivity extends AppCompatActivity implements KensRecyclerView
 
     @Override
     public void onKenClick(Ken ken) {
-        currentFragment = ViewKenFragment.newInstance(ken);
+        currentFragment = ViewKenFragment.newInstance(ken,sp.getString("name","").equals("barvaz15"));
         fragmentManager.beginTransaction().add(R.id.main_fragments_holder,currentFragment,"ShowKen").addToBackStack("backStack").commit();
     }
 
     @Override
     public void onBackPressed() {
         super.onBackPressed();
+    }
+
+    @Override
+    public void reloadInfoFromFirebase() {
+        getInfoFromFirebase();
     }
 }

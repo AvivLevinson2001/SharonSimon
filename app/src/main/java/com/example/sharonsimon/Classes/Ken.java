@@ -6,17 +6,15 @@ import java.util.ArrayList;
 public class Ken implements Serializable {
 
     String name;
-    ArrayList<Task> todaysTasks;
-    ArrayList<Task> allTasks;
+    ArrayList<Task> tasks;
     int points;
 
     public Ken() {
     }
 
-    public Ken(String name, ArrayList<Task> todaysTasks, ArrayList<Task> allTasks, int points) {
+    public Ken(String name, ArrayList<Task> allTasks, int points) {
         this.name = name;
-        this.todaysTasks = todaysTasks;
-        this.allTasks = allTasks;
+        this.tasks = allTasks;
         this.points = points;
     }
 
@@ -28,20 +26,12 @@ public class Ken implements Serializable {
         this.name = name;
     }
 
-    public ArrayList<Task> getTodaysTasks() {
-        return todaysTasks;
+    public ArrayList<Task> getTasks() {
+        return tasks;
     }
 
-    public void setTodaysTasks(ArrayList<Task> todaysTasks) {
-        this.todaysTasks = todaysTasks;
-    }
-
-    public ArrayList<Task> getAllTasks() {
-        return allTasks;
-    }
-
-    public void setAllTasks(ArrayList<Task> allTasks) {
-        this.allTasks = allTasks;
+    public void setTasks(ArrayList<Task> tasks) {
+        this.tasks = tasks;
     }
 
     public int getPoints() {
@@ -56,9 +46,19 @@ public class Ken implements Serializable {
     public String toString() {
         return "Ken{" +
                 "name='" + name + '\'' +
-                ", tasks=" + todaysTasks +
-                ", completedTasks=" + allTasks +
+                ", completedTasks=" + tasks +
                 ", points=" + points +
                 '}';
+    }
+
+    public void addTasks(ArrayList<Task> tasks){
+        for(Task task : tasks){
+            addTask(task);
+        }
+    }
+
+    public void addTask(Task task){
+        if(tasks == null) tasks = new ArrayList<>();
+        tasks.add(task);
     }
 }
