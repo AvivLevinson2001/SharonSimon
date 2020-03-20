@@ -18,6 +18,7 @@ import com.example.sharonsimon.Adapters.TaskAdapter;
 import com.example.sharonsimon.Classes.Ken;
 import com.example.sharonsimon.Classes.Task;
 import com.example.sharonsimon.Dialogs.LoadingDialogBuilder;
+import com.example.sharonsimon.Interfaces.FirebaseChangesListener;
 import com.example.sharonsimon.R;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -55,10 +56,6 @@ public class UpdateTodaysTasksFragment extends Fragment
     ArrayList<Task> tasks;
 
     FirebaseChangesListener listener;
-
-    public interface FirebaseChangesListener {
-        void reloadInfoFromFirebase();
-    }
 
     @Override
     public void onAttach(@NonNull Context context) {

@@ -11,10 +11,10 @@ import android.view.MenuItem;
 import com.example.sharonsimon.Classes.Ken;
 import com.example.sharonsimon.Classes.Task;
 import com.example.sharonsimon.Dialogs.LoadingDialogBuilder;
+import com.example.sharonsimon.Interfaces.FirebaseChangesListener;
 import com.example.sharonsimon.Fragments.HighlightsFragment;
 import com.example.sharonsimon.Fragments.KensRecyclerViewFragment;
 import com.example.sharonsimon.Fragments.ViewKenFragment;
-import com.example.sharonsimon.Fragments.TasksRecyclerViewFragment;
 import com.example.sharonsimon.Fragments.UpdateTodaysTasksFragment;
 import com.example.sharonsimon.R;
 import com.google.android.material.navigation.NavigationView;
@@ -36,7 +36,7 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
-public class  MainActivity extends AppCompatActivity implements KensRecyclerViewFragment.KensRecyclerViewFragmentListener, UpdateTodaysTasksFragment.FirebaseChangesListener {
+public class  MainActivity extends AppCompatActivity implements KensRecyclerViewFragment.KensRecyclerViewFragmentListener, FirebaseChangesListener {
 
     ArrayList<Ken> kensList;
     Ken myKen;
@@ -80,10 +80,6 @@ public class  MainActivity extends AppCompatActivity implements KensRecyclerView
                     currentFragment = ViewKenFragment.newInstance(myKen,sp.getString("name","").equals("barvaz15"));
                     fragmentTag = "MyKen";
                 }
-                /*else if(item.getItemId() == R.id.action_todays_tasks){
-                    currentFragment = TasksRecyclerViewFragment.newInstance(todaysTasks);
-                    fragmentTag = "TodaysTasks";
-                }*/
                 else if(item.getItemId() == R.id.action_leaderboard){
                     currentFragment = KensRecyclerViewFragment.newInstance(kensList);
                     fragmentTag = "Leaderboard";
@@ -182,12 +178,12 @@ public class  MainActivity extends AppCompatActivity implements KensRecyclerView
     }
 
     @Override
-    public void onBackPressed() {
-        super.onBackPressed();
+    public void reloadInfoFromFirebase() {
+        getInfoFromFirebase();
     }
 
     @Override
-    public void reloadInfoFromFirebase() {
-        getInfoFromFirebase();
+    public void saveKensToFirebase(ArrayList<Ken> kens) {
+
     }
 }
