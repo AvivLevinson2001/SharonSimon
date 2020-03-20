@@ -1,5 +1,6 @@
 package com.example.sharonsimon.Adapters;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -39,11 +40,14 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.CreateTaskView
     public TaskAdapter(ArrayList<Task> tasks)
     {
         this.tasks = tasks;
+        if(this.tasks == null)
+            this.tasks = new ArrayList<>();
     }
 
     @Override
     public int getItemCount()
     {
+        if(tasks == null) return 0;
         return tasks.size();
     }
 
@@ -97,5 +101,9 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.CreateTaskView
         holder.pointsTV.setText(task.getPoints() + "");
 
         //Todo change opacity if completed
+    }
+
+    public void setTasks(ArrayList<Task> tasks) {
+        this.tasks = tasks;
     }
 }

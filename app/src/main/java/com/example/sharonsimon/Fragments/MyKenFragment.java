@@ -4,6 +4,7 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,9 +14,12 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.sharonsimon.Activities.MainActivity;
+import com.example.sharonsimon.Adapters.KenAdapter;
+import com.example.sharonsimon.Adapters.TaskAdapter;
 import com.example.sharonsimon.Classes.Ken;
 import com.example.sharonsimon.Classes.Task;
 import com.example.sharonsimon.Dialogs.LoadingDialogBuilder;
@@ -36,6 +40,7 @@ public class MyKenFragment extends Fragment {
     TextView myKenPointsTV;
     TextView myKenNameTv;
     RecyclerView recycler;
+    TaskAdapter adapter;
 
     SharedPreferences sp;
     Dialog loadingDialog;
@@ -50,12 +55,19 @@ public class MyKenFragment extends Fragment {
 
         ViewGroup viewGroup = (ViewGroup) inflater.inflate(R.layout.my_ken_fragment,container,false);
 
+        ArrayList<Task> tasks = new ArrayList<>();
+        tasks.add(new Task());
+        adapter = new TaskAdapter(tasks);
+
         sp = getActivity().getSharedPreferences("login", Context.MODE_PRIVATE);
 
         myKenImage = viewGroup.findViewById(R.id.my_ken_image);
         myKenPointsTV = viewGroup.findViewById(R.id.my_ken_points_tv);
         myKenNameTv = viewGroup.findViewById(R.id.my_ken_name_tv);
         recycler = viewGroup.findViewById(R.id.tasks_rv);
+
+        recycler.setAdapter(adapter);
+        recycler.setLayoutManager(new LinearLayoutManager(getActivity()));
 
         getMyKenFromFirebase();
 
@@ -109,6 +121,8 @@ public class MyKenFragment extends Fragment {
     {
         myKenNameTv.setText(myKen.getName());
         myKenPointsTV.setText(myKen.getPoints() + "");
+        adapter.setTasks(myKen.getCompletedTasks());
+        adapter.notifyDataSetChanged();
         //Todo Add Image
 
         loadingDialog.dismiss();

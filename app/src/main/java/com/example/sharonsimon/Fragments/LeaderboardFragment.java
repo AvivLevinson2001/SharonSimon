@@ -37,7 +37,7 @@ public class LeaderboardFragment extends Fragment {
         ViewGroup viewGroup = (ViewGroup) inflater.inflate(R.layout.leaderboard_fragment,container,false);
 
         RecyclerView recyclerView = viewGroup.findViewById(R.id.kens_rv);
-        final KenAdapter  adapter = new KenAdapter(new ArrayList<Ken>());
+        final KenAdapter  adapter = new KenAdapter(null);
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
