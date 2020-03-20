@@ -8,7 +8,7 @@
         android:id="@+id/user_items_group">
         <item
             android:id="@+id/action_my_ken"
-            android:icon="@drawable/ic_menu_camera"
+            android:icon="@drawable/ic_nest"
             android:title="הקן שלי"
             android:checked="true"/>
         <item

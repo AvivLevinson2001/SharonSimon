@@ -98,7 +98,7 @@ public class  MainActivity extends AppCompatActivity implements KensRecyclerView
                     Intent intent = new Intent(MainActivity.this,RegisterActivity.class);
                     startActivity(intent);
                     finish();
-
+                    return false;
                 }
                 else if(item.getItemId() == R.id.action_update_todays_tasks){
                     currentFragment = new UpdateTodaysTasksFragment();
