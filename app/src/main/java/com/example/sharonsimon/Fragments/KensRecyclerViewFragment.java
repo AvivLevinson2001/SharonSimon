@@ -1,5 +1,7 @@
 package com.example.sharonsimon.Fragments;
 
+import android.app.Activity;
+import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,6 +23,22 @@ public class KensRecyclerViewFragment extends Fragment {
 
     ArrayList<Ken> kensArrayList = new ArrayList<>();
     KenAdapter adapter;
+    KensRecyclerViewFragmentListener listener;
+
+    public interface KensRecyclerViewFragmentListener{
+        void onKenClick(Ken ken);
+    }
+
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+        Activity activity = (Activity)context;
+        try{
+            listener = (KensRecyclerViewFragmentListener) activity;
+        }catch (ClassCastException e){
+            throw new ClassCastException("Activity: " + activity.toString() + " must implement KensRecyclerViewFragmentListener");
+        }
+    }
 
     public static KensRecyclerViewFragment newInstance(ArrayList<Ken> kensArrayList){
         KensRecyclerViewFragment fragment = new KensRecyclerViewFragment();
@@ -40,6 +58,12 @@ public class KensRecyclerViewFragment extends Fragment {
         adapter = new KenAdapter(kensArrayList);
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        adapter.setListener(new KenAdapter.myKenAdapterListener() {
+            @Override
+            public void onKenClick(int position, View v) {
+                listener.onKenClick(kensArrayList.get(position));
+            }
+        });
 
         return viewGroup;
     }

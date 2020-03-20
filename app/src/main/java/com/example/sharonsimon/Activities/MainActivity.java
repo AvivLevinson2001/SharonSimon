@@ -36,7 +36,7 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
-public class  MainActivity extends AppCompatActivity{
+public class  MainActivity extends AppCompatActivity implements KensRecyclerViewFragment.KensRecyclerViewFragmentListener {
 
     ArrayList<Ken> kensList;
     Ken myKen;
@@ -181,5 +181,11 @@ public class  MainActivity extends AppCompatActivity{
 
             }
         });
+    }
+
+    @Override
+    public void onKenClick(Ken ken) {
+        currentFragment = ViewKenFragment.newInstance(ken);
+        fragmentManager.beginTransaction().add(R.id.main_fragments_holder,currentFragment,"Tag").commit();
     }
 }
