@@ -178,12 +178,43 @@ public class  MainActivity extends AppCompatActivity implements KensRecyclerView
     }
 
     @Override
-    public void reloadInfoFromFirebase() {
-        getInfoFromFirebase();
+    public void saveKenToFirebase(Ken kenToSave) {
+        for(int i = 0; i<kensList.size(); i++){
+            if(kensList.get(i).getName().equals(kenToSave.getName())){
+                kensList.set(i, kenToSave);
+            }
+        }
+        reference.child("kens").setValue(kensList);
     }
 
     @Override
-    public void saveKensToFirebase(ArrayList<Ken> kens) {
+    public void addTasksToFirebase(final ArrayList<Task> tasks) {
+        final Dialog loadingDialog = LoadingDialogBuilder.createLoadingDialog(this);
+        loadingDialog.show();
 
+        final DatabaseReference databaseReference = firebaseDatabase.getReference();
+        databaseReference.child("kens").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if(dataSnapshot.exists()){
+                    GenericTypeIndicator<ArrayList<Ken>> genericTypeIndicator = new GenericTypeIndicator<ArrayList<Ken>>() {};
+                    ArrayList<Ken> kens = dataSnapshot.getValue(genericTypeIndicator);
+                    for(Ken ken : kens){
+                        ken.addTasks(tasks);
+                    }
+                    databaseReference.child("kens").setValue(kens);
+                    databaseReference.child("tasks").setValue(tasks);
+                    loadingDialog.dismiss();
+                }
+                for(Ken ken : kensList){
+                    ken.addTasks(tasks);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
     }
 }

@@ -25,16 +25,22 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.CreateTaskView
 
     private ArrayList<Task> tasks;
     private myTaskAdapterListener listener;
+    private boolean checkBoxIsClickable = false;
 
     public interface myTaskAdapterListener
     {
         void onTaskClick(int position, View v);
         void onTaskLongClick(int position, View v);
+        void onCheckBoxClick(int position, View v);
     }
 
     public void setListener(myTaskAdapterListener listener)
     {
         this.listener = listener;
+    }
+
+    public void setCheckBoxIsClickable(boolean isClickable){
+        checkBoxIsClickable = isClickable;
     }
 
     public TaskAdapter(ArrayList<Task> tasks)
@@ -57,20 +63,17 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.CreateTaskView
         TextView descTV;
         TextView pointsTV;
 
-        public CreateTaskViewHolder(final View itemView)
-        {
+        public CreateTaskViewHolder(final View itemView) {
             super(itemView);
 
             isCompletedCB = itemView.findViewById(R.id.card_view_task_is_completed_cb);
             descTV = itemView.findViewById(R.id.card_view_task_desc_tv);
             pointsTV = itemView.findViewById(R.id.card_view_task_points_tv);
 
-            itemView.setOnClickListener(new View.OnClickListener()
-            {
+            itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
-                public void onClick(View view)
-                {
-                    if(listener!=null)
+                public void onClick(View view) {
+                    if (listener != null)
                         listener.onTaskClick(getAdapterPosition(), view);
                 }
             });
@@ -78,11 +81,23 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.CreateTaskView
             itemView.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
                 public boolean onLongClick(View view) {
-                    if(listener!=null)
+                    if (listener != null)
                         listener.onTaskLongClick(getAdapterPosition(), view);
                     return false;
                 }
             });
+
+            if (checkBoxIsClickable) {
+                isCompletedCB.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        listener.onCheckBoxClick(getAdapterPosition(), view);
+                    }
+                });
+            }
+            else{
+                isCompletedCB.setClickable(false);
+            }
         }
     }
 

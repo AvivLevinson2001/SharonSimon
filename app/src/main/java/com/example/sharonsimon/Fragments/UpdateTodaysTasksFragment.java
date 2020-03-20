@@ -23,12 +23,6 @@ import com.example.sharonsimon.R;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.GenericTypeIndicator;
-import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 
@@ -46,9 +40,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 public class UpdateTodaysTasksFragment extends Fragment
 {
-
-    FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
-
     RecyclerView recyclerView;
     FloatingActionButton addTaskFab;
     FloatingActionButton confirmFab;
@@ -162,6 +153,10 @@ public class UpdateTodaysTasksFragment extends Fragment
                 popupMenu.show();
             }
 
+            @Override
+            public void onCheckBoxClick(int position, View v) {
+
+            }
         });
         recyclerView.setAdapter(adapter);
 
@@ -213,32 +208,7 @@ public class UpdateTodaysTasksFragment extends Fragment
             @Override
             public void onClick(View view)
             {
-
-                final Dialog loadingDialog = LoadingDialogBuilder.createLoadingDialog(getActivity());
-                loadingDialog.show();
-
-                final DatabaseReference databaseReference = firebaseDatabase.getReference();
-                databaseReference.child("kens").addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        if(dataSnapshot.exists()){
-                            GenericTypeIndicator<ArrayList<Ken>> genericTypeIndicator = new GenericTypeIndicator<ArrayList<Ken>>() {};
-                            ArrayList<Ken> kens = dataSnapshot.getValue(genericTypeIndicator);
-                            for(Ken ken : kens){
-                                ken.addTasks(tasks);
-                            }
-                            databaseReference.child("kens").setValue(kens);
-                            databaseReference.child("todays-tasks").setValue(tasks);
-                            loadingDialog.dismiss();
-                        }
-                        listener.reloadInfoFromFirebase();
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                    }
-                });
+                listener.addTasksToFirebase(tasks);
             }
         });
 

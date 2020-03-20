@@ -10,21 +10,11 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:padding="10dp"
-            android:gravity="center"
-            android:text="Update Daily Tasks"
-            android:textSize="30sp"
-            android:id="@+id/update_daily_tasks_tv"/>
-
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:background="@color/home_text_color"
-            android:id="@+id/update_daily_tasks_divider_a"
-            android:layout_below="@id/update_daily_tasks_tv"/>
+            android:id="@+id/update_daily_tasks_divider_a" />
 
         <RelativeLayout
             android:layout_width="match_parent"
