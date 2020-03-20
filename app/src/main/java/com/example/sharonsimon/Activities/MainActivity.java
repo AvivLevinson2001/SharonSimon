@@ -74,14 +74,18 @@ public class  MainActivity extends AppCompatActivity implements KensRecyclerView
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                String fragmentTag = "";
                 if(item.getItemId() == R.id.action_my_ken){
                     currentFragment = ViewKenFragment.newInstance(myKen);
+                    fragmentTag = "MyKen";
                 }
                 else if(item.getItemId() == R.id.action_todays_tasks){
                     currentFragment = TasksRecyclerViewFragment.newInstance(todaysTasks);
+                    fragmentTag = "TodaysTasks";
                 }
                 else if(item.getItemId() == R.id.action_leaderboard){
                     currentFragment = KensRecyclerViewFragment.newInstance(kensList);
+                    fragmentTag = "Leaderboard";
                 }
                 else if(item.getItemId() == R.id.action_highlights){
                     currentFragment = new HighlightsFragment();
@@ -98,10 +102,12 @@ public class  MainActivity extends AppCompatActivity implements KensRecyclerView
                 }
                 else if(item.getItemId() == R.id.action_update_todays_tasks){
                     currentFragment = new UpdateTodaysTasksFragment();
+                    fragmentTag = "UpdateTodaysTasks";
                 }
                 navigationView.setCheckedItem(item);
                 drawer.closeDrawer(GravityCompat.START);
-                fragmentManager.beginTransaction().replace(R.id.main_fragments_holder,currentFragment,"TAG").commit();
+                fragmentManager.popBackStack();
+                fragmentManager.beginTransaction().replace(R.id.main_fragments_holder,currentFragment,fragmentTag).commit();
                 return false;
             }
         });
@@ -173,7 +179,7 @@ public class  MainActivity extends AppCompatActivity implements KensRecyclerView
                     });
                 }
                 currentFragment = ViewKenFragment.newInstance(myKen);
-                fragmentManager.beginTransaction().replace(R.id.main_fragments_holder,currentFragment,"Tag").commit();
+                fragmentManager.beginTransaction().replace(R.id.main_fragments_holder,currentFragment,"MyKen").commit();
             }
 
             @Override
@@ -186,6 +192,11 @@ public class  MainActivity extends AppCompatActivity implements KensRecyclerView
     @Override
     public void onKenClick(Ken ken) {
         currentFragment = ViewKenFragment.newInstance(ken);
-        fragmentManager.beginTransaction().add(R.id.main_fragments_holder,currentFragment,"Tag").commit();
+        fragmentManager.beginTransaction().add(R.id.main_fragments_holder,currentFragment,"ShowKen").addToBackStack("backStack").commit();
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
     }
 }
