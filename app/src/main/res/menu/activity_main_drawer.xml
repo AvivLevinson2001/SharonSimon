@@ -17,11 +17,11 @@
             android:title="המשימות היומיות" />
         <item
             android:id="@+id/action_leaderboard"
-            android:icon="@drawable/ic_menu_slideshow"
+            android:icon="@drawable/ic_bull"
             android:title="קני האזור" />
         <item
             android:id="@+id/action_highlights"
-            android:icon="@drawable/ic_menu_slideshow"
+            android:icon="@drawable/ic_fire_black_24dp"
             android:title="קטעים חמים" />
 
     </group>
