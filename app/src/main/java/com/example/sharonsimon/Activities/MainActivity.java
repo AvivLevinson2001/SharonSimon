@@ -5,18 +5,16 @@ import android.app.Dialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Toast;
 
 import com.example.sharonsimon.Classes.Ken;
 import com.example.sharonsimon.Classes.Task;
 import com.example.sharonsimon.Dialogs.LoadingDialogBuilder;
 import com.example.sharonsimon.Fragments.HighlightsFragment;
-import com.example.sharonsimon.Fragments.LeaderboardFragment;
-import com.example.sharonsimon.Fragments.MyKenFragment;
-import com.example.sharonsimon.Fragments.TodaysTasksFragment;
+import com.example.sharonsimon.Fragments.KensRecyclerViewFragment;
+import com.example.sharonsimon.Fragments.ViewKenFragment;
+import com.example.sharonsimon.Fragments.TasksRecyclerViewFragment;
 import com.example.sharonsimon.Fragments.UpdateTodaysTasksFragment;
 import com.example.sharonsimon.R;
 import com.google.android.material.navigation.NavigationView;
@@ -37,10 +35,6 @@ import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
-import androidx.navigation.NavController;
-import androidx.navigation.Navigation;
-import androidx.navigation.ui.AppBarConfiguration;
-import androidx.navigation.ui.NavigationUI;
 
 public class  MainActivity extends AppCompatActivity{
 
@@ -81,13 +75,13 @@ public class  MainActivity extends AppCompatActivity{
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 if(item.getItemId() == R.id.action_my_ken){
-                    currentFragment = MyKenFragment.newInstance(myKen);
+                    currentFragment = ViewKenFragment.newInstance(myKen);
                 }
                 else if(item.getItemId() == R.id.action_todays_tasks){
-                    currentFragment = TodaysTasksFragment.newInstance(todaysTasks);
+                    currentFragment = TasksRecyclerViewFragment.newInstance(todaysTasks);
                 }
                 else if(item.getItemId() == R.id.action_leaderboard){
-                    currentFragment = LeaderboardFragment.newInstance(kensList);
+                    currentFragment = KensRecyclerViewFragment.newInstance(kensList);
                 }
                 else if(item.getItemId() == R.id.action_highlights){
                     currentFragment = new HighlightsFragment();
@@ -178,7 +172,7 @@ public class  MainActivity extends AppCompatActivity{
                         }
                     });
                 }
-                currentFragment = MyKenFragment.newInstance(myKen);
+                currentFragment = ViewKenFragment.newInstance(myKen);
                 fragmentManager.beginTransaction().replace(R.id.main_fragments_holder,currentFragment,"Tag").commit();
             }
 

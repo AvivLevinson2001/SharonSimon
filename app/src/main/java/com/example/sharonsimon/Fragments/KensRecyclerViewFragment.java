@@ -1,16 +1,9 @@
 package com.example.sharonsimon.Fragments;
 
-import android.app.Activity;
-import android.app.Dialog;
-import android.app.backup.BackupDataInput;
-import android.content.Context;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Adapter;
-import android.widget.LinearLayout;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -19,25 +12,18 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.sharonsimon.Adapters.KenAdapter;
 import com.example.sharonsimon.Classes.Ken;
-import com.example.sharonsimon.Dialogs.LoadingDialogBuilder;
-import com.example.sharonsimon.Interfaces.KensListFragmentInterface;
+
 import com.example.sharonsimon.R;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.GenericTypeIndicator;
-import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 
-public class LeaderboardFragment extends Fragment {
+public class KensRecyclerViewFragment extends Fragment {
 
     ArrayList<Ken> kensArrayList = new ArrayList<>();
     KenAdapter adapter;
 
-    public static LeaderboardFragment newInstance(ArrayList<Ken> kensArrayList){
-        LeaderboardFragment fragment = new LeaderboardFragment();
+    public static KensRecyclerViewFragment newInstance(ArrayList<Ken> kensArrayList){
+        KensRecyclerViewFragment fragment = new KensRecyclerViewFragment();
         Bundle arguments = new Bundle();
         arguments.putSerializable("kensArrayList",kensArrayList);
         fragment.setArguments(arguments);
@@ -46,7 +32,7 @@ public class LeaderboardFragment extends Fragment {
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        ViewGroup viewGroup = (ViewGroup) inflater.inflate(R.layout.leaderboard_fragment,container,false);
+        ViewGroup viewGroup = (ViewGroup) inflater.inflate(R.layout.kens_recycler_view_fragment,container,false);
 
         kensArrayList = (ArrayList<Ken>) getArguments().getSerializable("kensArrayList");
 
