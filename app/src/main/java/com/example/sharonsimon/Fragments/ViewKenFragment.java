@@ -30,9 +30,6 @@ public class ViewKenFragment extends Fragment {
     RecyclerView recycler;
     TaskAdapter adapter;
 
-    FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
-    DatabaseReference reference = firebaseDatabase.getReference();
-
     public static ViewKenFragment newInstance(Ken ken){
         ViewKenFragment fragment = new ViewKenFragment();
         Bundle arguments = new Bundle();
