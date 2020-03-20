@@ -3,7 +3,7 @@ package com.example.sharonsimon.Classes;
 import java.io.Serializable;
 import java.util.ArrayList;
 
-public class Ken implements Serializable {
+public class Ken implements Serializable,Comparable {
 
     String name;
     ArrayList<Task> tasks;
@@ -60,5 +60,13 @@ public class Ken implements Serializable {
     public void addTask(Task task){
         if(tasks == null) tasks = new ArrayList<>();
         tasks.add(task);
+    }
+
+    @Override
+    public int compareTo(Object o)
+    {
+        int comparePoints=((Ken)o).getPoints();
+
+        return comparePoints-this.points;
     }
 }

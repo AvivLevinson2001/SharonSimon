@@ -12,6 +12,8 @@ import com.example.sharonsimon.Classes.Ken;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -36,6 +38,7 @@ public class KenAdapter extends RecyclerView.Adapter<KenAdapter.CreateKenViewHol
 
     public KenAdapter(ArrayList<Ken> kens)
     {
+        Collections.sort(kens);
         this.kens = kens;
         if(this.kens == null)
             this.kens = new ArrayList<>();
