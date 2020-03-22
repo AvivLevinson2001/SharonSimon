@@ -44,8 +44,7 @@
                 android:textSize="24sp"
                 android:gravity="center"
                 android:fontFamily="serif"
-                android:id="@+id/card_view_ken_name_tv"
-                android:textColor="@color/home_text_color"/>
+                android:id="@+id/card_view_ken_name_tv"/>
 
         </LinearLayout>
 
@@ -70,7 +69,7 @@
                 android:gravity="center"
                 android:layout_weight="1"
                 android:id="@+id/card_view_ken_points_tv"
-                android:textColor="@color/home_text_color"/>
+                android:textColor="@color/cardview_light_background"/>
 
             <ImageView
                 android:layout_width="match_parent"
