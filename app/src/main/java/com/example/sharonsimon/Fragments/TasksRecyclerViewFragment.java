@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -41,10 +42,12 @@ public class TasksRecyclerViewFragment extends Fragment {
         tasksArrayList = (ArrayList<Task>)getArguments().getSerializable("tasksArrayList");
 
         recycler = viewGroup.findViewById(R.id.tasks_rv);
+        RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(getActivity(), 2);
+        recycler.setLayoutManager(mLayoutManager);
 
         adapter = new TaskAdapter(tasksArrayList);
         recycler.setAdapter(adapter);
-        recycler.setLayoutManager(new LinearLayoutManager(getActivity()));
+
 
         return viewGroup;
     }
