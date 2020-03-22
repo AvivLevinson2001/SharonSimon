@@ -12,6 +12,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -100,7 +101,8 @@ public class ViewKenFragment extends Fragment {
         adapter.setCheckBoxIsClickable(isAdmin);
 
         recycler.setAdapter(adapter);
-        recycler.setLayoutManager(new LinearLayoutManager(getActivity()));
+        RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(getActivity(), 2);
+        recycler.setLayoutManager(mLayoutManager);
 
         myKenNameTv.setText(ken.getName());
         myKenPointsTV.setText(ken.getPoints() + "");

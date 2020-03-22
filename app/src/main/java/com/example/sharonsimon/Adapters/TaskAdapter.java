@@ -1,10 +1,18 @@
 package com.example.sharonsimon.Adapters;
 
+import android.animation.AnimatorSet;
+import android.animation.ObjectAnimator;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
+import android.view.animation.AnimationSet;
+import android.view.animation.LinearInterpolator;
+import android.view.animation.ScaleAnimation;
 import android.widget.CheckBox;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
@@ -62,6 +70,7 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.CreateTaskView
         CheckBox isCompletedCB;
         TextView descTV;
         TextView pointsTV;
+        ImageView starIv;
 
         public CreateTaskViewHolder(final View itemView) {
             super(itemView);
@@ -69,6 +78,7 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.CreateTaskView
             isCompletedCB = itemView.findViewById(R.id.card_view_task_is_completed_cb);
             descTV = itemView.findViewById(R.id.card_view_task_desc_tv);
             pointsTV = itemView.findViewById(R.id.card_view_task_points_tv);
+            starIv = itemView.findViewById(R.id.card_view_task_star_iv);
 
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -117,7 +127,36 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.CreateTaskView
         holder.descTV.setText(task.getDesc());
         holder.pointsTV.setText(task.getPoints() + "");
 
-        //Todo change opacity if completed
+        if (task.isCompleted())
+        {
+            holder.starIv.setVisibility(View.INVISIBLE);
+        }
+        else
+        {
+
+            AnimationSet starAnimations = new AnimationSet(true);
+
+            AlphaAnimation  blink= new AlphaAnimation(1, 0); // Change alpha from fully visible to invisible
+            blink.setDuration(600); // duration
+            blink.setInterpolator(new LinearInterpolator()); // do not alter animation rate
+            blink.setRepeatCount(Animation.INFINITE); // Repeat animation infinitely
+            blink.setRepeatMode(Animation.REVERSE);
+
+            starAnimations.addAnimation(blink);
+            holder.starIv.startAnimation(starAnimations);
+
+            ObjectAnimator scaleDownX = ObjectAnimator.ofFloat(holder.starIv, "scaleX", 1.5f);
+            ObjectAnimator scaleDownY = ObjectAnimator.ofFloat(holder.starIv, "scaleY", 1.5f);
+            scaleDownX.setDuration(600);
+            scaleDownY.setDuration(600);
+
+            AnimatorSet scaleDown = new AnimatorSet();
+            scaleDown.play(scaleDownX).with(scaleDownY);
+
+            scaleDown.start();
+
+        }
+
     }
 
     public void setTasks(ArrayList<Task> tasks) {
