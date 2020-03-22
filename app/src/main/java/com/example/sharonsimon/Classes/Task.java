@@ -1,6 +1,7 @@
 package com.example.sharonsimon.Classes;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 
 public class Task implements Serializable {
 
@@ -52,5 +53,13 @@ public class Task implements Serializable {
 
     public boolean isSameTask(Task t){
         return (this.desc.equals(t.desc) && this.points == t.points);
+    }
+
+    public boolean taskExists(ArrayList<Task> tasks){
+        for(Task task : tasks){
+            if(task.getDesc().equals(this.getDesc()))
+                return true;
+        }
+        return false;
     }
 }

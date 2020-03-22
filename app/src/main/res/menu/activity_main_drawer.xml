@@ -36,7 +36,7 @@
         android:id="@+id/admin_items_group">
 
         <item
-            android:id="@+id/action_update_todays_tasks"
+            android:id="@+id/action_update_tasks"
             android:icon="@drawable/ic_update"
             android:title="עדכן משימות"/>
 

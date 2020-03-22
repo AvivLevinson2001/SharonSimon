@@ -5,6 +5,7 @@ import android.app.Dialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -17,7 +18,10 @@ import com.example.sharonsimon.Fragments.KensRecyclerViewFragment;
 import com.example.sharonsimon.Fragments.ViewKenFragment;
 import com.example.sharonsimon.Fragments.UpdateTodaysTasksFragment;
 import com.example.sharonsimon.R;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.material.navigation.NavigationView;
+import com.google.android.material.snackbar.BaseTransientBottomBar;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -25,12 +29,14 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.GenericTypeIndicator;
 import com.google.firebase.database.ValueEventListener;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
@@ -40,6 +46,7 @@ public class  MainActivity extends AppCompatActivity implements KensRecyclerView
 
     ArrayList<Ken> kensList;
     Ken myKen;
+    ArrayList<Task> allTasks;
 
     SharedPreferences sp;
 
@@ -49,6 +56,7 @@ public class  MainActivity extends AppCompatActivity implements KensRecyclerView
     Fragment currentFragment;
 
     DrawerLayout drawer;
+    CoordinatorLayout coordinatorLayout;
     NavigationView navigationView;
 
     Dialog loadingDialog;
@@ -65,6 +73,7 @@ public class  MainActivity extends AppCompatActivity implements KensRecyclerView
         getInfoFromFirebase();
 
         drawer = findViewById(R.id.drawer_layout);
+        coordinatorLayout = findViewById(R.id.coordinator_layout);
         navigationView = findViewById(R.id.nav_view);
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
@@ -97,9 +106,9 @@ public class  MainActivity extends AppCompatActivity implements KensRecyclerView
                     finish();
                     return false;
                 }
-                else if(item.getItemId() == R.id.action_update_todays_tasks){
-                    currentFragment = new UpdateTodaysTasksFragment();
-                    fragmentTag = "UpdateTodaysTasks";
+                else if(item.getItemId() == R.id.action_update_tasks){
+                    currentFragment = UpdateTodaysTasksFragment.newInstance(allTasks);
+                    fragmentTag = "UpdateTasks";
                 }
                 navigationView.setCheckedItem(item);
                 drawer.closeDrawer(GravityCompat.START);
@@ -146,6 +155,7 @@ public class  MainActivity extends AppCompatActivity implements KensRecyclerView
                     }
                     kensList = newKens;
                     reference.child("kens").setValue(newKens);
+                    allTasks = new ArrayList<>();
                     loadingDialog.dismiss();
                 }
                 else{
@@ -156,7 +166,24 @@ public class  MainActivity extends AppCompatActivity implements KensRecyclerView
                             myKen = ken;
                         }
                     }
-                    loadingDialog.dismiss();
+                    reference.child("tasks").addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                            if(dataSnapshot.exists()) {
+                                GenericTypeIndicator<ArrayList<Task>> genericTypeIndicator = new GenericTypeIndicator<ArrayList<Task>>() {};
+                                allTasks = dataSnapshot.getValue(genericTypeIndicator);
+                            }
+                            else{
+                                allTasks = new ArrayList<>();
+                            }
+                            loadingDialog.dismiss();
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                        }
+                    });
                 }
                 if(navigationView.getCheckedItem().getItemId() == R.id.action_my_ken) {
                     currentFragment = ViewKenFragment.newInstance(myKen, sp.getString("name", "").equals("barvaz15"));
@@ -174,7 +201,13 @@ public class  MainActivity extends AppCompatActivity implements KensRecyclerView
     @Override
     public void onKenClick(Ken ken) {
         currentFragment = ViewKenFragment.newInstance(ken,sp.getString("name","").equals("barvaz15"));
-        fragmentManager.beginTransaction().add(R.id.main_fragments_holder,currentFragment,"ShowKen").addToBackStack("backStack").commit();
+        if(ken.getName().equals(myKen.getName())){
+            fragmentManager.beginTransaction().replace(R.id.main_fragments_holder,currentFragment,"MyKen").commit();
+            navigationView.setCheckedItem(R.id.action_my_ken);
+        }
+        else {
+            fragmentManager.beginTransaction().add(R.id.main_fragments_holder, currentFragment, "ShowKen").addToBackStack("backStack").commit();
+        }
     }
 
     @Override
@@ -188,33 +221,33 @@ public class  MainActivity extends AppCompatActivity implements KensRecyclerView
     }
 
     @Override
-    public void addTasksToFirebase(final ArrayList<Task> tasks) {
-        final Dialog loadingDialog = LoadingDialogBuilder.createLoadingDialog(this);
-        loadingDialog.show();
+    public void addTaskToFirebase(Task task) {
+        // allTasks is already up to date
+        Log.d("tasks", allTasks.toString());
+        reference.child("tasks").setValue(allTasks);
+        for(Ken ken : kensList){
+            ken.addTask(task);
+            ken.calculatePoints();
+        }
+        reference.child("kens").setValue(kensList);
+    }
 
-        final DatabaseReference databaseReference = firebaseDatabase.getReference();
-        databaseReference.child("kens").addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if(dataSnapshot.exists()){
-                    GenericTypeIndicator<ArrayList<Ken>> genericTypeIndicator = new GenericTypeIndicator<ArrayList<Ken>>() {};
-                    ArrayList<Ken> kens = dataSnapshot.getValue(genericTypeIndicator);
-                    for(Ken ken : kens){
-                        ken.addTasks(tasks);
-                    }
-                    databaseReference.child("kens").setValue(kens);
-                    databaseReference.child("tasks").setValue(tasks);
-                    loadingDialog.dismiss();
-                }
-                for(Ken ken : kensList){
-                    ken.addTasks(tasks);
-                }
-            }
+    @Override
+    public void removeTaskFromFirebase(Task task) {
+        // allTasks is already up to date
+        reference.child("tasks").setValue(allTasks);
+        Log.d("tasks", allTasks.toString());
+        for(Ken ken : kensList){
+            ken.removeTask(task);
+            ken.calculatePoints();
+        }
+        reference.child("kens").setValue(kensList);
+    }
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
+    @Override
+    public void onBackPressed() {
+        if(drawer.isDrawerOpen(GravityCompat.START))
+            drawer.closeDrawer(GravityCompat.START);
+        super.onBackPressed();
     }
 }

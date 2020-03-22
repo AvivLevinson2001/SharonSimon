@@ -7,5 +7,6 @@ import java.util.ArrayList;
 
 public interface FirebaseChangesListener {
     void saveKenToFirebase(Ken kenToSave);
-    void addTasksToFirebase(ArrayList<Task> tasks);
+    void addTaskToFirebase(Task task);
+    void removeTaskFromFirebase(Task task);
 }

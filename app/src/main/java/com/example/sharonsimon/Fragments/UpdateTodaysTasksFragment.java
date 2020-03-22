@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -15,13 +16,13 @@ import android.widget.EditText;
 import android.widget.PopupMenu;
 
 import com.example.sharonsimon.Adapters.TaskAdapter;
-import com.example.sharonsimon.Classes.Ken;
 import com.example.sharonsimon.Classes.Task;
-import com.example.sharonsimon.Dialogs.LoadingDialogBuilder;
 import com.example.sharonsimon.Interfaces.FirebaseChangesListener;
 import com.example.sharonsimon.R;
 
+import com.google.android.gms.tasks.Tasks;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.snackbar.BaseTransientBottomBar;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
@@ -30,6 +31,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -48,6 +50,14 @@ public class UpdateTodaysTasksFragment extends Fragment
 
     FirebaseChangesListener listener;
 
+    public static UpdateTodaysTasksFragment newInstance(ArrayList<Task> tasks){
+        UpdateTodaysTasksFragment fragment = new UpdateTodaysTasksFragment();
+        Bundle arguments = new Bundle();
+        arguments.putSerializable("tasks",tasks);
+        fragment.setArguments(arguments);
+        return fragment;
+    }
+
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
@@ -65,16 +75,19 @@ public class UpdateTodaysTasksFragment extends Fragment
     {
         ViewGroup viewGroup = (ViewGroup)inflater.inflate(R.layout.update_todays_tasks_fragment, container, false);
 
+        tasks = (ArrayList<Task>) getArguments().getSerializable("tasks");
+        if(tasks == null){
+            tasks = new ArrayList<>();
+        }
+
         //Assigning the views
         addTaskFab = viewGroup.findViewById(R.id.update_daily_tasks_add_task_fab);
-        recyclerView = viewGroup.findViewById(R.id.update_daily_tasks_recycler);
-        confirmFab = viewGroup.findViewById(R.id.update_daily_tasks_confirm_fab);
+        recyclerView = viewGroup.findViewById(R.id.update_tasks_recycler);
         final CoordinatorLayout coordinatorLayout = viewGroup.findViewById(R.id.update_daily_tasks_coordinator);
 
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
-        recyclerView.setLayoutManager(linearLayoutManager);
+        RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(getActivity(), 2);
+        recyclerView.setLayoutManager(mLayoutManager);
 
-        tasks = new ArrayList<>();
         final TaskAdapter adapter = new TaskAdapter(tasks);
         adapter.setListener(new TaskAdapter.myTaskAdapterListener()
         {
@@ -119,7 +132,7 @@ public class UpdateTodaysTasksFragment extends Fragment
                                     }
                                     else
                                     {
-                                        com.example.sharonsimon.Classes.Task task = tasks.get(position);
+                                        Task task = tasks.get(position);
                                         task.setPoints(Integer.parseInt(points));
                                         task.setDesc(desc);
                                         adapter.notifyDataSetChanged();//Updates the recycler
@@ -142,7 +155,9 @@ public class UpdateTodaysTasksFragment extends Fragment
 
                         else if (menuItem.getItemId() == R.id.item_delete)
                         {
-                            tasks.remove(position);
+                            Task taskToRemove = tasks.get(position);
+                            tasks.remove(taskToRemove);
+                            listener.removeTaskFromFirebase(taskToRemove);
                             recyclerView.removeViewAt(position);
                         }
 
@@ -187,12 +202,18 @@ public class UpdateTodaysTasksFragment extends Fragment
                         }
                         else
                         {
-                            com.example.sharonsimon.Classes.Task newTask = new com.example.sharonsimon.Classes.Task(desc, Integer.parseInt(points), false);
+                            for(int k = 0; k < tasks.size(); k ++) {
+                                if (tasks.get(k).getDesc().equals(desc)) {
+                                    Snackbar.make(coordinatorLayout, "המשימה כבר קיימת", BaseTransientBottomBar.LENGTH_SHORT).show();
+                                    return;
+                                }
+                            }
+                            Task newTask = new Task(desc, Integer.parseInt(points), false);
                             tasks.add(newTask);
+                            listener.addTaskToFirebase(newTask);
                             adapter.notifyDataSetChanged();//Updates the recycler
 
                             Snackbar.make(coordinatorLayout, "משימה נוספה", Snackbar.LENGTH_SHORT).show();
-                            addTaskFab.callOnClick();
                         }
 
                     }
@@ -200,15 +221,6 @@ public class UpdateTodaysTasksFragment extends Fragment
                 builder.setView(v);
                 final Dialog dialog = builder.create();
                 dialog.show();
-            }
-        });
-
-        confirmFab.setOnClickListener(new View.OnClickListener()
-        {
-            @Override
-            public void onClick(View view)
-            {
-                listener.addTasksToFirebase(tasks);
             }
         });
 

@@ -4,58 +4,29 @@
     android:layout_height="match_parent"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/update_daily_tasks_coordinator">
+    android:id="@+id/update_daily_tasks_coordinator"
+    android:layoutDirection="rtl">
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:background="@color/colorBackground"
+        android:padding="8dp">
 
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="@color/home_text_color"
-            android:id="@+id/update_daily_tasks_divider_a" />
-
-        <RelativeLayout
+        <androidx.recyclerview.widget.RecyclerView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_below="@id/update_daily_tasks_divider_a"
-            android:background="@color/colorBackground"
-            android:padding="8dp"
-            android:layout_marginBottom="40dp">
+            android:id="@+id/update_tasks_recycler"/>
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:id="@+id/update_daily_tasks_recycler"/>
-
-        </RelativeLayout>
     </RelativeLayout>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_anchor="@id/update_daily_tasks_bottom_app_bar"
-        app:layout_anchorGravity="end"
-        android:layout_marginEnd="16dp"
-        android:src="@drawable/ic_done_black_24dp"
-        android:id="@+id/update_daily_tasks_confirm_fab"
-        android:foreground="?android:selectableItemBackground"/>
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_anchorGravity="center_horizontal"
-        app:layout_anchor="@id/update_daily_tasks_bottom_app_bar"
+        android:layout_gravity="right|bottom"
+        android:layout_margin="16dp"
         android:src="@drawable/ic_add_black_24dp"
         android:id="@+id/update_daily_tasks_add_task_fab"
         android:foreground="?android:selectableItemBackground"/>
-
-    <com.google.android.material.appbar.AppBarLayout
-        android:layout_width="match_parent"
-        android:layout_height="40dp"
-        android:layout_gravity="bottom"
-        android:id="@+id/update_daily_tasks_bottom_app_bar"
-        app:layout_dodgeInsetEdges="bottom">
-    </com.google.android.material.appbar.AppBarLayout>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
