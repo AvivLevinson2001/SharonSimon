@@ -1,14 +1,16 @@
 package com.example.sharonsimon.Activities;
 
 
-import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.VideoView;
 
 import com.example.sharonsimon.Classes.Ken;
 import com.example.sharonsimon.Classes.Task;
@@ -19,21 +21,25 @@ import com.example.sharonsimon.Fragments.KensRecyclerViewFragment;
 import com.example.sharonsimon.Fragments.ViewKenFragment;
 import com.example.sharonsimon.Fragments.UpdateTodaysTasksFragment;
 import com.example.sharonsimon.R;
-import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnCanceledListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.navigation.NavigationView;
-import com.google.android.material.snackbar.BaseTransientBottomBar;
-import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.GenericTypeIndicator;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.OnProgressListener;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -52,7 +58,9 @@ public class  MainActivity extends AppCompatActivity implements KensRecyclerView
     SharedPreferences sp;
 
     FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
-    DatabaseReference reference = firebaseDatabase.getReference();
+    DatabaseReference databaseReference = firebaseDatabase.getReference();
+    FirebaseStorage firebaseStorage = FirebaseStorage.getInstance();
+    StorageReference storageReference = firebaseStorage.getReference();
     FragmentManager fragmentManager = getSupportFragmentManager();
     Fragment currentFragment;
 
@@ -61,6 +69,8 @@ public class  MainActivity extends AppCompatActivity implements KensRecyclerView
     NavigationView navigationView;
 
     Dialog loadingDialog;
+
+    VideoView videoView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -139,7 +149,7 @@ public class  MainActivity extends AppCompatActivity implements KensRecyclerView
         loadingDialog = LoadingDialogBuilder.createLoadingDialog(this);
         loadingDialog.show();
         final String myKenName = sp.getString("ken","");
-        reference.child("kens").addListenerForSingleValueEvent(new ValueEventListener() {
+        databaseReference.child("kens").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if(!dataSnapshot.exists()){
@@ -155,7 +165,7 @@ public class  MainActivity extends AppCompatActivity implements KensRecyclerView
                             myKen = newKen;
                     }
                     kensList = newKens;
-                    reference.child("kens").setValue(newKens);
+                    databaseReference.child("kens").setValue(newKens);
                     allTasks = new ArrayList<>();
                     loadingDialog.dismiss();
                 }
@@ -167,7 +177,7 @@ public class  MainActivity extends AppCompatActivity implements KensRecyclerView
                             myKen = ken;
                         }
                     }
-                    reference.child("tasks").addListenerForSingleValueEvent(new ValueEventListener() {
+                    databaseReference.child("tasks").addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                             if(dataSnapshot.exists()) {
@@ -218,29 +228,29 @@ public class  MainActivity extends AppCompatActivity implements KensRecyclerView
                 kensList.set(i, kenToSave);
             }
         }
-        reference.child("kens").setValue(kensList);
+        databaseReference.child("kens").setValue(kensList);
     }
 
     @Override
     public void addTaskToFirebase(Task task) {
         // allTasks is already up to date
-        reference.child("tasks").setValue(allTasks);
+        databaseReference.child("tasks").setValue(allTasks);
         for(Ken ken : kensList){
             ken.addTask(new Task(task));
             ken.calculatePoints();
         }
-        reference.child("kens").setValue(kensList);
+        databaseReference.child("kens").setValue(kensList);
     }
 
     @Override
     public void removeTaskFromFirebase(Task task) {
         // allTasks is already up to date
-        reference.child("tasks").setValue(allTasks);
+        databaseReference.child("tasks").setValue(allTasks);
         for(Ken ken : kensList){
             ken.removeTaskByDesc(task.getDesc());
             ken.calculatePoints();
         }
-        reference.child("kens").setValue(kensList);
+        databaseReference.child("kens").setValue(kensList);
     }
 
     @Override
@@ -248,5 +258,26 @@ public class  MainActivity extends AppCompatActivity implements KensRecyclerView
         if(drawer.isDrawerOpen(GravityCompat.START))
             drawer.closeDrawer(GravityCompat.START);
         super.onBackPressed();
+    }
+
+    public void getVideoFromGallery(){
+        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+        intent.setType("video/*");
+        startActivityForResult(Intent.createChooser(intent,"select video"), 1);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(resultCode == RESULT_OK){
+            if(requestCode == 1){
+                Uri videoUri = data.getData();
+                String path = "videos/" + getIntent().getExtras().get("kenName") + "/" + getIntent().getExtras().get("taskDesc");
+                StorageReference ref = storageReference.child(path);
+                ref.putFile(videoUri);
+                /*videoView.setVideoURI(videoUri);
+                videoView.start();*/
+            }
+        }
     }
 }

@@ -2,6 +2,7 @@ package com.example.sharonsimon.Fragments;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -86,13 +87,20 @@ public class ViewKenFragment extends Fragment {
 
             @Override
             public void onCheckBoxClick(int position, View v) {
-                tasks.get(position).setCompleted(!tasks.get(position).isCompleted());
-                adapter.notifyDataSetChanged();
-                ken.setTasks(tasks);
-                if(tasks.get(position).isCompleted())
+                if(!tasks.get(position).isCompleted()){
+                    Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+                    intent.setType("video/*");
+                    getActivity().getIntent().putExtra("taskDesc",tasks.get(position).getDesc());
+                    getActivity().getIntent().putExtra("kenName",ken.getName());
+                    getActivity().startActivityForResult(Intent.createChooser(intent,"select video"), 1);
+                    tasks.get(position).setCompleted(true);
                     ken.setPoints(ken.getPoints() + tasks.get(position).getPoints());
-                else
+                }
+                else{
+                    tasks.get(position).setCompleted(false);
                     ken.setPoints(ken.getPoints() - tasks.get(position).getPoints());
+                }
+                adapter.notifyDataSetChanged();
                 listener.saveKenToFirebase(ken);
                 myKenPointsTV.setText(ken.getPoints() + "");
             }
