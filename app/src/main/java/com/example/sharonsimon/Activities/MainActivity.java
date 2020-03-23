@@ -1,6 +1,7 @@
 package com.example.sharonsimon.Activities;
 
 
+import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -223,10 +224,9 @@ public class  MainActivity extends AppCompatActivity implements KensRecyclerView
     @Override
     public void addTaskToFirebase(Task task) {
         // allTasks is already up to date
-        Log.d("tasks", allTasks.toString());
         reference.child("tasks").setValue(allTasks);
         for(Ken ken : kensList){
-            ken.addTask(task);
+            ken.addTask(new Task(task));
             ken.calculatePoints();
         }
         reference.child("kens").setValue(kensList);
@@ -236,9 +236,8 @@ public class  MainActivity extends AppCompatActivity implements KensRecyclerView
     public void removeTaskFromFirebase(Task task) {
         // allTasks is already up to date
         reference.child("tasks").setValue(allTasks);
-        Log.d("tasks", allTasks.toString());
         for(Ken ken : kensList){
-            ken.removeTask(task);
+            ken.removeTaskByDesc(task.getDesc());
             ken.calculatePoints();
         }
         reference.child("kens").setValue(kensList);

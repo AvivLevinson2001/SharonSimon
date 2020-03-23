@@ -2,6 +2,7 @@ package com.example.sharonsimon.Classes;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Iterator;
 
 public class Ken implements Serializable,Comparable {
 
@@ -51,17 +52,15 @@ public class Ken implements Serializable,Comparable {
                 '}';
     }
 
-    public void removeTasks(ArrayList<Task> tasks){
-        this.tasks.removeAll(tasks);
-    }
-
-    public void removeTask(Task task){
-        if(task == null) tasks = new ArrayList<>();
-        tasks.remove(task);
-    }
-
-    public void addTasks(ArrayList<Task> tasks){
-        this.tasks.addAll(tasks);
+    public void removeTaskByDesc(String desc){
+        if(tasks == null) tasks = new ArrayList<>();
+        Iterator<Task> iterator = tasks.iterator();
+        while(iterator.hasNext()){
+            Task task = iterator.next();
+            if(task.getDesc().equals(desc)){
+                iterator.remove();
+            }
+        }
     }
 
     public void addTask(Task task){

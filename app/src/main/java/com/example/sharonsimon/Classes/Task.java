@@ -12,6 +12,12 @@ public class Task implements Serializable {
     public Task() {
     }
 
+    public Task(Task task){
+        this.desc = task.desc;
+        this.points = task.points;
+        this.isCompleted = task.isCompleted;
+    }
+
     public Task(String desc, int points, boolean isCompleted) {
         this.desc = desc;
         this.points = points;

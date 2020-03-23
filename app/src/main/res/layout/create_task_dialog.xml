@@ -12,14 +12,14 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="5dp"
         android:textSize="20sp"
-        android:text="Create a Task"
+        android:text="הוסף משימה"
         android:gravity="center"/>
     <EditText
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="3dp"
         android:textSize="18sp"
-        android:hint="Description"
+        android:hint="משימה"
         android:gravity="center"
         android:id="@+id/create_task_dialog_desc_et"/>
     <EditText
@@ -27,7 +27,7 @@
         android:layout_width="100dp"
         android:layout_height="wrap_content"
         android:textSize="17sp"
-        android:hint="Points"
+        android:hint="ניקוד"
         android:layout_gravity="center_horizontal"
         android:gravity="center"
         android:inputType="number"

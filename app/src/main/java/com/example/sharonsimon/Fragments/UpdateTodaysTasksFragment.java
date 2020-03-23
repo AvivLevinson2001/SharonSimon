@@ -108,12 +108,12 @@ public class UpdateTodaysTasksFragment extends Fragment
                     @Override
                     public boolean onMenuItemClick(MenuItem menuItem)
                     {
-                        if (menuItem.getItemId() == R.id.item_edit)
+                        /*if (menuItem.getItemId() == R.id.item_edit)
                         {
                             final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
                             LayoutInflater inflater = (LayoutInflater)getActivity().getSystemService(getActivity().LAYOUT_INFLATER_SERVICE);
                             final View v = inflater.inflate(R.layout.create_task_dialog, null);
-                            builder.setPositiveButton("Confirm", new DialogInterface.OnClickListener()
+                            builder.setPositiveButton("אישור", new DialogInterface.OnClickListener()
                             {
                                 @Override
                                 public void onClick(DialogInterface dialogInterface, int i)
@@ -122,8 +122,8 @@ public class UpdateTodaysTasksFragment extends Fragment
                                     EditText descEt = v.findViewById(R.id.create_task_dialog_desc_et);
                                     EditText pointsEt = v.findViewById(R.id.create_task_dialog_points_et);
 
-                                    String desc = descEt.getText().toString();
-                                    String points = pointsEt.getText().toString();
+                                    final String desc = descEt.getText().toString();
+                                    final String points = pointsEt.getText().toString();
 
 
                                     if (points.equals("") || desc.equals("")) //Checking for null fields
@@ -132,11 +132,24 @@ public class UpdateTodaysTasksFragment extends Fragment
                                     }
                                     else
                                     {
-                                        Task task = tasks.get(position);
-                                        task.setPoints(Integer.parseInt(points));
-                                        task.setDesc(desc);
-                                        adapter.notifyDataSetChanged();//Updates the recycler
-                                        Snackbar.make(coordinatorLayout, "משימה התעדכנה", Snackbar.LENGTH_SHORT);
+                                        final AlertDialog.Builder confirmBuilder = new AlertDialog.Builder(getActivity());
+                                        confirmBuilder.setMessage("אתה בטוח שברצונך לשנות את המשימה?").setPositiveButton("כן", new DialogInterface.OnClickListener() {
+                                            @Override
+                                            public void onClick(DialogInterface dialogInterface, int i) {
+                                                Task task = tasks.get(position);
+                                                task.setPoints(Integer.parseInt(points));
+                                                task.setDesc(desc);
+                                                adapter.notifyDataSetChanged();//Updates the recycler
+                                                Snackbar.make(coordinatorLayout, "משימה התעדכנה", Snackbar.LENGTH_SHORT);
+                                            }
+                                        }).setNegativeButton("לא", new DialogInterface.OnClickListener() {
+                                            @Override
+                                            public void onClick(DialogInterface dialogInterface, int i) {
+
+                                            }
+                                        }).create().show();
+
+
                                     }
 
                                 }
@@ -149,18 +162,30 @@ public class UpdateTodaysTasksFragment extends Fragment
                             EditText pointsEt = v.findViewById(R.id.create_task_dialog_points_et);
 
                             descEt.setText(tasks.get(position).getDesc());
-                            pointsEt.setText(tasks.get(position).getPoints());
+                            pointsEt.setText(tasks.get(position).getPoints() + "");
 
-                        }
+                        }*/
 
-                        else if (menuItem.getItemId() == R.id.item_delete)
+                        if (menuItem.getItemId() == R.id.item_delete)
                         {
-                            Task taskToRemove = tasks.get(position);
-                            tasks.remove(taskToRemove);
-                            listener.removeTaskFromFirebase(taskToRemove);
-                            recyclerView.removeViewAt(position);
-                        }
+                            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                            builder.setMessage("האם אתה בטוח שברצונך למחוק את המשימה: " + tasks.get(position).getDesc() + " ?").setPositiveButton("כן", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    Log.d("tasks", "before removing: " + tasks.toString());
+                                    Task taskToRemove = tasks.get(position);
+                                    tasks.remove(taskToRemove);
+                                    listener.removeTaskFromFirebase(taskToRemove);
+                                    recyclerView.removeViewAt(position);
+                                    Log.d("tasks", "after deleting: " + tasks.toString());
+                                }
+                            }).setNegativeButton("לא", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
 
+                                }
+                            }).create().show();
+                        }
                         return true;
                     }
                 });
@@ -183,7 +208,7 @@ public class UpdateTodaysTasksFragment extends Fragment
                 final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
                 LayoutInflater inflater = (LayoutInflater)getActivity().getSystemService(getActivity().LAYOUT_INFLATER_SERVICE);
                 final View v = inflater.inflate(R.layout.create_task_dialog, null);
-                builder.setPositiveButton("Confirm", new DialogInterface.OnClickListener()
+                builder.setPositiveButton("אישור", new DialogInterface.OnClickListener()
                 {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i)
@@ -208,11 +233,12 @@ public class UpdateTodaysTasksFragment extends Fragment
                                     return;
                                 }
                             }
+                            Log.d("tasks", "before adding: " + tasks.toString());
                             Task newTask = new Task(desc, Integer.parseInt(points), false);
                             tasks.add(newTask);
                             listener.addTaskToFirebase(newTask);
                             adapter.notifyDataSetChanged();//Updates the recycler
-
+                            Log.d("tasks", "after adding: " + tasks.toString());
                             Snackbar.make(coordinatorLayout, "משימה נוספה", Snackbar.LENGTH_SHORT).show();
                         }
 
