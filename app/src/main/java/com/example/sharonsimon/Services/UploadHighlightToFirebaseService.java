@@ -9,14 +9,25 @@ import android.os.Build;
 import android.os.IBinder;
 import android.util.Log;
 
+import com.example.sharonsimon.Activities.MainActivity;
+import com.example.sharonsimon.Classes.Highlight;
 import com.example.sharonsimon.R;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.GenericTypeIndicator;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import androidx.annotation.NonNull;
@@ -24,8 +35,11 @@ import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
-public class UploadVideoToFirebaseService extends Service {
+public class UploadHighlightToFirebaseService extends Service {
 
+    private ArrayList<Highlight> highlights = new ArrayList<>();
+    private FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
+    private DatabaseReference databaseReference = firebaseDatabase.getReference();
     private FirebaseStorage firebaseStorage = FirebaseStorage.getInstance();
     private StorageReference storageReference = firebaseStorage.getReference();
     private NotificationManager notificationManager;
@@ -38,8 +52,7 @@ public class UploadVideoToFirebaseService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        final String kenName = intent.getStringExtra("kenName");
-        final String taskDesc = intent.getStringExtra("taskDesc");
+        final Highlight highlight = (Highlight) intent.getSerializableExtra("highlight");
         final Uri videoUri = intent.getParcelableExtra("videoUri");
         final int notificationID = getNotificationID();
 
@@ -47,7 +60,7 @@ public class UploadVideoToFirebaseService extends Service {
         final NotificationCompat.Builder builder = new NotificationCompat.Builder(this,"Upload Video")
                 .setSmallIcon(R.drawable.ic_file_upload_black_24dp)
                 .setContentTitle("מעלה סרטון")
-                .setContentText("קן: " + kenName + " | " + "משימה: " + taskDesc)
+                .setContentText("קן: " + highlight.getKenName() + " | " + "משימה: " + highlight.getTaskDesc())
                 .setProgress(100,0,false)
                 .setOngoing(true);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -58,7 +71,7 @@ public class UploadVideoToFirebaseService extends Service {
 
         startForeground(notificationID,builder.build());
 
-        final String path = "videos/highlights/" + kenName + "_" + taskDesc;
+        final String path = "videos/highlights/" + highlight.getKenName() + "_" + highlight.getTaskDesc();
         final StorageReference ref = storageReference.child(path);
         ref.putFile(videoUri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
             @Override
@@ -69,11 +82,34 @@ public class UploadVideoToFirebaseService extends Service {
 
                 storageReference.child(path).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                     @Override
-                    public void onSuccess(Uri uri) {
-                        Intent imageUploadedIntent = new Intent("sharon_simon.video_uploaded_action");
-                        imageUploadedIntent.putExtra("taskDesc",taskDesc);
-                        imageUploadedIntent.putExtra("videoUri",uri);
-                        LocalBroadcastManager.getInstance(UploadVideoToFirebaseService.this).sendBroadcast(imageUploadedIntent);
+                    public void onSuccess(final Uri uri) {
+                        String videoUrl = "";
+                        try {
+                            videoUrl = (new URL(uri.toString())).toString();
+                        } catch (MalformedURLException e) {
+                            e.printStackTrace();
+                        }
+                        highlight.setVideoURL(videoUrl);
+                        databaseReference.child("highlights").addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                if(dataSnapshot.exists()) {
+                                    GenericTypeIndicator<ArrayList<Highlight>> genericTypeIndicator = new GenericTypeIndicator<ArrayList<Highlight>>() {};
+                                    highlights = dataSnapshot.getValue(genericTypeIndicator);
+                                }
+                                    highlights.add(highlight);
+                                    databaseReference.child("highlights").setValue(highlights);
+                                    Intent highlightUploadedIntent = new Intent("sharon_simon.highlight_uploaded_action");
+                                    highlightUploadedIntent.putExtra("highlights",highlights);
+                                    highlightUploadedIntent.putExtra("videoUri",uri);
+                                    LocalBroadcastManager.getInstance(UploadHighlightToFirebaseService.this).sendBroadcast(highlightUploadedIntent);
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                            }
+                        });
 
                         stopForeground(false);
                     }

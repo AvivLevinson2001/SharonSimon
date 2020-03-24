@@ -7,19 +7,17 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
-import android.graphics.drawable.Drawable;
+import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.media.MediaMetadataRetriever;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
+import android.provider.MediaStore;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.ImageView;
-import android.widget.VideoView;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.request.RequestOptions;
-import com.bumptech.glide.request.target.Target;
 import com.example.sharonsimon.Classes.Highlight;
 import com.example.sharonsimon.Classes.Ken;
 import com.example.sharonsimon.Classes.Task;
@@ -30,11 +28,7 @@ import com.example.sharonsimon.Fragments.KensRecyclerViewFragment;
 import com.example.sharonsimon.Fragments.ViewKenFragment;
 import com.example.sharonsimon.Fragments.UpdateTodaysTasksFragment;
 import com.example.sharonsimon.R;
-import com.example.sharonsimon.Services.UploadVideoToFirebaseService;
-import com.google.android.gms.tasks.OnCanceledListener;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
+import com.example.sharonsimon.Services.UploadHighlightToFirebaseService;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -43,11 +37,15 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.GenericTypeIndicator;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
-import com.google.firebase.storage.UploadTask;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -99,15 +97,11 @@ public class  MainActivity extends AppCompatActivity implements KensRecyclerView
         videoUploadedReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
-                if(currentFragment instanceof ViewKenFragment){
-                    String taskDesc = intent.getStringExtra("taskDesc");
-                    Uri videoUri = intent.getParcelableExtra("videoUri");
-                    //TODO update highlights
-                }
+                highlights = (ArrayList<Highlight>) intent.getSerializableExtra("highlights");
             }
         };
 
-        LocalBroadcastManager.getInstance(this).registerReceiver(videoUploadedReceiver,new IntentFilter("sharon_simon.video_uploaded_action"));
+        LocalBroadcastManager.getInstance(this).registerReceiver(videoUploadedReceiver,new IntentFilter("sharon_simon.highlight_uploaded_action"));
 
         sp = getSharedPreferences("login",MODE_PRIVATE);
 
@@ -135,7 +129,7 @@ public class  MainActivity extends AppCompatActivity implements KensRecyclerView
                     fragmentTag = "Leaderboard";
                 }
                 else if(item.getItemId() == R.id.action_highlights){
-                    currentFragment = new HighlightsFragment();
+                    currentFragment = HighlightsFragment.newInstance(highlights);
                 }
                 else if(item.getItemId() == R.id.action_log_out){
                     sp.edit().putBoolean("isLoggedIn", false)
@@ -303,9 +297,8 @@ public class  MainActivity extends AppCompatActivity implements KensRecyclerView
 
     @Override
     public void addTaskToHighlights(String taskDesc, String kenName) {
-        highlights.add(new Highlight(taskDesc,kenName,null));
+        newHighlight = new Highlight(taskDesc,kenName,null);
         getVideoFromGallery();
-        databaseReference.child("highlights").setValue(highlights);
     }
 
     @Override
@@ -333,11 +326,8 @@ public class  MainActivity extends AppCompatActivity implements KensRecyclerView
         if(resultCode == RESULT_OK){
             if(requestCode == 1){
                 final Uri videoUri = data.getData();
-                final String kenName = highlights.get(highlights.size() - 1).getKenName();
-                final String taskDesc = highlights.get(highlights.size() - 1).getTaskDesc();
-                Intent uploadVideoToFirebaseService = new Intent(MainActivity.this, UploadVideoToFirebaseService.class);
-                uploadVideoToFirebaseService.putExtra("kenName",kenName);
-                uploadVideoToFirebaseService.putExtra("taskDesc",taskDesc);
+                Intent uploadVideoToFirebaseService = new Intent(MainActivity.this, UploadHighlightToFirebaseService.class);
+                uploadVideoToFirebaseService.putExtra("highlight",newHighlight);
                 uploadVideoToFirebaseService.putExtra("videoUri",videoUri);
                 startService(uploadVideoToFirebaseService);
             }

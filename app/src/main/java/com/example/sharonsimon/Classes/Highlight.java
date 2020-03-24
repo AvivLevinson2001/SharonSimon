@@ -1,10 +1,14 @@
 package com.example.sharonsimon.Classes;
 
-public class Highlight
+import java.io.Serializable;
+
+public class Highlight implements Serializable
 {
     String taskDesc;
     String kenName;
     String videoURL;
+
+    public Highlight(){ }
 
     public Highlight(String taskDesc, String kenName, String videoURL)
     {

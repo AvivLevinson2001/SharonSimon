@@ -1,6 +1,8 @@
 package com.example.sharonsimon.Adapters;
 
 import android.content.Context;
+import android.graphics.drawable.BitmapDrawable;
+import android.media.ThumbnailUtils;
 import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,6 +11,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.example.sharonsimon.Activities.MainActivity;
 import com.example.sharonsimon.Classes.Highlight;
 import com.example.sharonsimon.R;
 
@@ -74,15 +77,10 @@ public class HighlightAdapter extends RecyclerView.Adapter<HighlightAdapter.Crea
         holder.taskDescTV.setText(highlight.getTaskDesc());
         holder.kenNameTV.setText(highlight.getKenName());
 
-        /*Uri videoURI = Uri.parse(highlight.getVideoURL());
-        ImageView imageView = new ImageView(this.context);
-        Glide.with(this.context).load(videoURI)*/
-
         holder.video.setUp(highlight.getVideoURL(),
                 JCVideoPlayerStandard.SCREEN_LAYOUT_NORMAL,
-                (highlight.getKenName()+ "|" +highlight.getTaskDesc()));
-        holder.video.thumbImageView.setImageURI(Uri.parse(highlight.getVideoURL())); //Maybe doesn't work gotta check
-
+                (highlight.getKenName()+ " | " +highlight.getTaskDesc()));
+        holder.video.thumbImageView.setImageURI(null);
     }
 
     public void setHighlights(ArrayList<Highlight> highlights) {
