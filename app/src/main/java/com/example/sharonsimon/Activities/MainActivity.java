@@ -59,6 +59,8 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+import fm.jiecao.jcvideoplayer_lib.JCVideoPlayer;
+import fm.jiecao.jcvideoplayer_lib.JCVideoPlayerStandard;
 
 public class  MainActivity extends AppCompatActivity implements KensRecyclerViewFragment.KensRecyclerViewFragmentListener, FirebaseChangesListener {
 
@@ -83,7 +85,7 @@ public class  MainActivity extends AppCompatActivity implements KensRecyclerView
 
     Dialog loadingDialog;
 
-    VideoView videoView;
+    JCVideoPlayerStandard videoPlayer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -289,6 +291,12 @@ public class  MainActivity extends AppCompatActivity implements KensRecyclerView
     public void onBackPressed() {
         if(drawer.isDrawerOpen(GravityCompat.START))
             drawer.closeDrawer(GravityCompat.START);
+        if (currentFragment instanceof HighlightsFragment)
+        {
+            if (JCVideoPlayer.backPress()) {
+                return;
+            }
+        }
         super.onBackPressed();
     }
 
@@ -319,5 +327,15 @@ public class  MainActivity extends AppCompatActivity implements KensRecyclerView
     protected void onDestroy() {
         LocalBroadcastManager.getInstance(this).unregisterReceiver(videoUploadedReceiver);
         super.onDestroy();
+    }
+
+    @Override
+    protected void onPause()
+    {
+        if (currentFragment instanceof HighlightsFragment)
+        {
+            JCVideoPlayer.releaseAllVideos();
+        }
+        super.onPause();
     }
 }
