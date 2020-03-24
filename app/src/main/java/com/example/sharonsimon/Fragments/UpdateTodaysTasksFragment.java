@@ -112,12 +112,10 @@ public class UpdateTodaysTasksFragment extends Fragment
                             builder.setMessage("האם אתה בטוח שברצונך למחוק את המשימה: " + tasks.get(position).getDesc() + " ?").setPositiveButton("כן", new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialogInterface, int i) {
-                                    Log.d("tasks", "before removing: " + tasks.toString());
                                     Task taskToRemove = tasks.get(position);
                                     tasks.remove(taskToRemove);
                                     listener.removeTaskFromFirebase(taskToRemove);
                                     recyclerView.removeViewAt(position);
-                                    Log.d("tasks", "after deleting: " + tasks.toString());
                                 }
                             }).setNegativeButton("לא", new DialogInterface.OnClickListener() {
                                 @Override

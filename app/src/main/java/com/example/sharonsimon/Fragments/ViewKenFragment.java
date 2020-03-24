@@ -109,11 +109,6 @@ public class ViewKenFragment extends Fragment {
             @Override
             public void onCheckBoxClick(int position, View v) {
                 if(!tasks.get(position).isCompleted()){
-                    Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-                    intent.setType("video/*");
-                    getActivity().getIntent().putExtra("taskDesc",tasks.get(position).getDesc());
-                    getActivity().getIntent().putExtra("kenName",ken.getName());
-                    getActivity().startActivityForResult(Intent.createChooser(intent,"select video"), 1);
                     tasks.get(position).setCompleted(true);
                     ken.setPoints(ken.getPoints() + tasks.get(position).getPoints());
                 }
@@ -128,7 +123,7 @@ public class ViewKenFragment extends Fragment {
 
             @Override
             public void onVideoClick(int position, View v) {
-                Log.d("test","video clicked: videos/" + ken.getName() + "/" + tasks.get(position));
+
             }
         });
 

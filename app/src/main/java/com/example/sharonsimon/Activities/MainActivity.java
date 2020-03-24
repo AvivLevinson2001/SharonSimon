@@ -20,6 +20,7 @@ import android.widget.VideoView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.Target;
+import com.example.sharonsimon.Classes.Highlight;
 import com.example.sharonsimon.Classes.Ken;
 import com.example.sharonsimon.Classes.Task;
 import com.example.sharonsimon.Dialogs.LoadingDialogBuilder;
@@ -67,7 +68,8 @@ public class  MainActivity extends AppCompatActivity implements KensRecyclerView
     ArrayList<Ken> kensList;
     Ken myKen;
     ArrayList<Task> allTasks;
-
+    ArrayList<Highlight> highlights;
+    Highlight newHighlight;
 
     SharedPreferences sp;
 
@@ -180,7 +182,6 @@ public class  MainActivity extends AppCompatActivity implements KensRecyclerView
         databaseReference.child("kens").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                Log.d("dddd","dddd");
                 if(!dataSnapshot.exists()){
                     final String[] kensNames = new String[]
                             {"מקורות", "המעפיל", "מעיין", "העוגן", "רמות חפר", "יקום", "געש", "גן שמואל",
@@ -196,6 +197,7 @@ public class  MainActivity extends AppCompatActivity implements KensRecyclerView
                     kensList = newKens;
                     databaseReference.child("kens").setValue(newKens);
                     allTasks = new ArrayList<>();
+                    highlights = new ArrayList<>();
                     loadingDialog.dismiss();
                 }
                 else{
@@ -216,7 +218,24 @@ public class  MainActivity extends AppCompatActivity implements KensRecyclerView
                             else{
                                 allTasks = new ArrayList<>();
                             }
-                            loadingDialog.dismiss();
+                            databaseReference.child("highlights").addListenerForSingleValueEvent(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                    if(dataSnapshot.exists()){
+                                        GenericTypeIndicator<ArrayList<Highlight>> genericTypeIndicator = new GenericTypeIndicator<ArrayList<Highlight>>() {};
+                                        highlights = dataSnapshot.getValue(genericTypeIndicator);
+                                    }
+                                    else{
+                                        highlights = new ArrayList<>();
+                                    }
+                                    loadingDialog.dismiss();
+                                }
+
+                                @Override
+                                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                }
+                            });
                         }
 
                         @Override
@@ -284,7 +303,9 @@ public class  MainActivity extends AppCompatActivity implements KensRecyclerView
 
     @Override
     public void addTaskToHighlights(String taskDesc, String kenName) {
-
+        highlights.add(new Highlight(taskDesc,kenName,null));
+        getVideoFromGallery();
+        databaseReference.child("highlights").setValue(highlights);
     }
 
     @Override
@@ -312,8 +333,8 @@ public class  MainActivity extends AppCompatActivity implements KensRecyclerView
         if(resultCode == RESULT_OK){
             if(requestCode == 1){
                 final Uri videoUri = data.getData();
-                final String kenName = (String) getIntent().getExtras().get("kenName");
-                final String taskDesc = (String) getIntent().getExtras().get("taskDesc");
+                final String kenName = highlights.get(highlights.size() - 1).getKenName();
+                final String taskDesc = highlights.get(highlights.size() - 1).getTaskDesc();
                 Intent uploadVideoToFirebaseService = new Intent(MainActivity.this, UploadVideoToFirebaseService.class);
                 uploadVideoToFirebaseService.putExtra("kenName",kenName);
                 uploadVideoToFirebaseService.putExtra("taskDesc",taskDesc);

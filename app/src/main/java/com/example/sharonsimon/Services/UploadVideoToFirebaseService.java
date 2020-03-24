@@ -58,7 +58,7 @@ public class UploadVideoToFirebaseService extends Service {
 
         startForeground(notificationID,builder.build());
 
-        final String path = "videos/" + kenName + "/" + taskDesc;
+        final String path = "videos/highlights/" + kenName + "_" + taskDesc;
         final StorageReference ref = storageReference.child(path);
         ref.putFile(videoUri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
             @Override
