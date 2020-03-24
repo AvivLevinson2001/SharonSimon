@@ -197,6 +197,11 @@ public class UpdateTodaysTasksFragment extends Fragment
             public void onCheckBoxClick(int position, View v) {
 
             }
+
+            @Override
+            public void onVideoClick(int position, View v) {
+
+            }
         });
         recyclerView.setAdapter(adapter);
 

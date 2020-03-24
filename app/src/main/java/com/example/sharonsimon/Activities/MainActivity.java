@@ -2,7 +2,10 @@ package com.example.sharonsimon.Activities;
 
 
 import android.app.Dialog;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
@@ -10,8 +13,11 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.VideoView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 import com.example.sharonsimon.Classes.Ken;
 import com.example.sharonsimon.Classes.Task;
 import com.example.sharonsimon.Dialogs.LoadingDialogBuilder;
@@ -21,7 +27,9 @@ import com.example.sharonsimon.Fragments.KensRecyclerViewFragment;
 import com.example.sharonsimon.Fragments.ViewKenFragment;
 import com.example.sharonsimon.Fragments.UpdateTodaysTasksFragment;
 import com.example.sharonsimon.R;
+import com.example.sharonsimon.Services.UploadVideoToFirebaseService;
 import com.google.android.gms.tasks.OnCanceledListener;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.navigation.NavigationView;
@@ -48,6 +56,7 @@ import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 public class  MainActivity extends AppCompatActivity implements KensRecyclerViewFragment.KensRecyclerViewFragmentListener, FirebaseChangesListener {
 
@@ -63,6 +72,7 @@ public class  MainActivity extends AppCompatActivity implements KensRecyclerView
     StorageReference storageReference = firebaseStorage.getReference();
     FragmentManager fragmentManager = getSupportFragmentManager();
     Fragment currentFragment;
+    BroadcastReceiver videoUploadedReceiver;
 
     DrawerLayout drawer;
     CoordinatorLayout coordinatorLayout;
@@ -78,6 +88,19 @@ public class  MainActivity extends AppCompatActivity implements KensRecyclerView
         setContentView(R.layout.activity_main);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        videoUploadedReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                if(currentFragment instanceof ViewKenFragment){
+                    String taskDesc = intent.getStringExtra("taskDesc");
+                    Uri videoUri = intent.getParcelableExtra("videoUri");
+                    ((ViewKenFragment) currentFragment).addVideoUri(taskDesc, videoUri);
+                }
+            }
+        };
+
+        LocalBroadcastManager.getInstance(this).registerReceiver(videoUploadedReceiver,new IntentFilter("sharon_simon.video_uploaded_action"));
 
         sp = getSharedPreferences("login",MODE_PRIVATE);
 
@@ -152,6 +175,7 @@ public class  MainActivity extends AppCompatActivity implements KensRecyclerView
         databaseReference.child("kens").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                Log.d("dddd","dddd");
                 if(!dataSnapshot.exists()){
                     final String[] kensNames = new String[]
                             {"מקורות", "המעפיל", "מעיין", "העוגן", "רמות חפר", "יקום", "געש", "גן שמואל",
@@ -271,13 +295,41 @@ public class  MainActivity extends AppCompatActivity implements KensRecyclerView
         super.onActivityResult(requestCode, resultCode, data);
         if(resultCode == RESULT_OK){
             if(requestCode == 1){
-                Uri videoUri = data.getData();
-                String path = "videos/" + getIntent().getExtras().get("kenName") + "/" + getIntent().getExtras().get("taskDesc");
-                StorageReference ref = storageReference.child(path);
-                ref.putFile(videoUri);
-                /*videoView.setVideoURI(videoUri);
-                videoView.start();*/
+                final Uri videoUri = data.getData();
+                final String kenName = (String) getIntent().getExtras().get("kenName");
+                final String taskDesc = (String) getIntent().getExtras().get("taskDesc");
+                /*String path = "videos/" + kenName + "/" + taskDesc;
+                final StorageReference ref = storageReference.child(path);
+                ref.putFile(videoUri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                    @Override
+                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                        Log.d("uploadTask","success");
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.d("uploadTask","failure");
+                        e.printStackTrace();
+                    }
+                }).addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
+                    @Override
+                    public void onProgress(@NonNull UploadTask.TaskSnapshot taskSnapshot) {
+                        double progress = (100.0 * taskSnapshot.getBytesTransferred()) / taskSnapshot.getTotalByteCount();
+                        Log.d("uploadTask","progressing: " + progress);
+                    }
+                });*/
+                Intent uploadVideoToFirebaseService = new Intent(MainActivity.this, UploadVideoToFirebaseService.class);
+                uploadVideoToFirebaseService.putExtra("kenName",kenName);
+                uploadVideoToFirebaseService.putExtra("taskDesc",taskDesc);
+                uploadVideoToFirebaseService.putExtra("videoUri",videoUri);
+                startService(uploadVideoToFirebaseService);
             }
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(videoUploadedReceiver);
+        super.onDestroy();
     }
 }
