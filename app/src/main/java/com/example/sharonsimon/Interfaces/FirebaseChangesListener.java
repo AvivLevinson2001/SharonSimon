@@ -9,4 +9,5 @@ public interface FirebaseChangesListener {
     void saveKenToFirebase(Ken kenToSave);
     void addTaskToFirebase(Task task);
     void removeTaskFromFirebase(Task task);
+    void addTaskToHighlights(String taskDesc, String kenName);
 }

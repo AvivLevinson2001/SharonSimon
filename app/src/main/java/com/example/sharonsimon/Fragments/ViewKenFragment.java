@@ -91,16 +91,19 @@ public class ViewKenFragment extends Fragment {
             }
 
             @Override
-            public void onTaskLongClick(int position, View v) {
+            public void onTaskLongClick(final int position, View v) {
                 PopupMenu popupMenu = new PopupMenu(getActivity(), v);
                 popupMenu.getMenuInflater().inflate(R.menu.view_ken_tasks_long_click, popupMenu.getMenu());
 
                 popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                     @Override
                     public boolean onMenuItemClick(MenuItem menuItem) {
+                        listener.addTaskToHighlights(tasks.get(position).getDesc(),ken.getName());
                         return true;
                     }
                 });
+
+                popupMenu.show();
             }
 
             @Override

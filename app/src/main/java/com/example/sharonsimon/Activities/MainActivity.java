@@ -66,6 +66,7 @@ public class  MainActivity extends AppCompatActivity implements KensRecyclerView
     Ken myKen;
     ArrayList<Task> allTasks;
 
+
     SharedPreferences sp;
 
     FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
@@ -277,6 +278,11 @@ public class  MainActivity extends AppCompatActivity implements KensRecyclerView
             ken.calculatePoints();
         }
         databaseReference.child("kens").setValue(kensList);
+    }
+
+    @Override
+    public void addTaskToHighlights(String taskDesc, String kenName) {
+
     }
 
     @Override
