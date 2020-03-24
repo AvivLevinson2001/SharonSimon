@@ -88,23 +88,6 @@
 
             </LinearLayout>
 
-            <ImageView
-                android:layout_width="match_parent"
-                android:layout_height="70dp"
-                android:layout_marginTop="8dp"
-                android:id="@+id/card_view_task_video_thumbnail_iv"
-                android:scaleType="fitCenter"
-                android:background="#000"
-                android:visibility="gone"/>
-
-            <ProgressBar
-                android:layout_width="wrap_content"
-                android:layout_height="70dp"
-                android:layout_marginTop="8dp"
-                android:id="@+id/card_view_task_loading_thumbnail_pb"
-                android:visibility="gone"/>
-
-
         </LinearLayout>
 
     </LinearLayout>

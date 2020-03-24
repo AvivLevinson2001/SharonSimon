@@ -38,11 +38,9 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.CreateTaskView
 {
 
     private ArrayList<Task> tasks;
-    private Uri[] videosUri;
     private myTaskAdapterListener listener;
     private boolean checkBoxIsClickable = false;
     private String kenName;
-    private Context context;
 
     public interface myTaskAdapterListener
     {
@@ -63,20 +61,9 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.CreateTaskView
 
     public TaskAdapter(ArrayList<Task> tasks)
     {
-        videosUri = new Uri[tasks.size()];
         this.tasks = tasks;
         if(this.tasks == null)
             this.tasks = new ArrayList<>();
-    }
-
-    public TaskAdapter(ArrayList<Task> tasks, Uri[] videosUri, Context context)
-    {
-        this.videosUri = new Uri[tasks.size()];
-        this.tasks = tasks;
-        if(this.tasks == null)
-            this.tasks = new ArrayList<>();
-        this.kenName = kenName;
-        this.context = context;
     }
 
     @Override
@@ -92,8 +79,6 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.CreateTaskView
         TextView descTV;
         TextView pointsTV;
         ImageView starIV;
-        ImageView videoThumbnailIV;
-        ProgressBar loadingThumbnailPB;
 
         public CreateTaskViewHolder(final View itemView) {
             super(itemView);
@@ -102,8 +87,6 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.CreateTaskView
             descTV = itemView.findViewById(R.id.card_view_task_desc_tv);
             pointsTV = itemView.findViewById(R.id.card_view_task_points_tv);
             starIV = itemView.findViewById(R.id.card_view_task_star_iv);
-            videoThumbnailIV = itemView.findViewById(R.id.card_view_task_video_thumbnail_iv);
-            loadingThumbnailPB = itemView.findViewById(R.id.card_view_task_loading_thumbnail_pb);
 
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -133,15 +116,6 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.CreateTaskView
             else{
                 isCompletedCB.setClickable(false);
             }
-
-            if(isCompletedCB.isChecked()){
-                videoThumbnailIV.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        listener.onVideoClick(getAdapterPosition(), view);
-                    }
-                });
-            }
         }
     }
 
@@ -164,13 +138,9 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.CreateTaskView
         if (task.isCompleted())
         {
             holder.starIV.setVisibility(View.INVISIBLE);
-            holder.videoThumbnailIV.setVisibility(View.GONE);
-            holder.loadingThumbnailPB.setVisibility(View.VISIBLE);
         }
         else
         {
-            holder.videoThumbnailIV.setVisibility(View.GONE);
-            holder.loadingThumbnailPB.setVisibility(View.GONE);
             AnimationSet starAnimations = new AnimationSet(true);
 
             AlphaAnimation  blink= new AlphaAnimation(1, 0); // Change alpha from fully visible to invisible
@@ -191,23 +161,6 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.CreateTaskView
             scaleDown.play(scaleDownX).with(scaleDownY);
 
             scaleDown.start();
-        }
-
-        if(task.isCompleted() && videosUri != null && videosUri[position] != null){
-            Glide.with(context).asBitmap().load(videosUri[position]).into(holder.videoThumbnailIV);
-            holder.videoThumbnailIV.setVisibility(View.VISIBLE);
-            holder.loadingThumbnailPB.setVisibility(View.GONE);
-        }
-        else{
-            holder.videoThumbnailIV.setImageURI(null);
-            holder.videoThumbnailIV.setImageBitmap(null);
-        }
-    }
-
-    public void setVideoUri(int position, Uri uri){
-        if(position < videosUri.length){
-            videosUri[position] = uri;
-            notifyDataSetChanged();
         }
     }
 

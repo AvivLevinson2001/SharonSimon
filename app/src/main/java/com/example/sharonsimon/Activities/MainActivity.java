@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -18,6 +19,7 @@ import android.widget.VideoView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
+import com.bumptech.glide.request.target.Target;
 import com.example.sharonsimon.Classes.Ken;
 import com.example.sharonsimon.Classes.Task;
 import com.example.sharonsimon.Dialogs.LoadingDialogBuilder;
@@ -95,7 +97,7 @@ public class  MainActivity extends AppCompatActivity implements KensRecyclerView
                 if(currentFragment instanceof ViewKenFragment){
                     String taskDesc = intent.getStringExtra("taskDesc");
                     Uri videoUri = intent.getParcelableExtra("videoUri");
-                    ((ViewKenFragment) currentFragment).addVideoUri(taskDesc, videoUri);
+                    //TODO update highlights
                 }
             }
         };
@@ -298,26 +300,6 @@ public class  MainActivity extends AppCompatActivity implements KensRecyclerView
                 final Uri videoUri = data.getData();
                 final String kenName = (String) getIntent().getExtras().get("kenName");
                 final String taskDesc = (String) getIntent().getExtras().get("taskDesc");
-                /*String path = "videos/" + kenName + "/" + taskDesc;
-                final StorageReference ref = storageReference.child(path);
-                ref.putFile(videoUri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                    @Override
-                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                        Log.d("uploadTask","success");
-                    }
-                }).addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.d("uploadTask","failure");
-                        e.printStackTrace();
-                    }
-                }).addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
-                    @Override
-                    public void onProgress(@NonNull UploadTask.TaskSnapshot taskSnapshot) {
-                        double progress = (100.0 * taskSnapshot.getBytesTransferred()) / taskSnapshot.getTotalByteCount();
-                        Log.d("uploadTask","progressing: " + progress);
-                    }
-                });*/
                 Intent uploadVideoToFirebaseService = new Intent(MainActivity.this, UploadVideoToFirebaseService.class);
                 uploadVideoToFirebaseService.putExtra("kenName",kenName);
                 uploadVideoToFirebaseService.putExtra("taskDesc",taskDesc);

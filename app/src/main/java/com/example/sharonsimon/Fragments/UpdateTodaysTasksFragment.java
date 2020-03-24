@@ -20,7 +20,6 @@ import com.example.sharonsimon.Classes.Task;
 import com.example.sharonsimon.Interfaces.FirebaseChangesListener;
 import com.example.sharonsimon.R;
 
-import com.google.android.gms.tasks.Tasks;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.BaseTransientBottomBar;
 import com.google.android.material.snackbar.Snackbar;
@@ -32,7 +31,6 @@ import androidx.annotation.Nullable;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 
@@ -101,71 +99,13 @@ public class UpdateTodaysTasksFragment extends Fragment
             public void onTaskLongClick(final int position, View v)
             {
                 PopupMenu popupMenu = new PopupMenu(getActivity(), v);
-                popupMenu.getMenuInflater().inflate(R.menu.task_long_click_menu, popupMenu.getMenu());
+                popupMenu.getMenuInflater().inflate(R.menu.update_task_long_click_menu, popupMenu.getMenu());
 
                 popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener()
                 {
                     @Override
                     public boolean onMenuItemClick(MenuItem menuItem)
                     {
-                        /*if (menuItem.getItemId() == R.id.item_edit)
-                        {
-                            final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-                            LayoutInflater inflater = (LayoutInflater)getActivity().getSystemService(getActivity().LAYOUT_INFLATER_SERVICE);
-                            final View v = inflater.inflate(R.layout.create_task_dialog, null);
-                            builder.setPositiveButton("אישור", new DialogInterface.OnClickListener()
-                            {
-                                @Override
-                                public void onClick(DialogInterface dialogInterface, int i)
-                                {
-
-                                    EditText descEt = v.findViewById(R.id.create_task_dialog_desc_et);
-                                    EditText pointsEt = v.findViewById(R.id.create_task_dialog_points_et);
-
-                                    final String desc = descEt.getText().toString();
-                                    final String points = pointsEt.getText().toString();
-
-
-                                    if (points.equals("") || desc.equals("")) //Checking for null fields
-                                    {
-                                        Snackbar.make(coordinatorLayout, "מלאו את כל השדות", Snackbar.LENGTH_SHORT).show();
-                                    }
-                                    else
-                                    {
-                                        final AlertDialog.Builder confirmBuilder = new AlertDialog.Builder(getActivity());
-                                        confirmBuilder.setMessage("אתה בטוח שברצונך לשנות את המשימה?").setPositiveButton("כן", new DialogInterface.OnClickListener() {
-                                            @Override
-                                            public void onClick(DialogInterface dialogInterface, int i) {
-                                                Task task = tasks.get(position);
-                                                task.setPoints(Integer.parseInt(points));
-                                                task.setDesc(desc);
-                                                adapter.notifyDataSetChanged();//Updates the recycler
-                                                Snackbar.make(coordinatorLayout, "משימה התעדכנה", Snackbar.LENGTH_SHORT);
-                                            }
-                                        }).setNegativeButton("לא", new DialogInterface.OnClickListener() {
-                                            @Override
-                                            public void onClick(DialogInterface dialogInterface, int i) {
-
-                                            }
-                                        }).create().show();
-
-
-                                    }
-
-                                }
-                            });
-                            builder.setView(v);
-                            final Dialog dialog = builder.create();
-                            dialog.show();
-
-                            EditText descEt = v.findViewById(R.id.create_task_dialog_desc_et);
-                            EditText pointsEt = v.findViewById(R.id.create_task_dialog_points_et);
-
-                            descEt.setText(tasks.get(position).getDesc());
-                            pointsEt.setText(tasks.get(position).getPoints() + "");
-
-                        }*/
-
                         if (menuItem.getItemId() == R.id.item_delete)
                         {
                             AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());

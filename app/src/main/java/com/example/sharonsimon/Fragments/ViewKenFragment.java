@@ -7,24 +7,24 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.PopupMenu;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.example.sharonsimon.Adapters.TaskAdapter;
 import com.example.sharonsimon.Classes.Ken;
 import com.example.sharonsimon.Classes.Task;
 import com.example.sharonsimon.Interfaces.FirebaseChangesListener;
 import com.example.sharonsimon.R;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
@@ -38,7 +38,6 @@ public class ViewKenFragment extends Fragment {
     Ken ken;
     boolean isAdmin;
     ArrayList<Task> tasks;
-    Uri[] videosUri;
 
     ImageView myKenImage;
     TextView myKenPointsTV;
@@ -83,10 +82,7 @@ public class ViewKenFragment extends Fragment {
 
         tasks = ken.getTasks();
         if(tasks == null) tasks = new ArrayList<>();
-
-        videosUri = new Uri[tasks.size()];
-
-        adapter = new TaskAdapter(tasks,videosUri,getActivity());
+        adapter = new TaskAdapter(tasks);
 
         adapter.setListener(new TaskAdapter.myTaskAdapterListener() {
             @Override
@@ -96,7 +92,15 @@ public class ViewKenFragment extends Fragment {
 
             @Override
             public void onTaskLongClick(int position, View v) {
+                PopupMenu popupMenu = new PopupMenu(getActivity(), v);
+                popupMenu.getMenuInflater().inflate(R.menu.view_ken_tasks_long_click, popupMenu.getMenu());
 
+                popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem menuItem) {
+                        return true;
+                    }
+                });
             }
 
             @Override
@@ -134,28 +138,6 @@ public class ViewKenFragment extends Fragment {
         myKenNameTv.setText(ken.getName());
         myKenPointsTV.setText(ken.getPoints() + "");
 
-        for(final Task task1 : tasks){
-            if(task1.isCompleted()) {
-                final Task task2 = task1;
-                storageReference.child("videos/" + ken.getName() + "/" + task2.getDesc()).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-                    @Override
-                    public void onSuccess(Uri uri) {
-                        videosUri[tasks.indexOf(task2)] = uri;
-                        adapter.setVideoUri(tasks.indexOf(task2),uri);
-                    }
-                });
-            }
-        }
-
         return viewGroup;
-    }
-
-    public void addVideoUri(String taskDesc, Uri uri){
-        for(Task task : tasks){
-            if(task.getDesc().equals(taskDesc)){
-                videosUri[tasks.indexOf(task)] = uri;
-                adapter.setVideoUri(tasks.indexOf(task),uri);
-            }
-        }
     }
 }
