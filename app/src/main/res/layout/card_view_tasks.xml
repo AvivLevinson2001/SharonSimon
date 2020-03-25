@@ -20,7 +20,7 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="60dp"
-            android:background="@drawable/task_background"
+            android:background="@drawable/task_background_not_completed"
             android:gravity="center_vertical"
             android:orientation="horizontal"
             android:padding="16dp">
