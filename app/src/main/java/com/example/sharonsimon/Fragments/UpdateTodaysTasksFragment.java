@@ -7,7 +7,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -99,14 +98,14 @@ public class UpdateTodaysTasksFragment extends Fragment
             public void onTaskLongClick(final int position, View v)
             {
                 PopupMenu popupMenu = new PopupMenu(getActivity(), v);
-                popupMenu.getMenuInflater().inflate(R.menu.update_task_long_click_menu, popupMenu.getMenu());
+                popupMenu.getMenuInflater().inflate(R.menu.long_click_delete_menu, popupMenu.getMenu());
 
                 popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener()
                 {
                     @Override
                     public boolean onMenuItemClick(MenuItem menuItem)
                     {
-                        if (menuItem.getItemId() == R.id.item_delete)
+                        if (menuItem.getItemId() == R.id.action_delete)
                         {
                             AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
                             builder.setMessage("האם אתה בטוח שברצונך למחוק את המשימה: " + tasks.get(position).getDesc() + " ?").setPositiveButton("כן", new DialogInterface.OnClickListener() {
@@ -129,16 +128,6 @@ public class UpdateTodaysTasksFragment extends Fragment
                 });
 
                 popupMenu.show();
-            }
-
-            @Override
-            public void onCheckBoxClick(int position, View v) {
-
-            }
-
-            @Override
-            public void onVideoClick(int position, View v) {
-
             }
         });
         recyclerView.setAdapter(adapter);
@@ -176,12 +165,10 @@ public class UpdateTodaysTasksFragment extends Fragment
                                     return;
                                 }
                             }
-                            Log.d("tasks", "before adding: " + tasks.toString());
                             Task newTask = new Task(desc, Integer.parseInt(points), false);
                             tasks.add(newTask);
                             listener.addTaskToFirebase(newTask);
                             adapter.notifyDataSetChanged();//Updates the recycler
-                            Log.d("tasks", "after adding: " + tasks.toString());
                             Snackbar.make(coordinatorLayout, "משימה נוספה", Snackbar.LENGTH_SHORT).show();
                         }
 

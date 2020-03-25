@@ -12,6 +12,7 @@ import android.widget.PopupMenu;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -21,6 +22,8 @@ import com.example.sharonsimon.Classes.Ken;
 import com.example.sharonsimon.Classes.Task;
 import com.example.sharonsimon.Interfaces.FirebaseChangesListener;
 import com.example.sharonsimon.R;
+import com.google.android.material.snackbar.BaseTransientBottomBar;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
@@ -64,7 +67,7 @@ public class ViewKenFragment extends Fragment {
     }
 
     public View onCreateView(@NonNull LayoutInflater inflater,
-            ViewGroup container, Bundle savedInstanceState) {
+                             final ViewGroup container, Bundle savedInstanceState) {
 
         ViewGroup viewGroup = (ViewGroup) inflater.inflate(R.layout.view_ken_fragment,container,false);
 
@@ -88,42 +91,44 @@ public class ViewKenFragment extends Fragment {
 
             @Override
             public void onTaskLongClick(final int position, View v) {
-                PopupMenu popupMenu = new PopupMenu(getActivity(), v);
-                popupMenu.getMenuInflater().inflate(R.menu.add_task_to_highlights_menu, popupMenu.getMenu());
+                if(isAdmin){
+                    PopupMenu popupMenu = new PopupMenu(getActivity(), v);
+                    popupMenu.getMenuInflater().inflate(R.menu.task_long_click_menu_admin, popupMenu.getMenu());
+                    popupMenu.getMenu().setGroupVisible(tasks.get(position).isCompleted() ? R.id.action_set_task_is_not_completed_group : R.id.action_set_task_is_completed_group, true);
 
-                popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-                    @Override
-                    public boolean onMenuItemClick(MenuItem menuItem) {
-                        listener.addTaskToHighlights(tasks.get(position).getDesc(),ken.getName());
-                        return true;
-                    }
-                });
-
-                popupMenu.show();
-            }
-
-            @Override
-            public void onCheckBoxClick(int position, View v) {
-                if(!tasks.get(position).isCompleted()){
-                    tasks.get(position).setCompleted(true);
-                    ken.setPoints(ken.getPoints() + tasks.get(position).getPoints());
+                    popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                        @Override
+                        public boolean onMenuItemClick(MenuItem menuItem) {
+                            switch (menuItem.getItemId()){
+                                case R.id.action_set_task_is_completed:
+                                    tasks.get(position).setCompleted(true);
+                                    ken.setPoints(ken.getPoints() + tasks.get(position).getPoints());
+                                    listener.saveKenToFirebase(ken);
+                                    myKenPointsTV.setText(ken.getPoints() + "");
+                                    break;
+                                case R.id.action_set_task_is_not_completed:
+                                    tasks.get(position).setCompleted(false);
+                                    ken.setPoints(ken.getPoints() - tasks.get(position).getPoints());
+                                    listener.saveKenToFirebase(ken);
+                                    myKenPointsTV.setText(ken.getPoints() + "");
+                                    break;
+                                case R.id.action_add_task_to_highlights:
+                                    if(tasks.get(position).isCompleted()) {
+                                        listener.addTaskToHighlights(tasks.get(position).getDesc(), ken.getName());
+                                    }
+                                    else{
+                                        Snackbar.make(container,"המשימה לא בוצעה", BaseTransientBottomBar.LENGTH_SHORT).show();
+                                    }
+                                    break;
+                            }
+                            adapter.notifyDataSetChanged();
+                            return true;
+                        }
+                    });
+                    popupMenu.show();
                 }
-                else{
-                    tasks.get(position).setCompleted(false);
-                    ken.setPoints(ken.getPoints() - tasks.get(position).getPoints());
-                }
-                adapter.notifyDataSetChanged();
-                listener.saveKenToFirebase(ken);
-                myKenPointsTV.setText(ken.getPoints() + "");
-            }
-
-            @Override
-            public void onVideoClick(int position, View v) {
-
             }
         });
-
-        adapter.setCheckBoxIsClickable(isAdmin);
 
         recycler.setAdapter(adapter);
         RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(getActivity(), 2);

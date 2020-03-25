@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <group
+        android:id="@+id/action_set_task_is_completed_group"
+        android:visible="false">
+        <item
+            android:id="@+id/action_set_task_is_completed"
+            android:title="המשימה הושלמה" />
+    </group>
+    <group
+        android:id="@+id/action_set_task_is_not_completed_group"
+        android:visible="false">
+        <item
+        android:id="@+id/action_set_task_is_not_completed"
+        android:title="המשימה לא הושלמה" />
+    </group>
+    <group>
+        <item
+            android:id="@+id/action_add_task_to_highlights"
+            android:title="הוסף לקטעים החמים"/>
+    </group>
+</menu>

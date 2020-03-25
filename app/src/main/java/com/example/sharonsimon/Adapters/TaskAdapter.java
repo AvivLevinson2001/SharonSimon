@@ -14,6 +14,7 @@ import android.view.animation.AnimationSet;
 import android.view.animation.LinearInterpolator;
 import android.widget.CheckBox;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -39,24 +40,16 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.CreateTaskView
 
     private ArrayList<Task> tasks;
     private myTaskAdapterListener listener;
-    private boolean checkBoxIsClickable = false;
-    private String kenName;
 
     public interface myTaskAdapterListener
     {
         void onTaskClick(int position, View v);
         void onTaskLongClick(int position, View v);
-        void onCheckBoxClick(int position, View v);
-        void onVideoClick(int position, View v);
     }
 
     public void setListener(myTaskAdapterListener listener)
     {
         this.listener = listener;
-    }
-
-    public void setCheckBoxIsClickable(boolean isClickable){
-        checkBoxIsClickable = isClickable;
     }
 
     public TaskAdapter(ArrayList<Task> tasks)
@@ -75,18 +68,18 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.CreateTaskView
 
     public class CreateTaskViewHolder extends RecyclerView.ViewHolder
     {
-        CheckBox isCompletedCB;
+        LinearLayout titleLL;
         TextView descTV;
         TextView pointsTV;
-        ImageView starIV;
+        ImageView doneIV;
 
         public CreateTaskViewHolder(final View itemView) {
             super(itemView);
 
-            isCompletedCB = itemView.findViewById(R.id.card_view_task_is_completed_cb);
+            titleLL = itemView.findViewById(R.id.card_view_task_title_ll);
             descTV = itemView.findViewById(R.id.card_view_task_desc_tv);
             pointsTV = itemView.findViewById(R.id.card_view_task_points_tv);
-            starIV = itemView.findViewById(R.id.card_view_task_star_iv);
+            doneIV = itemView.findViewById(R.id.card_view_task_done_iv);
 
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -104,18 +97,6 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.CreateTaskView
                     return false;
                 }
             });
-
-            if (checkBoxIsClickable) {
-                isCompletedCB.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        listener.onCheckBoxClick(getAdapterPosition(), view);
-                    }
-                });
-            }
-            else{
-                isCompletedCB.setClickable(false);
-            }
         }
     }
 
@@ -131,29 +112,29 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.CreateTaskView
     public void onBindViewHolder(final CreateTaskViewHolder holder, int position)
     {
         Task task = tasks.get(position);
-        holder.isCompletedCB.setChecked(task.isCompleted());
+        holder.titleLL.setBackgroundResource(task.isCompleted() ? R.drawable.task_background_completed : R.drawable.task_background_not_completed);
         holder.descTV.setText(task.getDesc());
         holder.pointsTV.setText(task.getPoints() + "");
 
-        if (task.isCompleted())
+        if (!task.isCompleted())
         {
-            holder.starIV.setVisibility(View.INVISIBLE);
+            holder.doneIV.setVisibility(View.INVISIBLE);
         }
         else
         {
             AnimationSet starAnimations = new AnimationSet(true);
 
-            AlphaAnimation  blink= new AlphaAnimation(1, 0); // Change alpha from fully visible to invisible
+            AlphaAnimation  blink= new AlphaAnimation(0, 1); // Change alpha from fully visible to invisible
             blink.setDuration(600); // duration
             blink.setInterpolator(new LinearInterpolator()); // do not alter animation rate
             blink.setRepeatCount(Animation.INFINITE); // Repeat animation infinitely
             blink.setRepeatMode(Animation.REVERSE);
 
             starAnimations.addAnimation(blink);
-            holder.starIV.startAnimation(starAnimations);
+            holder.doneIV.startAnimation(starAnimations);
 
-            ObjectAnimator scaleDownX = ObjectAnimator.ofFloat(holder.starIV, "scaleX", 1.5f);
-            ObjectAnimator scaleDownY = ObjectAnimator.ofFloat(holder.starIV, "scaleY", 1.5f);
+            ObjectAnimator scaleDownX = ObjectAnimator.ofFloat(holder.doneIV, "scaleX", 1.5f);
+            ObjectAnimator scaleDownY = ObjectAnimator.ofFloat(holder.doneIV, "scaleY", 1.5f);
             scaleDownX.setDuration(600);
             scaleDownY.setDuration(600);
 

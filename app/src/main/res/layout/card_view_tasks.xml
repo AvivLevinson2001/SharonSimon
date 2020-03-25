@@ -10,7 +10,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:foreground="?android:selectableItemBackground"
-    android:textDirection="rtl">
+    android:textDirection="rtl"
+    android:layoutDirection="rtl">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -23,14 +24,15 @@
             android:background="@drawable/task_background_not_completed"
             android:gravity="center_vertical"
             android:orientation="horizontal"
-            android:padding="16dp">
+            android:padding="16dp"
+            android:id="@+id/card_view_task_title_ll">
 
             <ImageView
-                android:layout_width="15dp"
-                android:layout_height="15dp"
-                android:src="@drawable/ic_star_gold_24dp"
-                android:id="@+id/card_view_task_star_iv"
-                android:layout_marginStart="5dp"/>
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/done_circle"
+                android:id="@+id/card_view_task_done_iv"
+                android:layout_weight="1" />
 
             <TextView
                 android:id="@+id/card_view_task_points_tv"
@@ -40,14 +42,13 @@
                 android:text="0"
                 android:textColor="@color/cardview_light_background"
                 android:textSize="26sp"
-                android:layout_weight="2"
-                />
+                android:layout_weight="4" />
 
             <ImageView
                 android:layout_width="26dp"
                 android:layout_height="26dp"
                 android:src="@drawable/trophy"
-                android:layout_weight="1"/>
+                android:layout_weight="1" />
 
         </LinearLayout>
 
@@ -63,30 +64,15 @@
             android:gravity="center"
             android:padding="8dp">
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center">
-
-            <CheckBox
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:id="@+id/card_view_task_is_completed_cb"/>
-
             <TextView
                 android:id="@+id/card_view_task_desc_tv"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="10"
                 android:gravity="center"
                 android:text="desc"
                 android:textSize="16sp"
                 android:fontFamily="serif"
                 android:textAlignment="center" />
-
-            </LinearLayout>
 
         </LinearLayout>
 

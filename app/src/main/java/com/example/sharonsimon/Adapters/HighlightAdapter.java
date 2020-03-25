@@ -26,17 +26,22 @@ import fm.jiecao.jcvideoplayer_lib.JCVideoPlayerStandard;
 
 public class HighlightAdapter extends RecyclerView.Adapter<HighlightAdapter.CreateHighlightViewHolder>
 {
-
     private ArrayList<Highlight> highlights;
-    private Context context;
+    private HighlightAdapterListener listener;
 
+    public interface HighlightAdapterListener{
+        void onHighlightLongClick(int position, View v);
+    }
 
-    public HighlightAdapter(ArrayList<Highlight> highlights, Context context)
+    public void setListener(HighlightAdapterListener listener) {
+        this.listener = listener;
+    }
+
+    public HighlightAdapter(ArrayList<Highlight> highlights)
     {
         this.highlights = highlights;
         if(this.highlights == null)
             this.highlights = new ArrayList<>();
-        this.context = context;
     }
 
     @Override
@@ -59,6 +64,15 @@ public class HighlightAdapter extends RecyclerView.Adapter<HighlightAdapter.Crea
             kenNameTV = itemView.findViewById(R.id.card_view_highlights_ken_tv);
             video = itemView.findViewById(R.id.card_view_highlights_video_player);
 
+            itemView.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View view) {
+                    if(listener != null){
+                        listener.onHighlightLongClick(getAdapterPosition(),view);
+                    }
+                    return false;
+                }
+            });
         }
     }
 

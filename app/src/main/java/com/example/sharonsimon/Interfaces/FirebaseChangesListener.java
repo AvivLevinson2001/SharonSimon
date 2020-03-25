@@ -1,5 +1,6 @@
 package com.example.sharonsimon.Interfaces;
 
+import com.example.sharonsimon.Classes.Highlight;
 import com.example.sharonsimon.Classes.Ken;
 import com.example.sharonsimon.Classes.Task;
 
@@ -10,4 +11,5 @@ public interface FirebaseChangesListener {
     void addTaskToFirebase(Task task);
     void removeTaskFromFirebase(Task task);
     void addTaskToHighlights(String taskDesc, String kenName);
+    void removeTaskFromHighlights(Highlight highlight);
 }

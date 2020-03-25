@@ -6,10 +6,13 @@
 
     <color name="colorAccent">#FF4081</color>
 
-    <color name="colorLight">#4f83cc</color>
+    <color name="colorLightBlue">#4f83cc</color>
+    <color name="colorLightGreen">#57BF5B</color>
 
     <color name="colorBackground">#e0e0e0</color>
 
     <color name="home_text_color">#c8c7c7</color>
     <color name="home_symbols_color">#454545</color>
+
+    <color name="colorOrange">#FF5722</color>
 </resources>

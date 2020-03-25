@@ -10,6 +10,7 @@ import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.media.MediaMetadataRetriever;
 import android.net.Uri;
 import android.os.Build;
@@ -32,6 +33,8 @@ import com.example.sharonsimon.R;
 import com.example.sharonsimon.Services.UploadHighlightToFirebaseService;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.navigation.NavigationView;
+import com.google.android.material.snackbar.BaseTransientBottomBar;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -301,9 +304,27 @@ public class  MainActivity extends AppCompatActivity implements KensRecyclerView
 
     @Override
     public void addTaskToHighlights(String taskDesc, String kenName) {
+        for(Highlight highlight : highlights){
+            if(highlight.getKenName().equals(kenName) && highlight.getTaskDesc().equals(taskDesc)){
+                Snackbar.make(coordinatorLayout,"המשימה כבר נמצאת בקטעים החמים", BaseTransientBottomBar.LENGTH_SHORT).show();
+                return;
+            }
+        }
         Highlight newHighlight = new Highlight(taskDesc,kenName,null);
         highlights.add(newHighlight);
         getVideoFromGallery();
+    }
+
+    @Override
+    public void removeTaskFromHighlights(Highlight highlight) {
+        // highlights is already up to date
+        databaseReference.child("highlights").setValue(highlights);
+        firebaseStorage.getReferenceFromUrl(highlight.getVideoURL()).delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                Snackbar.make(coordinatorLayout, "המשימה נמחקה מהקטעים החמים", Snackbar.LENGTH_SHORT).show();
+            }
+        });
     }
 
     @Override
@@ -328,18 +349,21 @@ public class  MainActivity extends AppCompatActivity implements KensRecyclerView
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if(resultCode == RESULT_OK){
-            if(requestCode == 1){
+        if(requestCode == 1) {
+            if (resultCode == RESULT_OK) {
                 final Uri videoUri = data.getData();
                 final Intent uploadVideoToFirebaseService = new Intent(MainActivity.this, UploadHighlightToFirebaseService.class);
-                uploadVideoToFirebaseService.putExtra("highlight",highlights.get(highlights.size() - 1));
-                uploadVideoToFirebaseService.putExtra("videoUri",videoUri);
+                uploadVideoToFirebaseService.putExtra("highlight", highlights.get(highlights.size() - 1));
+                uploadVideoToFirebaseService.putExtra("videoUri", videoUri);
                 databaseReference.child("highlights").setValue(highlights).addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
                         startService(uploadVideoToFirebaseService);
                     }
                 });
+            }
+            else{
+                highlights.remove(highlights.size() - 1);
             }
         }
     }
