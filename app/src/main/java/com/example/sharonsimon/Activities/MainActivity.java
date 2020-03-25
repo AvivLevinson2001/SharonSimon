@@ -15,6 +15,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -29,6 +30,7 @@ import com.example.sharonsimon.Fragments.ViewKenFragment;
 import com.example.sharonsimon.Fragments.UpdateTodaysTasksFragment;
 import com.example.sharonsimon.R;
 import com.example.sharonsimon.Services.UploadHighlightToFirebaseService;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -67,7 +69,6 @@ public class  MainActivity extends AppCompatActivity implements KensRecyclerView
     Ken myKen;
     ArrayList<Task> allTasks;
     ArrayList<Highlight> highlights;
-    Highlight newHighlight;
 
     SharedPreferences sp;
 
@@ -85,8 +86,6 @@ public class  MainActivity extends AppCompatActivity implements KensRecyclerView
 
     Dialog loadingDialog;
 
-    JCVideoPlayerStandard videoPlayer;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -97,7 +96,12 @@ public class  MainActivity extends AppCompatActivity implements KensRecyclerView
         videoUploadedReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
-                highlights = (ArrayList<Highlight>) intent.getSerializableExtra("highlights");
+                Highlight updatedHighlight = (Highlight) intent.getSerializableExtra("highlight");
+                for(Highlight highlight : highlights){
+                    if(highlight.getKenName().equals(updatedHighlight.getKenName()) && highlight.getTaskDesc().equals(updatedHighlight.getTaskDesc())){
+                        highlight.setVideoURL(updatedHighlight.getVideoURL());
+                    }
+                }
             }
         };
 
@@ -297,7 +301,8 @@ public class  MainActivity extends AppCompatActivity implements KensRecyclerView
 
     @Override
     public void addTaskToHighlights(String taskDesc, String kenName) {
-        newHighlight = new Highlight(taskDesc,kenName,null);
+        Highlight newHighlight = new Highlight(taskDesc,kenName,null);
+        highlights.add(newHighlight);
         getVideoFromGallery();
     }
 
@@ -326,10 +331,15 @@ public class  MainActivity extends AppCompatActivity implements KensRecyclerView
         if(resultCode == RESULT_OK){
             if(requestCode == 1){
                 final Uri videoUri = data.getData();
-                Intent uploadVideoToFirebaseService = new Intent(MainActivity.this, UploadHighlightToFirebaseService.class);
-                uploadVideoToFirebaseService.putExtra("highlight",newHighlight);
+                final Intent uploadVideoToFirebaseService = new Intent(MainActivity.this, UploadHighlightToFirebaseService.class);
+                uploadVideoToFirebaseService.putExtra("highlight",highlights.get(highlights.size() - 1));
                 uploadVideoToFirebaseService.putExtra("videoUri",videoUri);
-                startService(uploadVideoToFirebaseService);
+                databaseReference.child("highlights").setValue(highlights).addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        startService(uploadVideoToFirebaseService);
+                    }
+                });
             }
         }
     }

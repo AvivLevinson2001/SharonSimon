@@ -37,7 +37,6 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 public class UploadHighlightToFirebaseService extends Service {
 
-    private ArrayList<Highlight> highlights = new ArrayList<>();
     private FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
     private DatabaseReference databaseReference = firebaseDatabase.getReference();
     private FirebaseStorage firebaseStorage = FirebaseStorage.getInstance();
@@ -93,25 +92,38 @@ public class UploadHighlightToFirebaseService extends Service {
                         databaseReference.child("highlights").addListenerForSingleValueEvent(new ValueEventListener() {
                             @Override
                             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                ArrayList<Highlight> highlights = new ArrayList<>();
                                 if(dataSnapshot.exists()) {
                                     GenericTypeIndicator<ArrayList<Highlight>> genericTypeIndicator = new GenericTypeIndicator<ArrayList<Highlight>>() {};
                                     highlights = dataSnapshot.getValue(genericTypeIndicator);
                                 }
-                                    highlights.add(highlight);
-                                    databaseReference.child("highlights").setValue(highlights);
-                                    Intent highlightUploadedIntent = new Intent("sharon_simon.highlight_uploaded_action");
-                                    highlightUploadedIntent.putExtra("highlights",highlights);
-                                    highlightUploadedIntent.putExtra("videoUri",uri);
-                                    LocalBroadcastManager.getInstance(UploadHighlightToFirebaseService.this).sendBroadcast(highlightUploadedIntent);
+                                for(Highlight highlightFromDatabase : highlights){
+                                    if(highlightFromDatabase.getKenName().equals(highlight.getKenName()) && highlightFromDatabase.getTaskDesc().equals(highlight.getTaskDesc())){
+                                        highlightFromDatabase.setVideoURL(highlight.getVideoURL());
+                                        break;
+                                    }
+                                }
+                                databaseReference.child("highlights").setValue(highlights).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                    @Override
+                                    public void onSuccess(Void aVoid) {
+                                        Intent highlightUploadedIntent = new Intent("sharon_simon.highlight_uploaded_action");
+                                        highlightUploadedIntent.putExtra("highlight",highlight);
+                                        LocalBroadcastManager.getInstance(UploadHighlightToFirebaseService.this).sendBroadcast(highlightUploadedIntent);
+                                        stopForeground(false);
+                                    }
+                                }).addOnFailureListener(new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull Exception e) {
+                                        stopForeground(false);
+                                    }
+                                });
                             }
 
                             @Override
                             public void onCancelled(@NonNull DatabaseError databaseError) {
-
+                                stopForeground(false);
                             }
                         });
-
-                        stopForeground(false);
                     }
                 });
 

@@ -46,4 +46,13 @@ public class Highlight implements Serializable
     {
         this.videoURL = videoURL;
     }
+
+    @Override
+    public String toString() {
+        return "Highlight{" +
+                "taskDesc='" + taskDesc + '\'' +
+                ", kenName='" + kenName + '\'' +
+                ", videoURL='" + videoURL + '\'' +
+                '}';
+    }
 }
