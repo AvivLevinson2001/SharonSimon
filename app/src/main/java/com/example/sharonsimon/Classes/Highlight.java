@@ -55,4 +55,8 @@ public class Highlight implements Serializable
                 ", videoURL='" + videoURL + '\'' +
                 '}';
     }
+
+    public boolean isSameHighlight(Highlight highlight){
+        return this.kenName.equals(highlight.kenName) && this.taskDesc.equals(highlight.taskDesc);
+    }
 }

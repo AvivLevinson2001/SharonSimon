@@ -317,14 +317,20 @@ public class  MainActivity extends AppCompatActivity implements KensRecyclerView
 
     @Override
     public void removeTaskFromHighlights(Highlight highlight) {
-        // highlights is already up to date
+        for(Highlight highlight1 : highlights)
+        {
+            if(highlight1.isSameHighlight(highlight))
+                highlights.remove(highlight1);
+        }
         databaseReference.child("highlights").setValue(highlights);
-        firebaseStorage.getReferenceFromUrl(highlight.getVideoURL()).delete().addOnSuccessListener(new OnSuccessListener<Void>() {
-            @Override
-            public void onSuccess(Void aVoid) {
-                Snackbar.make(coordinatorLayout, "המשימה נמחקה מהקטעים החמים", Snackbar.LENGTH_SHORT).show();
-            }
-        });
+        if(highlight.getVideoURL() != null && !highlight.getVideoURL().equals("")) {
+            firebaseStorage.getReferenceFromUrl(highlight.getVideoURL()).delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+                @Override
+                public void onSuccess(Void aVoid) {
+                    Snackbar.make(coordinatorLayout, "המשימה נמחקה מהקטעים החמים", Snackbar.LENGTH_SHORT).show();
+                }
+            });
+        }
     }
 
     @Override

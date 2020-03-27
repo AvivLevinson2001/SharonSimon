@@ -2,12 +2,18 @@ package com.example.sharonsimon.Services;
 
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.Service;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.net.Uri;
 import android.os.Build;
 import android.os.IBinder;
 import android.util.Log;
+import android.widget.RemoteViews;
+import android.widget.TextView;
 
 import com.example.sharonsimon.Activities.MainActivity;
 import com.example.sharonsimon.Classes.Highlight;
@@ -55,6 +61,10 @@ public class UploadHighlightToFirebaseService extends Service {
         final Uri videoUri = intent.getParcelableExtra("videoUri");
         final int notificationID = getNotificationID();
 
+        Intent cancelDownloadIntent = new Intent("cancel_download_action");
+        cancelDownloadIntent.putExtra("notifID",notificationID);
+        cancelDownloadIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+
         if(notificationManager == null) notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         final NotificationCompat.Builder builder = new NotificationCompat.Builder(this,"Upload Video")
                 .setSmallIcon(R.drawable.ic_file_upload_black_24dp)
@@ -62,6 +72,13 @@ public class UploadHighlightToFirebaseService extends Service {
                 .setContentText("קן: " + highlight.getKenName() + " | " + "משימה: " + highlight.getTaskDesc())
                 .setProgress(100,0,false)
                 .setOngoing(true);
+
+        Intent stopSelf = new Intent(this, UploadHighlightToFirebaseService.class);
+        stopSelf.setAction("cancel_download_action");
+        PendingIntent pStopSelf = PendingIntent.getService(this, 0, stopSelf,PendingIntent.FLAG_CANCEL_CURRENT);
+
+        builder.addAction(R.drawable.ic_cancel_black_24dp, "Stop", pStopSelf);
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             NotificationChannel channel = new NotificationChannel("Upload Video","Upload Video",NotificationManager.IMPORTANCE_HIGH);
             channel.setSound(null,null);
@@ -98,7 +115,7 @@ public class UploadHighlightToFirebaseService extends Service {
                                     highlights = dataSnapshot.getValue(genericTypeIndicator);
                                 }
                                 for(Highlight highlightFromDatabase : highlights){
-                                    if(highlightFromDatabase.getKenName().equals(highlight.getKenName()) && highlightFromDatabase.getTaskDesc().equals(highlight.getTaskDesc())){
+                                    if(highlightFromDatabase.isSameHighlight(highlight)){
                                         highlightFromDatabase.setVideoURL(highlight.getVideoURL());
                                         break;
                                     }
