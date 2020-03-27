@@ -22,6 +22,7 @@ import com.example.sharonsimon.Adapters.HighlightAdapter;
 import com.example.sharonsimon.Classes.Highlight;
 import com.example.sharonsimon.Interfaces.FirebaseChangesListener;
 import com.example.sharonsimon.R;
+import com.google.android.material.snackbar.BaseTransientBottomBar;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
@@ -68,22 +69,27 @@ public class HighlightsFragment extends Fragment {
         adapter.setListener(new HighlightAdapter.HighlightAdapterListener() {
             @Override
             public void onHighlightLongClick(final int position, View v) {
-                PopupMenu popupMenu = new PopupMenu(getActivity(), v);
-                popupMenu.getMenuInflater().inflate(R.menu.long_click_delete_menu, popupMenu.getMenu());
+                if(highlights.get(position).getVideoURL() != null && !highlights.get(position).getVideoURL().equals("")){
+                    PopupMenu popupMenu = new PopupMenu(getActivity(), v);
+                    popupMenu.getMenuInflater().inflate(R.menu.long_click_delete_menu, popupMenu.getMenu());
 
-                popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-                    @Override
-                    public boolean onMenuItemClick(MenuItem menuItem) {
-                        if(menuItem.getItemId() == R.id.action_delete){
-                            Highlight highlightToRemove = highlights.get(position);
-                            highlights.remove(highlightToRemove);
-                            listener.removeTaskFromHighlights(highlightToRemove);
-                            adapter.notifyDataSetChanged();//Updates the recycler
+                    popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                        @Override
+                        public boolean onMenuItemClick(MenuItem menuItem) {
+                            if(menuItem.getItemId() == R.id.action_delete){
+                                Highlight highlightToRemove = highlights.get(position);
+                                highlights.remove(highlightToRemove);
+                                listener.removeTaskFromHighlights(highlightToRemove);
+                                adapter.notifyDataSetChanged();
+                            }
+                            return true;
                         }
-                        return true;
-                    }
-                });
-                popupMenu.show();
+                    });
+                    popupMenu.show();
+                }
+                else{
+                    Snackbar.make(container,"חכה שהעלאת הסרטון תסתיים", BaseTransientBottomBar.LENGTH_SHORT).show();
+                }
             }
         });
         recycler.setAdapter(adapter);
@@ -97,5 +103,9 @@ public class HighlightsFragment extends Fragment {
     public void onPause() {
         JCVideoPlayer.releaseAllVideos();
         super.onPause();
+    }
+
+    public void notifyAdapter(){
+        adapter.notifyDataSetChanged();
     }
 }

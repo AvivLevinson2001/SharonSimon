@@ -99,11 +99,24 @@ public class  MainActivity extends AppCompatActivity implements KensRecyclerView
         videoUploadedReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
-                Highlight updatedHighlight = (Highlight) intent.getSerializableExtra("highlight");
-                for(Highlight highlight : highlights){
-                    if(highlight.getKenName().equals(updatedHighlight.getKenName()) && highlight.getTaskDesc().equals(updatedHighlight.getTaskDesc())){
-                        highlight.setVideoURL(updatedHighlight.getVideoURL());
+                if(intent.getSerializableExtra("highlight") != null) {
+                    Highlight updatedHighlight = (Highlight) intent.getSerializableExtra("highlight");
+                    for (Highlight highlight : highlights) {
+                        if (highlight.getKenName().equals(updatedHighlight.getKenName()) && highlight.getTaskDesc().equals(updatedHighlight.getTaskDesc())) {
+                            highlight.setVideoURL(updatedHighlight.getVideoURL());
+                        }
                     }
+                }
+                else if(intent.getSerializableExtra("highlightUploadCanceled") != null){
+                    Highlight canceledHighlight = (Highlight) intent.getSerializableExtra("highlightUploadCanceled");
+                    for (Highlight highlight : highlights) {
+                        if(highlight.getKenName().equals(canceledHighlight.getKenName()) && highlight.getTaskDesc().equals(canceledHighlight.getTaskDesc())){
+                            highlights.remove(highlight);
+                        }
+                    }
+                }
+                if(currentFragment instanceof HighlightsFragment){
+                    ((HighlightsFragment)currentFragment).notifyAdapter();
                 }
             }
         };
@@ -309,6 +322,10 @@ public class  MainActivity extends AppCompatActivity implements KensRecyclerView
                 Snackbar.make(coordinatorLayout,"המשימה כבר נמצאת בקטעים החמים", BaseTransientBottomBar.LENGTH_SHORT).show();
                 return;
             }
+            if(highlight.getVideoURL() == null || highlight.getVideoURL().equals("")){
+                Snackbar.make(coordinatorLayout,"חכה שההעלאה הקודמת תסתיים", BaseTransientBottomBar.LENGTH_SHORT).show();
+                return;
+            }
         }
         Highlight newHighlight = new Highlight(taskDesc,kenName,null);
         highlights.add(newHighlight);
@@ -364,6 +381,7 @@ public class  MainActivity extends AppCompatActivity implements KensRecyclerView
                 databaseReference.child("highlights").setValue(highlights).addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
+                        UploadHighlightToFirebaseService.isCanceled = false;
                         startService(uploadVideoToFirebaseService);
                     }
                 });
