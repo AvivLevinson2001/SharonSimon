@@ -95,7 +95,7 @@ public class HighlightAdapter extends RecyclerView.Adapter<HighlightAdapter.Crea
         holder.taskDescTV.setText(highlight.getTaskDesc());
         holder.kenNameTV.setText(highlight.getKenName());
 
-        holder.video.setUp(highlight.getVideoURL(),
+        holder.video.setUp(highlight.getVideoURL(), //Yeet
                 JCVideoPlayerStandard.SCREEN_LAYOUT_NORMAL,
                 (highlight.getKenName()+ " | " +highlight.getTaskDesc()));
 
