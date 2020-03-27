@@ -2,6 +2,7 @@ package com.example.sharonsimon.Adapters;
 
 import android.content.Context;
 import android.graphics.drawable.BitmapDrawable;
+import android.media.Image;
 import android.media.ThumbnailUtils;
 import android.net.Uri;
 import android.view.LayoutInflater;
@@ -11,6 +12,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 import com.example.sharonsimon.Activities.MainActivity;
 import com.example.sharonsimon.Classes.Highlight;
 import com.example.sharonsimon.R;
@@ -28,6 +30,7 @@ public class HighlightAdapter extends RecyclerView.Adapter<HighlightAdapter.Crea
 {
     private ArrayList<Highlight> highlights;
     private HighlightAdapterListener listener;
+    private Context context;
 
     public interface HighlightAdapterListener{
         void onHighlightLongClick(int position, View v);
@@ -37,11 +40,12 @@ public class HighlightAdapter extends RecyclerView.Adapter<HighlightAdapter.Crea
         this.listener = listener;
     }
 
-    public HighlightAdapter(ArrayList<Highlight> highlights)
+    public HighlightAdapter(ArrayList<Highlight> highlights, Context context)
     {
         this.highlights = highlights;
         if(this.highlights == null)
             this.highlights = new ArrayList<>();
+        this.context = context;
     }
 
     @Override
@@ -94,7 +98,11 @@ public class HighlightAdapter extends RecyclerView.Adapter<HighlightAdapter.Crea
         holder.video.setUp(highlight.getVideoURL(),
                 JCVideoPlayerStandard.SCREEN_LAYOUT_NORMAL,
                 (highlight.getKenName()+ " | " +highlight.getTaskDesc()));
-        holder.video.thumbImageView.setImageURI(null);
+
+        long thumb = 1000;
+        RequestOptions options = new RequestOptions().frame(thumb);
+        Glide.with(context).load(highlight.getVideoURL()).apply(options).into(holder.video.thumbImageView);
+
     }
 
     public void setHighlights(ArrayList<Highlight> highlights) {

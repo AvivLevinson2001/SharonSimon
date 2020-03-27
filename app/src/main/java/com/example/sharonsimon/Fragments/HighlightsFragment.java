@@ -64,7 +64,7 @@ public class HighlightsFragment extends Fragment {
         if (highlights == null) highlights = new ArrayList<>();
 
         recycler = viewGroup.findViewById(R.id.highlights_recycler);
-        adapter = new HighlightAdapter(highlights);
+        adapter = new HighlightAdapter(highlights, getActivity());
         adapter.setListener(new HighlightAdapter.HighlightAdapterListener() {
             @Override
             public void onHighlightLongClick(final int position, View v) {
