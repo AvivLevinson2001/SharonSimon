@@ -95,13 +95,11 @@ public class HighlightAdapter extends RecyclerView.Adapter<HighlightAdapter.Crea
         holder.taskDescTV.setText(highlight.getTaskDesc());
         holder.kenNameTV.setText(highlight.getKenName());
 
-        holder.video.setUp(highlight.getVideoURL(), //Yeet
+        holder.video.setUp(highlight.getVideoURL(),
                 JCVideoPlayerStandard.SCREEN_LAYOUT_NORMAL,
                 (highlight.getKenName()+ " | " +highlight.getTaskDesc()));
 
-        long thumb = 1000;
-        RequestOptions options = new RequestOptions().frame(thumb);
-        Glide.with(context).load(highlight.getVideoURL()).apply(options).into(holder.video.thumbImageView);
+        Glide.with(context).load(highlight.getVideoURL()).apply(new RequestOptions()).into(holder.video.thumbImageView);
 
     }
 
