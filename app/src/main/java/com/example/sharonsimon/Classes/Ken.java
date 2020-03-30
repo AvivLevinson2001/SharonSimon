@@ -9,8 +9,16 @@ public class Ken implements Serializable,Comparable {
     String name;
     ArrayList<Task> tasks;
     int points;
+    String animalImageUrl;
 
     public Ken() {
+    }
+
+    public Ken(String name, ArrayList<Task> tasks, int points, String animalImageUrl) {
+        this.name = name;
+        this.tasks = tasks;
+        this.points = points;
+        this.animalImageUrl = animalImageUrl;
     }
 
     public Ken(String name, ArrayList<Task> allTasks, int points) {
@@ -43,12 +51,21 @@ public class Ken implements Serializable,Comparable {
         this.points = points;
     }
 
+    public String getAnimalImageUrl() {
+        return animalImageUrl;
+    }
+
+    public void setAnimalImageUrl(String animalImageUrl) {
+        this.animalImageUrl = animalImageUrl;
+    }
+
     @Override
     public String toString() {
         return "Ken{" +
                 "name='" + name + '\'' +
-                ", completedTasks=" + tasks +
+                ", tasks=" + tasks +
                 ", points=" + points +
+                ", animalImageUrl='" + animalImageUrl + '\'' +
                 '}';
     }
 

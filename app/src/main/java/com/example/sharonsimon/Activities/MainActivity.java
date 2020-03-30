@@ -31,6 +31,7 @@ import com.example.sharonsimon.Fragments.ViewKenFragment;
 import com.example.sharonsimon.Fragments.UpdateTodaysTasksFragment;
 import com.example.sharonsimon.R;
 import com.example.sharonsimon.Services.UploadHighlightToFirebaseService;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.snackbar.BaseTransientBottomBar;
@@ -201,18 +202,45 @@ public class  MainActivity extends AppCompatActivity implements KensRecyclerView
                             {"מקורות", "המעפיל", "מעיין", "העוגן", "רמות חפר", "יקום", "געש", "גן שמואל",
                                     "להבות חביבה", "מבואות עירון", "כרכור", "כפס מרום", "הרצליה", "חריש"};
 
-                    ArrayList<Ken> newKens = new ArrayList<>();
-                    for(String kenName : kensNames){
-                        Ken newKen = new Ken(kenName, new ArrayList<Task>(), 0);
-                        newKens.add(newKen);
+                    for(final String kenName : kensNames){
+                        final Ken newKen = new Ken(kenName, new ArrayList<Task>(), 0);
                         if(kenName.equals(myKenName))
                             myKen = newKen;
+                        kensList = new ArrayList<>();
+                        storageReference.child("animals_images/").child(newKen.getName() + ".png").getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                            @Override
+                            public void onSuccess(Uri uri) {
+                                if(uri != null)
+                                    newKen.setAnimalImageUrl(uri.toString());
+                                kensList.add(newKen);
+                                if(kensList.size() == kensNames.length){
+                                    databaseReference.child("kens").setValue(kensList);
+                                    allTasks = new ArrayList<>();
+                                    highlights = new ArrayList<>();
+                                    loadingDialog.dismiss();
+                                    if(navigationView.getCheckedItem().getItemId() == R.id.action_my_ken) {
+                                        currentFragment = ViewKenFragment.newInstance(myKen, sp.getString("name", "").equals("barvaz15"));
+                                        fragmentManager.beginTransaction().replace(R.id.main_fragments_holder, currentFragment, "MyKen").commit();
+                                    }
+                                }
+                            }
+                        }).addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                kensList.add(newKen);
+                                if(kensList.size() == kensNames.length){
+                                    databaseReference.child("kens").setValue(kensList);
+                                    allTasks = new ArrayList<>();
+                                    highlights = new ArrayList<>();
+                                    loadingDialog.dismiss();
+                                    if(navigationView.getCheckedItem().getItemId() == R.id.action_my_ken) {
+                                        currentFragment = ViewKenFragment.newInstance(myKen, sp.getString("name", "").equals("barvaz15"));
+                                        fragmentManager.beginTransaction().replace(R.id.main_fragments_holder, currentFragment, "MyKen").commit();
+                                    }
+                                }
+                            }
+                        });
                     }
-                    kensList = newKens;
-                    databaseReference.child("kens").setValue(newKens);
-                    allTasks = new ArrayList<>();
-                    highlights = new ArrayList<>();
-                    loadingDialog.dismiss();
                 }
                 else{
                     GenericTypeIndicator<ArrayList<Ken>> genericTypeIndicator = new GenericTypeIndicator<ArrayList<Ken>>() {};
@@ -243,6 +271,10 @@ public class  MainActivity extends AppCompatActivity implements KensRecyclerView
                                         highlights = new ArrayList<>();
                                     }
                                     loadingDialog.dismiss();
+                                    if(navigationView.getCheckedItem().getItemId() == R.id.action_my_ken) {
+                                        currentFragment = ViewKenFragment.newInstance(myKen, sp.getString("name", "").equals("barvaz15"));
+                                        fragmentManager.beginTransaction().replace(R.id.main_fragments_holder, currentFragment, "MyKen").commit();
+                                    }
                                 }
 
                                 @Override
@@ -258,10 +290,6 @@ public class  MainActivity extends AppCompatActivity implements KensRecyclerView
                         }
                     });
                 }
-                if(navigationView.getCheckedItem().getItemId() == R.id.action_my_ken) {
-                    currentFragment = ViewKenFragment.newInstance(myKen, sp.getString("name", "").equals("barvaz15"));
-                    fragmentManager.beginTransaction().replace(R.id.main_fragments_holder, currentFragment, "MyKen").commit();
-                }
             }
 
             @Override
@@ -274,13 +302,7 @@ public class  MainActivity extends AppCompatActivity implements KensRecyclerView
     @Override
     public void onKenClick(Ken ken) {
         currentFragment = ViewKenFragment.newInstance(ken,sp.getString("name","").equals("barvaz15"));
-        if(ken.getName().equals(myKen.getName())){
-            fragmentManager.beginTransaction().replace(R.id.main_fragments_holder,currentFragment,"MyKen").commit();
-            navigationView.setCheckedItem(R.id.action_my_ken);
-        }
-        else {
-            fragmentManager.beginTransaction().add(R.id.main_fragments_holder, currentFragment, "ShowKen").addToBackStack("backStack").commit();
-        }
+        fragmentManager.beginTransaction().add(R.id.main_fragments_holder, currentFragment, "ShowKen").addToBackStack("backStack").commit();
     }
 
     @Override

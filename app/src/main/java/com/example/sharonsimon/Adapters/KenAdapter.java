@@ -1,12 +1,15 @@
 package com.example.sharonsimon.Adapters;
 
+import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.example.sharonsimon.R;
 import com.example.sharonsimon.Classes.Ken;
 
@@ -25,6 +28,7 @@ public class KenAdapter extends RecyclerView.Adapter<KenAdapter.CreateKenViewHol
 
     private ArrayList<Ken> kens;
     private myKenAdapterListener listener;
+    Context context;
 
     public interface myKenAdapterListener
     {
@@ -36,12 +40,13 @@ public class KenAdapter extends RecyclerView.Adapter<KenAdapter.CreateKenViewHol
         this.listener = listener;
     }
 
-    public KenAdapter(ArrayList<Ken> kens)
+    public KenAdapter(ArrayList<Ken> kens, Context context)
     {
         Collections.sort(kens);
         this.kens = kens;
         if(this.kens == null)
             this.kens = new ArrayList<>();
+        this.context = context;
     }
 
     @Override
@@ -56,6 +61,7 @@ public class KenAdapter extends RecyclerView.Adapter<KenAdapter.CreateKenViewHol
 
         TextView nameTv;
         TextView pointsTv;
+        ImageView kenImageIV;
 
         public CreateKenViewHolder(final View itemView)
         {
@@ -63,6 +69,7 @@ public class KenAdapter extends RecyclerView.Adapter<KenAdapter.CreateKenViewHol
 
             nameTv = itemView.findViewById(R.id.card_view_ken_name_tv);
             pointsTv = itemView.findViewById(R.id.card_view_ken_points_tv);
+            kenImageIV = itemView.findViewById(R.id.card_view_ken_image);
 
             itemView.setOnClickListener(new View.OnClickListener()
             {
@@ -90,7 +97,11 @@ public class KenAdapter extends RecyclerView.Adapter<KenAdapter.CreateKenViewHol
         Ken ken = kens.get(position);
         holder.nameTv.setText(ken.getName());
         holder.pointsTv.setText(ken.getPoints() + "");
-
+        if(kens.get(position).getAnimalImageUrl() != null && !kens.get(position).getAnimalImageUrl().equals(""))
+            Glide.with(context).load(ken.getAnimalImageUrl()).into(holder.kenImageIV);
+        else{
+            holder.kenImageIV.setImageResource(R.drawable.semel_hash);
+        }
 
     }
 

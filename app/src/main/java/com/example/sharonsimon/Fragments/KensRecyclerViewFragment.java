@@ -55,7 +55,7 @@ public class KensRecyclerViewFragment extends Fragment {
         kensArrayList = (ArrayList<Ken>) getArguments().getSerializable("kensArrayList");
 
         RecyclerView recyclerView = viewGroup.findViewById(R.id.kens_rv);
-        adapter = new KenAdapter(kensArrayList);
+        adapter = new KenAdapter(kensArrayList,getActivity());
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         adapter.setListener(new KenAdapter.myKenAdapterListener() {
