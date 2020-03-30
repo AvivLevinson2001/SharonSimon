@@ -1,15 +1,22 @@
 package com.example.sharonsimon.Adapters;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.DataSource;
+import com.bumptech.glide.load.engine.GlideException;
+import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.target.Target;
 import com.example.sharonsimon.R;
 import com.example.sharonsimon.Classes.Ken;
 
@@ -62,6 +69,7 @@ public class KenAdapter extends RecyclerView.Adapter<KenAdapter.CreateKenViewHol
         TextView nameTv;
         TextView pointsTv;
         ImageView kenImageIV;
+        ProgressBar progressBar;
 
         public CreateKenViewHolder(final View itemView)
         {
@@ -70,6 +78,7 @@ public class KenAdapter extends RecyclerView.Adapter<KenAdapter.CreateKenViewHol
             nameTv = itemView.findViewById(R.id.card_view_ken_name_tv);
             pointsTv = itemView.findViewById(R.id.card_view_ken_points_tv);
             kenImageIV = itemView.findViewById(R.id.card_view_ken_image);
+            progressBar = itemView.findViewById(R.id.card_view_ken_image_progress);
 
             itemView.setOnClickListener(new View.OnClickListener()
             {
@@ -92,13 +101,28 @@ public class KenAdapter extends RecyclerView.Adapter<KenAdapter.CreateKenViewHol
     }
 
     @Override
-    public void onBindViewHolder(CreateKenViewHolder holder, int position)
+    public void onBindViewHolder(final CreateKenViewHolder holder, int position)
     {
         Ken ken = kens.get(position);
         holder.nameTv.setText(ken.getName());
         holder.pointsTv.setText(ken.getPoints() + "");
         if(kens.get(position).getAnimalImageUrl() != null && !kens.get(position).getAnimalImageUrl().equals(""))
-            Glide.with(context).load(ken.getAnimalImageUrl()).into(holder.kenImageIV);
+            Glide.with(context).load(ken.getAnimalImageUrl()).listener(new RequestListener<Drawable>()
+            {
+                @Override
+                public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource)
+                {
+                    return false;
+                }
+
+                @Override
+                public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource)
+                {
+                    holder.progressBar.setVisibility(View.GONE);
+                    holder.kenImageIV.setVisibility(View.VISIBLE);
+                    return false;
+                }
+            }).into(holder.kenImageIV);
         else{
             holder.kenImageIV.setImageResource(R.drawable.semel_hash);
         }

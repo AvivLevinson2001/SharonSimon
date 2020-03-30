@@ -23,13 +23,20 @@
             android:padding="16dp"
             android:layout_weight="5">
 
+            <ProgressBar
+                android:layout_width="70dp"
+                android:layout_height="70dp"
+                android:id="@+id/card_view_ken_image_progress"
+                android:src="@drawable/semel_hash"/>
+
             <de.hdodenhof.circleimageview.CircleImageView
                 android:layout_width="70dp"
                 android:layout_height="70dp"
                 android:id="@+id/card_view_ken_image"
                 android:src="@drawable/semel_hash"
                 app:civ_border_width="1dp"
-                app:civ_border_color="#686868"/>
+                app:civ_border_color="#686868"
+                android:visibility="gone"/>
 
             <View
                 android:layout_width="1dp"

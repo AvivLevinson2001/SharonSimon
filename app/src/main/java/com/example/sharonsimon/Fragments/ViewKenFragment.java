@@ -17,6 +17,7 @@ import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import de.hdodenhof.circleimageview.CircleImageView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
@@ -41,7 +42,7 @@ public class ViewKenFragment extends Fragment {
     boolean isAdmin;
     ArrayList<Task> tasks;
 
-    ImageView myKenImage;
+    CircleImageView myKenImage;
     TextView myKenPointsTV;
     TextView myKenNameTv;
     RecyclerView recycler;
