@@ -78,6 +78,11 @@ public class ViewKenFragment extends Fragment {
         ken = (Ken)getArguments().getSerializable("ken");
         isAdmin = getArguments().getBoolean("isAdmin");
 
+        if(ken == null){
+            Snackbar.make(container, "משהו השתבש", BaseTransientBottomBar.LENGTH_SHORT).show();
+            return viewGroup;
+        }
+
         myKenImage = viewGroup.findViewById(R.id.my_ken_image);
         myKenPointsTV = viewGroup.findViewById(R.id.my_ken_points_tv);
         myKenNameTv = viewGroup.findViewById(R.id.my_ken_name_tv);

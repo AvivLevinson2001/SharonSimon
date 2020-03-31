@@ -62,6 +62,7 @@ public class  MainActivity extends AppCompatActivity implements KensRecyclerView
     Ken myKen;
     ArrayList<Task> allTasks;
     ArrayList<Highlight> highlights;
+    boolean isAdmin;
 
     SharedPreferences sp;
 
@@ -117,9 +118,10 @@ public class  MainActivity extends AppCompatActivity implements KensRecyclerView
             }
         };
 
-        LocalBroadcastManager.getInstance(this).registerReceiver(videoUploadedReceiver,new IntentFilter("sharon_simon.highlight_uploaded_action"));
-
         sp = getSharedPreferences("user",MODE_PRIVATE);
+        isAdmin = sp.getBoolean("isAdmin",false);
+
+        LocalBroadcastManager.getInstance(this).registerReceiver(videoUploadedReceiver,new IntentFilter("sharon_simon.highlight_uploaded_action"));
 
         getInfoFromFirebase();
 
@@ -130,14 +132,19 @@ public class  MainActivity extends AppCompatActivity implements KensRecyclerView
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setHomeAsUpIndicator(R.drawable.ic_menu_white_24dp);
 
-        navigationView.getMenu().setGroupVisible(R.id.admin_items_group,sp.getBoolean("isAdmin",false));
+        navigationView.getMenu().setGroupVisible(R.id.admin_items_group,isAdmin);
+        if(isAdmin){
+            MenuItem item = navigationView.getMenu().findItem(R.id.action_my_ken);
+            item.setVisible(false);
+            navigationView.setCheckedItem(R.id.action_leaderboard);
+        }
 
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 String fragmentTag = "";
                 if(item.getItemId() == R.id.action_my_ken){
-                    currentFragment = ViewKenFragment.newInstance(myKen,sp.getBoolean("isAdmin",false));
+                    currentFragment = ViewKenFragment.newInstance(myKen,isAdmin);
                     fragmentTag = "MyKen";
                 }
                 else if(item.getItemId() == R.id.action_leaderboard){
@@ -146,6 +153,7 @@ public class  MainActivity extends AppCompatActivity implements KensRecyclerView
                 }
                 else if(item.getItemId() == R.id.action_highlights){
                     currentFragment = HighlightsFragment.newInstance(highlights);
+                    fragmentTag = "Higlights";
                 }
                 else if(item.getItemId() == R.id.action_log_out){
                     AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
@@ -218,10 +226,14 @@ public class  MainActivity extends AppCompatActivity implements KensRecyclerView
                                     allTasks = new ArrayList<>();
                                     highlights = new ArrayList<>();
                                     loadingDialog.dismiss();
-                                    if(navigationView.getCheckedItem().getItemId() == R.id.action_my_ken) {
-                                        currentFragment = ViewKenFragment.newInstance(myKen, sp.getBoolean("isAdmin",false));
+                                    /*if(navigationView.getCheckedItem().getItemId() == R.id.action_my_ken) {
+                                        currentFragment = ViewKenFragment.newInstance(myKen, isAdmin);
                                         fragmentManager.beginTransaction().replace(R.id.main_fragments_holder, currentFragment, "MyKen").commit();
                                     }
+                                    else if(navigationView.getCheckedItem().getItemId() == R.id.action_leaderboard){
+                                        currentFragment =
+                                    }*/
+                                    openFirstFragment();
                                 }
                             }
                         }).addOnFailureListener(new OnFailureListener() {
@@ -233,10 +245,11 @@ public class  MainActivity extends AppCompatActivity implements KensRecyclerView
                                     allTasks = new ArrayList<>();
                                     highlights = new ArrayList<>();
                                     loadingDialog.dismiss();
-                                    if(navigationView.getCheckedItem().getItemId() == R.id.action_my_ken) {
-                                        currentFragment = ViewKenFragment.newInstance(myKen,sp.getBoolean("isAdmin",false));
+                                    /*if(navigationView.getCheckedItem().getItemId() == R.id.action_my_ken) {
+                                        currentFragment = ViewKenFragment.newInstance(myKen,isAdmin);
                                         fragmentManager.beginTransaction().replace(R.id.main_fragments_holder, currentFragment, "MyKen").commit();
-                                    }
+                                    }*/
+                                    openFirstFragment();
                                 }
                             }
                         });
@@ -271,10 +284,11 @@ public class  MainActivity extends AppCompatActivity implements KensRecyclerView
                                         highlights = new ArrayList<>();
                                     }
                                     loadingDialog.dismiss();
-                                    if(navigationView.getCheckedItem().getItemId() == R.id.action_my_ken) {
-                                        currentFragment = ViewKenFragment.newInstance(myKen, sp.getBoolean("isAdmin",false));
+                                    /*if(navigationView.getCheckedItem().getItemId() == R.id.action_my_ken) {
+                                        currentFragment = ViewKenFragment.newInstance(myKen, isAdmin);
                                         fragmentManager.beginTransaction().replace(R.id.main_fragments_holder, currentFragment, "MyKen").commit();
-                                    }
+                                    }*/
+                                    openFirstFragment();
                                 }
 
                                 @Override
@@ -301,7 +315,7 @@ public class  MainActivity extends AppCompatActivity implements KensRecyclerView
 
     @Override
     public void onKenClick(Ken ken) {
-        currentFragment = ViewKenFragment.newInstance(ken,sp.getBoolean("isAdmin",false));
+        currentFragment = ViewKenFragment.newInstance(ken,isAdmin);
         fragmentManager.beginTransaction().add(R.id.main_fragments_holder, currentFragment, "ShowKen").addToBackStack("backStack").commit();
     }
 
@@ -445,7 +459,16 @@ public class  MainActivity extends AppCompatActivity implements KensRecyclerView
         }
     }
 
-
+    private void openFirstFragment(){
+        if(!isAdmin && navigationView.getCheckedItem().getItemId() == R.id.action_my_ken) {
+            currentFragment = ViewKenFragment.newInstance(myKen, isAdmin);
+            fragmentManager.beginTransaction().replace(R.id.main_fragments_holder, currentFragment, "MyKen").commit();
+        }
+        else{
+            currentFragment = KensRecyclerViewFragment.newInstance(kensList);
+            fragmentManager.beginTransaction().replace(R.id.main_fragments_holder, currentFragment, "Leaderboard").commit();
+        }
+    }
 
     @Override
     protected void onDestroy() {

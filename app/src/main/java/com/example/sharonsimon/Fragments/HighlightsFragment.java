@@ -45,7 +45,7 @@ public class HighlightsFragment extends Fragment {
         try{
             listener = (FirebaseChangesListener) activity;
         }catch (ClassCastException e){
-            throw new ClassCastException("Activity: " + activity.toString() + " must implement KensRecyclerViewFragmentListener");
+            throw new ClassCastException("Activity: " + activity.toString() + " must implement FirebaseChangesListener");
         }
     }
 

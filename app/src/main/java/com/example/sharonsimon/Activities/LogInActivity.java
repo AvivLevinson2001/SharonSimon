@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -18,6 +19,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.sharonsimon.Dialogs.EnterPasswordDialog;
 import com.example.sharonsimon.R;
 import com.google.android.material.snackbar.BaseTransientBottomBar;
 import com.google.android.material.snackbar.Snackbar;
@@ -27,7 +29,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-public class LogInActivity extends AppCompatActivity
+public class LogInActivity extends AppCompatActivity implements EnterPasswordDialog.EnterPasswordDialogInterface
 {
     FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
     DatabaseReference databaseReference = firebaseDatabase.getReference();
@@ -43,7 +45,7 @@ public class LogInActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.log_in_activity);
 
-        sp = getSharedPreferences("login", MODE_PRIVATE);
+        sp = getSharedPreferences("user", MODE_PRIVATE);
 
         if (sp.getBoolean("isLoggedIn", false))
         {
@@ -83,7 +85,6 @@ public class LogInActivity extends AppCompatActivity
             @Override
             public void onClick(View view)
             {
-
                 if (usernameEt != null && !usernameEt.getText().toString().equals("")
                  && !kenSpinner.getSelectedItem().toString().equals("בחר קן"))
                 {
@@ -95,7 +96,6 @@ public class LogInActivity extends AppCompatActivity
                     login();
                 }
                 else{
-
                     Snackbar.make(findViewById(R.id.register_root_layout),"הזן את כל הפרטים", Snackbar.LENGTH_LONG).show();
                 }
             }
@@ -111,35 +111,8 @@ public class LogInActivity extends AppCompatActivity
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if(item.getItemId() == R.id.action_admin_user){
-
-
-            //create password dialog/////////////////////////////////
-            final String password = ""; // set to dialog input
-            databaseReference.child("admin-password").addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    if(dataSnapshot.exists()){
-                        if(dataSnapshot.getValue(String.class).equals(password)){
-                            sp.edit().putBoolean("isLoggedIn", true)
-                                    .putString("name", usernameEt.getText().toString())
-                                    .putString("ken", kenSpinner.getSelectedItem().toString())
-                                    .putBoolean("isAdmin",true)
-                                    .apply();
-                            login();
-                        }
-                    }
-                    else{
-                        Snackbar.make(findViewById(R.id.register_root_layout),"משהו השתבש", BaseTransientBottomBar.LENGTH_SHORT).show();
-                    }
-                }
-
-                @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) {
-                    Snackbar.make(findViewById(R.id.register_root_layout),"משהו השתבש", BaseTransientBottomBar.LENGTH_SHORT).show();
-                }
-            });
+            openEnterPasswordDialog();
         }
-        /////////////////////////////////////////////
         return true;
     }
 
@@ -148,5 +121,45 @@ public class LogInActivity extends AppCompatActivity
         Intent intent = new Intent(LogInActivity.this, MainActivity.class);
         startActivity(intent);
         finish();
+    }
+
+    private void openEnterPasswordDialog(){
+        EnterPasswordDialog dialog = new EnterPasswordDialog();
+        dialog.show(getSupportFragmentManager(),"EnterPasswordDialog");
+    }
+
+    @Override
+    public void onPositiveButtonClick(final String password) {
+        databaseReference.child("admin-password").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if(dataSnapshot.exists()){
+                    if(dataSnapshot.getValue(String.class).equals(password)){
+                        sp.edit().putBoolean("isLoggedIn", true)
+                                .putString("name", "מנהל")
+                                .putString("ken", "")
+                                .putBoolean("isAdmin",true)
+                                .apply();
+                        login();
+                    }
+                    else{
+                        Snackbar.make(findViewById(R.id.register_root_layout),"הסיסמה שגויה", BaseTransientBottomBar.LENGTH_SHORT).show();
+                    }
+                }
+                else{
+                    Snackbar.make(findViewById(R.id.register_root_layout),"משהו השתבש", BaseTransientBottomBar.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Snackbar.make(findViewById(R.id.register_root_layout),"משהו השתבש", BaseTransientBottomBar.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    @Override
+    public void onNegativeButtonClick() {
+
     }
 }
