@@ -9,12 +9,16 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.graphics.PointF;
 import android.net.Uri;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.text.format.Formatter;
 import android.util.Log;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.animation.DecelerateInterpolator;
+import android.widget.TextView;
 
 import com.example.sharonsimon.Classes.Highlight;
 import com.example.sharonsimon.Classes.Ken;
@@ -40,6 +44,12 @@ import com.google.firebase.database.GenericTypeIndicator;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.takusemba.spotlight.Spotlight;
+import com.takusemba.spotlight.shape.Circle;
+import com.takusemba.spotlight.target.SimpleTarget;
+import com.takusemba.spotlight.target.Target;
+
+import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 
@@ -54,7 +64,10 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+import androidx.recyclerview.widget.RecyclerView;
 import fm.jiecao.jcvideoplayer_lib.JCVideoPlayer;
+
+import static android.graphics.Color.argb;
 
 public class  MainActivity extends AppCompatActivity implements KensRecyclerViewFragment.KensRecyclerViewFragmentListener, FirebaseChangesListener {
 
@@ -87,10 +100,6 @@ public class  MainActivity extends AppCompatActivity implements KensRecyclerView
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        WifiManager wm = (WifiManager) getApplicationContext().getSystemService(WIFI_SERVICE);
-        String ip = Formatter.formatIpAddress(wm.getConnectionInfo().getIpAddress());
-        Log.d("device_ip",ip);
-
         videoUploadedReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
@@ -120,6 +129,11 @@ public class  MainActivity extends AppCompatActivity implements KensRecyclerView
 
         sp = getSharedPreferences("user",MODE_PRIVATE);
         isAdmin = sp.getBoolean("isAdmin",false);
+        if(!isAdmin && sp.getBoolean("firstOpen", true))
+        {
+            startSpotlight(); //Spotlightssss
+            sp.edit().putBoolean("firstOpen", false).apply();
+        }
 
         LocalBroadcastManager.getInstance(this).registerReceiver(videoUploadedReceiver,new IntentFilter("sharon_simon.highlight_uploaded_action"));
 
@@ -472,4 +486,42 @@ public class  MainActivity extends AppCompatActivity implements KensRecyclerView
         }
         super.onPause();
     }
+
+    private void startSpotlight()
+    {
+        TextView taskDescTv = null;
+        TextView taskPointsTv = null;
+        TextView kenPointsTv = null;
+        View hamburger = findViewById(android.R.id.home);
+
+        if (currentFragment instanceof ViewKenFragment)
+        {
+            View viewGroup = ((ViewKenFragment)currentFragment).getViewByPosition(0);
+            taskDescTv = viewGroup.findViewById(R.id.card_view_task_desc_tv);
+            taskPointsTv = viewGroup.findViewById(R.id.card_view_task_points_tv);
+            kenPointsTv = findViewById(R.id.my_ken_points_tv);
+        }
+
+
+        SimpleTarget taskDescTarget = new SimpleTarget.Builder(this)
+                .setPoint(taskDescTv).setShape(new Circle(300f))
+                .setTitle("המשימה").setDescription("זאת המשימה שעליכם לבצע").build();
+        SimpleTarget taskPointsTarget = new SimpleTarget.Builder(this)
+                .setPoint(taskPointsTv).setShape(new Circle(250f))
+                .setTitle("ניקוד").setDescription("כאן תראו את כמות הנקודות שתקבלו עבור המשימה").build();
+        SimpleTarget kenPointsTarget = new SimpleTarget.Builder(this)
+                .setPoint(kenPointsTv).setShape(new Circle(250f))
+                .setTitle("ניקוד הקן").setDescription("כאן נמצא הניקוד של הקן שלכם, כל משימה שתבצעו תוסיף ניקוד לקן!").build();
+
+        SimpleTarget hamburgerTarget = new SimpleTarget.Builder(this)
+                .setPoint(hamburger).setShape(new Circle(170f))
+                .setTitle("תפריט").setDescription("כאן תוכלו לראות את העמודים השונים: הקן שלי, קני האיזור, והקטעים החמים").build(); //Todo add more yeet
+
+        Spotlight.with(this)
+                .setOverlayColor(R.color.background)
+                .setDuration(500L).setAnimation(new DecelerateInterpolator(2f))
+                .setTargets(taskDescTarget, taskPointsTarget, kenPointsTarget, hamburgerTarget)
+                .setClosedOnTouchedOutside(true).start();
+    }
+
 }

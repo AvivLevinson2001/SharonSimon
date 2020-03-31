@@ -150,4 +150,10 @@ public class ViewKenFragment extends Fragment {
 
         return viewGroup;
     }
+
+    public View getViewByPosition(int position)
+    {
+        return this.recycler.getLayoutManager().findViewByPosition(position);
+    }
+
 }

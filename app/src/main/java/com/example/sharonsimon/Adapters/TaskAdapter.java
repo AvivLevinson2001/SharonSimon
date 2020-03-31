@@ -148,4 +148,5 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.CreateTaskView
     public void setTasks(ArrayList<Task> tasks) {
         this.tasks = tasks;
     }
+
 }
