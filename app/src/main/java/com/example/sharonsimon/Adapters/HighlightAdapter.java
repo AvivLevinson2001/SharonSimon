@@ -98,8 +98,7 @@ public class HighlightAdapter extends RecyclerView.Adapter<HighlightAdapter.Crea
         holder.kenNameTV.setText(highlight.getKenName());
 
         holder.video.setUp(highlight.getVideoURL(),
-                JCVideoPlayerStandard.SCREEN_LAYOUT_NORMAL,
-                (highlight.getKenName()+ " | " +highlight.getTaskDesc()));
+                JCVideoPlayerStandard.SCREEN_LAYOUT_NORMAL);
 
         Glide.with(context).load(highlight.getVideoURL()).apply(new RequestOptions()).into(holder.video.thumbImageView);
 
