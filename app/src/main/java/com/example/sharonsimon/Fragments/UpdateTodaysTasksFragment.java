@@ -115,6 +115,7 @@ public class UpdateTodaysTasksFragment extends Fragment
                                     tasks.remove(taskToRemove);
                                     listener.removeTaskFromFirebase(taskToRemove);
                                     recyclerView.removeViewAt(position);
+                                    Snackbar.make(container,"משימה נמחקה", BaseTransientBottomBar.LENGTH_SHORT).show();
                                 }
                             }).setNegativeButton("לא", new DialogInterface.OnClickListener() {
                                 @Override
@@ -155,13 +156,13 @@ public class UpdateTodaysTasksFragment extends Fragment
 
                         if (points.equals("") || desc.equals("")) //Checking for null fields
                         {
-                            Snackbar.make(coordinatorLayout, "מלאו את כל השדות", Snackbar.LENGTH_SHORT).show();
+                            Snackbar.make(container, "מלאו את כל השדות", Snackbar.LENGTH_SHORT).show();
                         }
                         else
                         {
                             for(int k = 0; k < tasks.size(); k ++) {
                                 if (tasks.get(k).getDesc().equals(desc)) {
-                                    Snackbar.make(coordinatorLayout, "המשימה כבר קיימת", BaseTransientBottomBar.LENGTH_SHORT).show();
+                                    Snackbar.make(container, "המשימה כבר קיימת", BaseTransientBottomBar.LENGTH_SHORT).show();
                                     return;
                                 }
                             }
@@ -169,7 +170,7 @@ public class UpdateTodaysTasksFragment extends Fragment
                             tasks.add(newTask);
                             listener.addTaskToFirebase(newTask);
                             adapter.notifyDataSetChanged();//Updates the recycler
-                            Snackbar.make(coordinatorLayout, "משימה נוספה", Snackbar.LENGTH_SHORT).show();
+                            Snackbar.make(container, "משימה נוספה", Snackbar.LENGTH_SHORT).show();
                         }
 
                     }

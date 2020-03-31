@@ -52,6 +52,10 @@ public class UploadHighlightToFirebaseService extends Service {
     private StorageReference storageReference = firebaseStorage.getReference();
     private NotificationManager notificationManager;
     private static final AtomicInteger c = new AtomicInteger(0);
+
+    private UploadTask uploadTask;
+
+
     public static boolean isCanceled;
 
     @Override
@@ -64,7 +68,10 @@ public class UploadHighlightToFirebaseService extends Service {
 
         isCanceled = intent.getBooleanExtra("isCanceled",false);
 
-        if(!isCanceled) {
+        if(isCanceled){
+            cancelUpload();
+        }
+        else{
             final Highlight highlight = (Highlight) intent.getSerializableExtra("highlight");
             final Uri videoUri = intent.getParcelableExtra("videoUri");
             final int notificationID = getNotificationID();
@@ -90,7 +97,7 @@ public class UploadHighlightToFirebaseService extends Service {
 
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                NotificationChannel channel = new NotificationChannel("Upload Video", "Upload Video", NotificationManager.IMPORTANCE_HIGH);
+                NotificationChannel channel = new NotificationChannel("Upload Video", "העלאות", NotificationManager.IMPORTANCE_HIGH);
                 channel.setSound(null, null);
                 notificationManager.createNotificationChannel(channel);
             }
@@ -100,7 +107,7 @@ public class UploadHighlightToFirebaseService extends Service {
             final String path = "videos/highlights/" + highlight.getKenName() + "_" + highlight.getTaskDesc();
             final StorageReference ref = storageReference.child(path);
 
-            final UploadTask uploadTask = ref.putFile(videoUri);
+            uploadTask = ref.putFile(videoUri);
             uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                 @Override
                 public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
@@ -168,8 +175,6 @@ public class UploadHighlightToFirebaseService extends Service {
             }).addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
                 @Override
                 public void onProgress(@NonNull UploadTask.TaskSnapshot taskSnapshot) {
-                    Log.d("test",isCanceled + "");
-                    if (isCanceled) uploadTask.cancel();
                     double progress = (100.0 * taskSnapshot.getBytesTransferred()) / taskSnapshot.getTotalByteCount();
                     builder.setProgress(100, (int) progress, false);
                     notificationManager.notify(notificationID, builder.build());
@@ -221,5 +226,10 @@ public class UploadHighlightToFirebaseService extends Service {
 
     public static int getNotificationID(){
         return c.incrementAndGet();
+    }
+
+    private void cancelUpload(){
+        if(uploadTask != null)
+            uploadTask.cancel();
     }
 }

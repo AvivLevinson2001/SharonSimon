@@ -9,6 +9,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:foreground="?android:selectableItemBackground"
+
     android:layoutDirection="rtl">
 
     <LinearLayout

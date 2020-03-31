@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.PopupMenu;
 
 import androidx.annotation.NonNull;
@@ -33,6 +34,7 @@ public class HighlightsFragment extends Fragment {
     RecyclerView recycler;
     HighlightAdapter adapter;
     FirebaseChangesListener listener;
+    LinearLayout noHighlightsLL;
 
     ArrayList<Highlight> highlights;
 
@@ -64,6 +66,8 @@ public class HighlightsFragment extends Fragment {
         highlights = (ArrayList<Highlight>) getArguments().getSerializable("highlights");
         if (highlights == null) highlights = new ArrayList<>();
 
+        noHighlightsLL = viewGroup.findViewById(R.id.no_highlights_ll);
+        setNoHighlightsLLVisibility();
         recycler = viewGroup.findViewById(R.id.highlights_recycler);
         adapter = new HighlightAdapter(highlights, getActivity());
         adapter.setListener(new HighlightAdapter.HighlightAdapterListener() {
@@ -81,6 +85,7 @@ public class HighlightsFragment extends Fragment {
                                 highlights.remove(highlightToRemove);
                                 listener.removeTaskFromHighlights(highlightToRemove);
                                 adapter.notifyDataSetChanged();
+                                setNoHighlightsLLVisibility();
                             }
                             return true;
                         }
@@ -107,5 +112,14 @@ public class HighlightsFragment extends Fragment {
 
     public void notifyAdapter(){
         adapter.notifyDataSetChanged();
+    }
+
+    private void setNoHighlightsLLVisibility(){
+        if(highlights.size() == 0){
+            noHighlightsLL.setVisibility(View.VISIBLE);
+        }
+        else{
+            noHighlightsLL.setVisibility(View.GONE);
+        }
     }
 }

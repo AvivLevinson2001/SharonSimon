@@ -1,23 +1,19 @@
 package com.example.sharonsimon.Activities;
 
 
+import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
-import android.database.Cursor;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Color;
-import android.media.MediaMetadataRetriever;
 import android.net.Uri;
-import android.os.Build;
+import android.net.wifi.WifiManager;
 import android.os.Bundle;
-import android.provider.MediaStore;
+import android.text.format.Formatter;
 import android.util.Log;
-import android.view.Menu;
 import android.view.MenuItem;
 
 import com.example.sharonsimon.Classes.Highlight;
@@ -31,7 +27,6 @@ import com.example.sharonsimon.Fragments.ViewKenFragment;
 import com.example.sharonsimon.Fragments.UpdateTodaysTasksFragment;
 import com.example.sharonsimon.R;
 import com.example.sharonsimon.Services.UploadHighlightToFirebaseService;
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.navigation.NavigationView;
@@ -46,13 +41,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
-import java.util.HashMap;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -66,7 +55,6 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import fm.jiecao.jcvideoplayer_lib.JCVideoPlayer;
-import fm.jiecao.jcvideoplayer_lib.JCVideoPlayerStandard;
 
 public class  MainActivity extends AppCompatActivity implements KensRecyclerViewFragment.KensRecyclerViewFragmentListener, FirebaseChangesListener {
 
@@ -98,6 +86,10 @@ public class  MainActivity extends AppCompatActivity implements KensRecyclerView
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        WifiManager wm = (WifiManager) getApplicationContext().getSystemService(WIFI_SERVICE);
+        String ip = Formatter.formatIpAddress(wm.getConnectionInfo().getIpAddress());
+        Log.d("device_ip",ip);
+
         videoUploadedReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
@@ -106,6 +98,7 @@ public class  MainActivity extends AppCompatActivity implements KensRecyclerView
                     for (Highlight highlight : highlights) {
                         if (highlight.getKenName().equals(updatedHighlight.getKenName()) && highlight.getTaskDesc().equals(updatedHighlight.getTaskDesc())) {
                             highlight.setVideoURL(updatedHighlight.getVideoURL());
+                            Snackbar.make(coordinatorLayout,"העלאה הסתיימה", BaseTransientBottomBar.LENGTH_SHORT).show();
                         }
                     }
                 }
@@ -114,6 +107,7 @@ public class  MainActivity extends AppCompatActivity implements KensRecyclerView
                     for (Highlight highlight : highlights) {
                         if(highlight.getKenName().equals(canceledHighlight.getKenName()) && highlight.getTaskDesc().equals(canceledHighlight.getTaskDesc())){
                             highlights.remove(highlight);
+                            Snackbar.make(coordinatorLayout,"העלאה התבטלה", BaseTransientBottomBar.LENGTH_SHORT).show();
                         }
                     }
                 }
@@ -125,7 +119,7 @@ public class  MainActivity extends AppCompatActivity implements KensRecyclerView
 
         LocalBroadcastManager.getInstance(this).registerReceiver(videoUploadedReceiver,new IntentFilter("sharon_simon.highlight_uploaded_action"));
 
-        sp = getSharedPreferences("login",MODE_PRIVATE);
+        sp = getSharedPreferences("user",MODE_PRIVATE);
 
         getInfoFromFirebase();
 
@@ -136,14 +130,14 @@ public class  MainActivity extends AppCompatActivity implements KensRecyclerView
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setHomeAsUpIndicator(R.drawable.ic_menu_white_24dp);
 
-        navigationView.getMenu().setGroupVisible(R.id.admin_items_group,sp.getString("name","").equals("barvaz15"));
+        navigationView.getMenu().setGroupVisible(R.id.admin_items_group,sp.getBoolean("isAdmin",false));
 
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 String fragmentTag = "";
                 if(item.getItemId() == R.id.action_my_ken){
-                    currentFragment = ViewKenFragment.newInstance(myKen,sp.getString("name","").equals("barvaz15"));
+                    currentFragment = ViewKenFragment.newInstance(myKen,sp.getBoolean("isAdmin",false));
                     fragmentTag = "MyKen";
                 }
                 else if(item.getItemId() == R.id.action_leaderboard){
@@ -154,13 +148,25 @@ public class  MainActivity extends AppCompatActivity implements KensRecyclerView
                     currentFragment = HighlightsFragment.newInstance(highlights);
                 }
                 else if(item.getItemId() == R.id.action_log_out){
-                    sp.edit().putBoolean("isLoggedIn", false)
-                            .putString("name", "")
-                            .putString("ken","")
-                            .apply();
-                    Intent intent = new Intent(MainActivity.this,RegisterActivity.class);
-                    startActivity(intent);
-                    finish();
+                    AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+                    builder.setMessage("האם אתה בטוח שברצונך להתנתק?").setPositiveButton("כן", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            sp.edit().putBoolean("isLoggedIn", false)
+                                    .putString("name", "")
+                                    .putString("ken","")
+                                    .putBoolean("isAdmin",false)
+                                    .apply();
+                            Intent intent = new Intent(MainActivity.this, LogInActivity.class);
+                            startActivity(intent);
+                            finish();
+                        }
+                    }).setNegativeButton("לא", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+
+                        }
+                    }).create().show();
                     return false;
                 }
                 else if(item.getItemId() == R.id.action_update_tasks){
@@ -213,7 +219,7 @@ public class  MainActivity extends AppCompatActivity implements KensRecyclerView
                                     highlights = new ArrayList<>();
                                     loadingDialog.dismiss();
                                     if(navigationView.getCheckedItem().getItemId() == R.id.action_my_ken) {
-                                        currentFragment = ViewKenFragment.newInstance(myKen, sp.getString("name", "").equals("barvaz15"));
+                                        currentFragment = ViewKenFragment.newInstance(myKen, sp.getBoolean("isAdmin",false));
                                         fragmentManager.beginTransaction().replace(R.id.main_fragments_holder, currentFragment, "MyKen").commit();
                                     }
                                 }
@@ -228,7 +234,7 @@ public class  MainActivity extends AppCompatActivity implements KensRecyclerView
                                     highlights = new ArrayList<>();
                                     loadingDialog.dismiss();
                                     if(navigationView.getCheckedItem().getItemId() == R.id.action_my_ken) {
-                                        currentFragment = ViewKenFragment.newInstance(myKen, sp.getString("name", "").equals("barvaz15"));
+                                        currentFragment = ViewKenFragment.newInstance(myKen,sp.getBoolean("isAdmin",false));
                                         fragmentManager.beginTransaction().replace(R.id.main_fragments_holder, currentFragment, "MyKen").commit();
                                     }
                                 }
@@ -266,7 +272,7 @@ public class  MainActivity extends AppCompatActivity implements KensRecyclerView
                                     }
                                     loadingDialog.dismiss();
                                     if(navigationView.getCheckedItem().getItemId() == R.id.action_my_ken) {
-                                        currentFragment = ViewKenFragment.newInstance(myKen, sp.getString("name", "").equals("barvaz15"));
+                                        currentFragment = ViewKenFragment.newInstance(myKen, sp.getBoolean("isAdmin",false));
                                         fragmentManager.beginTransaction().replace(R.id.main_fragments_holder, currentFragment, "MyKen").commit();
                                     }
                                 }
@@ -295,7 +301,7 @@ public class  MainActivity extends AppCompatActivity implements KensRecyclerView
 
     @Override
     public void onKenClick(Ken ken) {
-        currentFragment = ViewKenFragment.newInstance(ken,sp.getString("name","").equals("barvaz15"));
+        currentFragment = ViewKenFragment.newInstance(ken,sp.getBoolean("isAdmin",false));
         fragmentManager.beginTransaction().add(R.id.main_fragments_holder, currentFragment, "ShowKen").addToBackStack("backStack").commit();
     }
 
@@ -370,13 +376,30 @@ public class  MainActivity extends AppCompatActivity implements KensRecyclerView
     public void onBackPressed() {
         if(drawer.isDrawerOpen(GravityCompat.START))
             drawer.closeDrawer(GravityCompat.START);
-        if (currentFragment instanceof HighlightsFragment)
-        {
-            if (JCVideoPlayer.backPress()) {
-                return;
+        else {
+            if (currentFragment instanceof HighlightsFragment) {
+                if (JCVideoPlayer.backPress()) {
+                    return;
+                }
+            }
+
+            if (fragmentManager.getBackStackEntryCount() == 0) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder.setMessage("האם אתה בטוח שברצונך לסגור את האפליקציה?").setPositiveButton("כן", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        MainActivity.super.onBackPressed();
+                    }
+                }).setNegativeButton("לא", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+
+                    }
+                }).create().show();
+            } else {
+                super.onBackPressed();
             }
         }
-        super.onBackPressed();
     }
 
     public void getVideoFromGallery(){
@@ -392,21 +415,37 @@ public class  MainActivity extends AppCompatActivity implements KensRecyclerView
             if (resultCode == RESULT_OK) {
                 final Uri videoUri = data.getData();
                 final Intent uploadVideoToFirebaseService = new Intent(MainActivity.this, UploadHighlightToFirebaseService.class);
-                uploadVideoToFirebaseService.putExtra("highlight", highlights.get(highlights.size() - 1));
-                uploadVideoToFirebaseService.putExtra("videoUri", videoUri);
-                databaseReference.child("highlights").setValue(highlights).addOnSuccessListener(new OnSuccessListener<Void>() {
+
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder.setMessage("האם אתה בטוח שברצונך להוסיף את המשימה: " + '"' + highlights.get(highlights.size() - 1).getTaskDesc() + '"' + " של קן: " + highlights.get(highlights.size() - 1).getKenName() + " לקטעים החמים?")
+                        .setPositiveButton("כן", new DialogInterface.OnClickListener() {
                     @Override
-                    public void onSuccess(Void aVoid) {
-                        UploadHighlightToFirebaseService.isCanceled = false;
-                        startService(uploadVideoToFirebaseService);
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        uploadVideoToFirebaseService.putExtra("highlight", highlights.get(highlights.size() - 1));
+                        uploadVideoToFirebaseService.putExtra("videoUri", videoUri);
+                        databaseReference.child("highlights").setValue(highlights).addOnSuccessListener(new OnSuccessListener<Void>() {
+                            @Override
+                            public void onSuccess(Void aVoid) {
+                                UploadHighlightToFirebaseService.isCanceled = false;
+                                startService(uploadVideoToFirebaseService);
+                            }
+                        });
                     }
-                });
+                }).setNegativeButton("לא", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        highlights.remove(highlights.size() - 1);
+                        Snackbar.make(coordinatorLayout,"העלאה התבטלה", BaseTransientBottomBar.LENGTH_SHORT).show();
+                    }
+                }).create().show();
             }
             else{
                 highlights.remove(highlights.size() - 1);
             }
         }
     }
+
+
 
     @Override
     protected void onDestroy() {
