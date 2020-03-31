@@ -1,6 +1,7 @@
 package com.example.sharonsimon.Activities;
 
 
+import android.animation.TimeInterpolator;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.BroadcastReceiver;
@@ -20,6 +21,7 @@ import android.view.View;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.TextView;
 
+import com.example.sharonsimon.Adapters.TaskAdapter;
 import com.example.sharonsimon.Classes.Highlight;
 import com.example.sharonsimon.Classes.Ken;
 import com.example.sharonsimon.Classes.Task;
@@ -69,7 +71,8 @@ import fm.jiecao.jcvideoplayer_lib.JCVideoPlayer;
 
 import static android.graphics.Color.argb;
 
-public class  MainActivity extends AppCompatActivity implements KensRecyclerViewFragment.KensRecyclerViewFragmentListener, FirebaseChangesListener {
+public class  MainActivity extends AppCompatActivity implements KensRecyclerViewFragment.KensRecyclerViewFragmentListener, FirebaseChangesListener, ViewKenFragment.ViewKenFragmentInterface
+{
 
     ArrayList<Ken> kensList;
     Ken myKen;
@@ -129,11 +132,7 @@ public class  MainActivity extends AppCompatActivity implements KensRecyclerView
 
         sp = getSharedPreferences("user",MODE_PRIVATE);
         isAdmin = sp.getBoolean("isAdmin",false);
-        if(!isAdmin && sp.getBoolean("firstOpen", true))
-        {
-            startSpotlight(); //Spotlightssss
-            sp.edit().putBoolean("firstOpen", false).apply();
-        }
+
 
         LocalBroadcastManager.getInstance(this).registerReceiver(videoUploadedReceiver,new IntentFilter("sharon_simon.highlight_uploaded_action"));
 
@@ -463,7 +462,7 @@ public class  MainActivity extends AppCompatActivity implements KensRecyclerView
     private void openFirstFragment(){
         if(!isAdmin && navigationView.getCheckedItem().getItemId() == R.id.action_my_ken) {
             currentFragment = ViewKenFragment.newInstance(myKen, isAdmin);
-            fragmentManager.beginTransaction().replace(R.id.main_fragments_holder, currentFragment, "MyKen").commit();
+            fragmentManager.beginTransaction().replace(R.id.main_fragments_holder, currentFragment, "MyKen").commitAllowingStateLoss();
         }
         else{
             currentFragment = KensRecyclerViewFragment.newInstance(kensList);
@@ -487,21 +486,21 @@ public class  MainActivity extends AppCompatActivity implements KensRecyclerView
         super.onPause();
     }
 
-    private void startSpotlight()
+    private void startSpotlight(TaskAdapter.CreateTaskViewHolder holder)
     {
-        TextView taskDescTv = null;
-        TextView taskPointsTv = null;
-        TextView kenPointsTv = null;
+        TextView taskDescTv = holder.itemView.findViewById(R.id.card_view_task_desc_tv);
+        TextView taskPointsTv = holder.itemView.findViewById(R.id.card_view_task_points_tv);
+        //TextView kenPointsTv = findViewById(R.id.my_ken_points_tv);
+        TextView textView = findViewById(R.id.texty_texty);
         View hamburger = findViewById(android.R.id.home);
 
-        if (currentFragment instanceof ViewKenFragment)
+        /*if (currentFragment instanceof ViewKenFragment)
         {
             View viewGroup = ((ViewKenFragment)currentFragment).getViewByPosition(0);
             taskDescTv = viewGroup.findViewById(R.id.card_view_task_desc_tv);
             taskPointsTv = viewGroup.findViewById(R.id.card_view_task_points_tv);
-            kenPointsTv = findViewById(R.id.my_ken_points_tv);
-        }
 
+        }*/
 
         SimpleTarget taskDescTarget = new SimpleTarget.Builder(this)
                 .setPoint(taskDescTv).setShape(new Circle(300f))
@@ -509,19 +508,32 @@ public class  MainActivity extends AppCompatActivity implements KensRecyclerView
         SimpleTarget taskPointsTarget = new SimpleTarget.Builder(this)
                 .setPoint(taskPointsTv).setShape(new Circle(250f))
                 .setTitle("ניקוד").setDescription("כאן תראו את כמות הנקודות שתקבלו עבור המשימה").build();
-        SimpleTarget kenPointsTarget = new SimpleTarget.Builder(this)
+        /*SimpleTarget kenPointsTarget = new SimpleTarget.Builder(this)
                 .setPoint(kenPointsTv).setShape(new Circle(250f))
-                .setTitle("ניקוד הקן").setDescription("כאן נמצא הניקוד של הקן שלכם, כל משימה שתבצעו תוסיף ניקוד לקן!").build();
+                .setTitle("ניקוד הקן").setDescription("כאן נמצא הניקוד של הקן שלכם, כל משימה שתבצעו תוסיף ניקוד לקן!").build();*/
 
-        SimpleTarget hamburgerTarget = new SimpleTarget.Builder(this)
+        SimpleTarget texty = new SimpleTarget.Builder(this)
+                .setPoint(taskDescTv).setShape(new Circle(300f))
+                .setTitle("המשימה").setDescription("זאת המשימה שעליכם לבצע").build();
+
+        /*SimpleTarget hamburgerTarget = new SimpleTarget.Builder(this)
                 .setPoint(hamburger).setShape(new Circle(170f))
-                .setTitle("תפריט").setDescription("כאן תוכלו לראות את העמודים השונים: הקן שלי, קני האיזור, והקטעים החמים").build(); //Todo add more yeet
+                .setTitle("תפריט").setDescription("כאן תוכלו לראות את העמודים השונים: הקן שלי, קני האיזור, והקטעים החמים").build(); //Todo add more yeet*/
 
         Spotlight.with(this)
                 .setOverlayColor(R.color.background)
                 .setDuration(500L).setAnimation(new DecelerateInterpolator(2f))
-                .setTargets(taskDescTarget, taskPointsTarget, kenPointsTarget, hamburgerTarget)
+                .setTargets(texty)
                 .setClosedOnTouchedOutside(true).start();
     }
 
+    @Override
+    public void firstOnBindCompleted(TaskAdapter.CreateTaskViewHolder holder)
+    {
+        if(!isAdmin && sp.getBoolean("firstOpen", true))
+        {
+            startSpotlight(holder); //Spotlightssss
+            sp.edit().putBoolean("firstOpen", false).apply();
+        }
+    }
 }

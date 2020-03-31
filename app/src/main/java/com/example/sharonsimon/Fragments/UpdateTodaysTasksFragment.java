@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.PopupMenu;
+import android.widget.TextView;
 
 import com.example.sharonsimon.Adapters.TaskAdapter;
 import com.example.sharonsimon.Classes.Task;
@@ -129,6 +130,12 @@ public class UpdateTodaysTasksFragment extends Fragment
                 });
 
                 popupMenu.show();
+            }
+
+            @Override
+            public void firstOnBindCompleted(TaskAdapter.CreateTaskViewHolder holder)
+            {
+
             }
         });
         recyclerView.setAdapter(adapter);

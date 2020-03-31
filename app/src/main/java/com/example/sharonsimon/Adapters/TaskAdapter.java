@@ -17,6 +17,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -29,6 +30,8 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
+import org.w3c.dom.Text;
+
 import java.util.ArrayList;
 
 /**
@@ -38,6 +41,7 @@ import java.util.ArrayList;
 public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.CreateTaskViewHolder>
 {
 
+    private boolean isFirstOnBind = true;
     private ArrayList<Task> tasks;
     private myTaskAdapterListener listener;
 
@@ -45,6 +49,7 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.CreateTaskView
     {
         void onTaskClick(int position, View v);
         void onTaskLongClick(int position, View v);
+        void firstOnBindCompleted(CreateTaskViewHolder holder);
     }
 
     public void setListener(myTaskAdapterListener listener)
@@ -142,6 +147,13 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.CreateTaskView
             scaleDown.play(scaleDownX).with(scaleDownY);
 
             scaleDown.start();
+        }
+
+        if (isFirstOnBind)
+        {
+
+            listener.firstOnBindCompleted(holder);
+            isFirstOnBind = false;
         }
     }
 

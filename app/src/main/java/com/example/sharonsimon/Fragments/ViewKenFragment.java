@@ -8,19 +8,16 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.PopupMenu;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.request.RequestOptions;
 import com.example.sharonsimon.Adapters.TaskAdapter;
 import com.example.sharonsimon.Classes.Ken;
 import com.example.sharonsimon.Classes.Task;
@@ -48,16 +45,23 @@ public class ViewKenFragment extends Fragment {
     RecyclerView recycler;
     TaskAdapter adapter;
 
-    FirebaseChangesListener listener;
+    FirebaseChangesListener firebaseChangesListener;
+    ViewKenFragmentInterface viewKenFragmentInterface;
+
+    public interface ViewKenFragmentInterface
+    {
+        void firstOnBindCompleted(TaskAdapter.CreateTaskViewHolder holder);
+    }
 
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
         Activity activity = (Activity)context;
         try{
-            listener = (FirebaseChangesListener) activity;
+            firebaseChangesListener = (FirebaseChangesListener) activity;
+            viewKenFragmentInterface = (ViewKenFragmentInterface)activity;
         }catch (ClassCastException e){
-            throw new ClassCastException("Activity: " + activity.toString() + " must implement KensRecyclerViewFragmentListener");
+            throw new ClassCastException("Activity: " + activity.toString() + " must implement FirebaseChangesListener and ViewKenFragmentInterface");
         }
     }
 
@@ -112,18 +116,18 @@ public class ViewKenFragment extends Fragment {
                                 case R.id.action_set_task_is_completed:
                                     tasks.get(position).setCompleted(true);
                                     ken.setPoints(ken.getPoints() + tasks.get(position).getPoints());
-                                    listener.saveKenToFirebase(ken);
+                                    firebaseChangesListener.saveKenToFirebase(ken);
                                     myKenPointsTV.setText(ken.getPoints() + "");
                                     break;
                                 case R.id.action_set_task_is_not_completed:
                                     tasks.get(position).setCompleted(false);
                                     ken.setPoints(ken.getPoints() - tasks.get(position).getPoints());
-                                    listener.saveKenToFirebase(ken);
+                                    firebaseChangesListener.saveKenToFirebase(ken);
                                     myKenPointsTV.setText(ken.getPoints() + "");
                                     break;
                                 case R.id.action_add_task_to_highlights:
                                     if(tasks.get(position).isCompleted()) {
-                                        listener.addTaskToHighlights(tasks.get(position).getDesc(), ken.getName());
+                                        firebaseChangesListener.addTaskToHighlights(tasks.get(position).getDesc(), ken.getName());
                                     }
                                     else{
                                         Snackbar.make(container,"המשימה לא בוצעה", BaseTransientBottomBar.LENGTH_SHORT).show();
@@ -136,6 +140,12 @@ public class ViewKenFragment extends Fragment {
                     });
                     popupMenu.show();
                 }
+            }
+
+            @Override
+            public void firstOnBindCompleted(TaskAdapter.CreateTaskViewHolder holder)
+            {
+                viewKenFragmentInterface.firstOnBindCompleted(holder);
             }
         });
 

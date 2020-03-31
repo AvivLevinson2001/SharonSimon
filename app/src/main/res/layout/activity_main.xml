@@ -37,7 +37,13 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_below="@+id/app_bar_layout"
-                android:id="@+id/main_fragments_holder"/>
+                android:id="@+id/main_fragments_holder">
+                <TextView
+                    android:layout_width="100dp"
+                    android:layout_height="100dp"
+                    android:id="@+id/texty_texty"
+                    android:layout_centerInParent="true"/>
+            </RelativeLayout>
 
         </RelativeLayout>
 
