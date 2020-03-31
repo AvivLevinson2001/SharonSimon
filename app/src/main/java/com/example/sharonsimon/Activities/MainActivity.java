@@ -503,7 +503,7 @@ public class  MainActivity extends AppCompatActivity implements KensRecyclerView
         }*/
 
         SimpleTarget taskDescTarget = new SimpleTarget.Builder(this)
-                .setPoint(taskDescTv).setShape(new Circle(300f))
+                .setPoint(getCenterPointValues(taskDescTv)[0], getCenterPointValues(taskDescTv)[1]).setShape(new Circle(300f))
                 .setTitle("המשימה").setDescription("זאת המשימה שעליכם לבצע").build();
         SimpleTarget taskPointsTarget = new SimpleTarget.Builder(this)
                 .setPoint(taskPointsTv).setShape(new Circle(250f))
@@ -512,9 +512,9 @@ public class  MainActivity extends AppCompatActivity implements KensRecyclerView
                 .setPoint(kenPointsTv).setShape(new Circle(250f))
                 .setTitle("ניקוד הקן").setDescription("כאן נמצא הניקוד של הקן שלכם, כל משימה שתבצעו תוסיף ניקוד לקן!").build();*/
 
-        SimpleTarget texty = new SimpleTarget.Builder(this)
-                .setPoint(taskDescTv).setShape(new Circle(300f))
-                .setTitle("המשימה").setDescription("זאת המשימה שעליכם לבצע").build();
+        /*SimpleTarget texty = new SimpleTarget.Builder(this)
+                .setPoint(getCenterPointValues(textView)[0], getCenterPointValues(textView)[1]).setShape(new Circle(300f))
+                .setTitle("המשימה").setDescription("זאת המשימה שעליכם לבצע").build();*/
 
         /*SimpleTarget hamburgerTarget = new SimpleTarget.Builder(this)
                 .setPoint(hamburger).setShape(new Circle(170f))
@@ -523,7 +523,7 @@ public class  MainActivity extends AppCompatActivity implements KensRecyclerView
         Spotlight.with(this)
                 .setOverlayColor(R.color.background)
                 .setDuration(500L).setAnimation(new DecelerateInterpolator(2f))
-                .setTargets(texty)
+                .setTargets(taskDescTarget)
                 .setClosedOnTouchedOutside(true).start();
     }
 
@@ -535,5 +535,15 @@ public class  MainActivity extends AppCompatActivity implements KensRecyclerView
             startSpotlight(holder); //Spotlightssss
             sp.edit().putBoolean("firstOpen", false).apply();
         }
+    }
+
+    public static int[] getCenterPointValues(View v)
+    {
+        int[] location = new int[2];
+        v.getLocationOnScreen(location);
+        int[] pointVals = new int[2];
+        pointVals[0] = location[0]+(v.getWidth()/2);
+        pointVals[1] = location[1]+(v.getHeight()/2);
+        return pointVals;
     }
 }
