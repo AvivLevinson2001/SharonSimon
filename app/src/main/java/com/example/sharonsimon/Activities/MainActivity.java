@@ -223,16 +223,10 @@ public class  MainActivity extends AppCompatActivity implements KensRecyclerView
                                 kensList.add(newKen);
                                 if(kensList.size() == kensNames.length){
                                     databaseReference.child("kens").setValue(kensList);
+                                    databaseReference.child("admin-password").setValue("barvaz15");
                                     allTasks = new ArrayList<>();
                                     highlights = new ArrayList<>();
                                     loadingDialog.dismiss();
-                                    /*if(navigationView.getCheckedItem().getItemId() == R.id.action_my_ken) {
-                                        currentFragment = ViewKenFragment.newInstance(myKen, isAdmin);
-                                        fragmentManager.beginTransaction().replace(R.id.main_fragments_holder, currentFragment, "MyKen").commit();
-                                    }
-                                    else if(navigationView.getCheckedItem().getItemId() == R.id.action_leaderboard){
-                                        currentFragment =
-                                    }*/
                                     openFirstFragment();
                                 }
                             }
@@ -242,13 +236,10 @@ public class  MainActivity extends AppCompatActivity implements KensRecyclerView
                                 kensList.add(newKen);
                                 if(kensList.size() == kensNames.length){
                                     databaseReference.child("kens").setValue(kensList);
+                                    databaseReference.child("admin-password").setValue("barvaz15");
                                     allTasks = new ArrayList<>();
                                     highlights = new ArrayList<>();
                                     loadingDialog.dismiss();
-                                    /*if(navigationView.getCheckedItem().getItemId() == R.id.action_my_ken) {
-                                        currentFragment = ViewKenFragment.newInstance(myKen,isAdmin);
-                                        fragmentManager.beginTransaction().replace(R.id.main_fragments_holder, currentFragment, "MyKen").commit();
-                                    }*/
                                     openFirstFragment();
                                 }
                             }
@@ -284,10 +275,6 @@ public class  MainActivity extends AppCompatActivity implements KensRecyclerView
                                         highlights = new ArrayList<>();
                                     }
                                     loadingDialog.dismiss();
-                                    /*if(navigationView.getCheckedItem().getItemId() == R.id.action_my_ken) {
-                                        currentFragment = ViewKenFragment.newInstance(myKen, isAdmin);
-                                        fragmentManager.beginTransaction().replace(R.id.main_fragments_holder, currentFragment, "MyKen").commit();
-                                    }*/
                                     openFirstFragment();
                                 }
 
