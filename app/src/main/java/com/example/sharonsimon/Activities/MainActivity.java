@@ -18,7 +18,9 @@ import android.text.format.Formatter;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewTreeObserver;
 import android.view.animation.DecelerateInterpolator;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.example.sharonsimon.Adapters.TaskAdapter;
@@ -46,6 +48,7 @@ import com.google.firebase.database.GenericTypeIndicator;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.takusemba.spotlight.OnSpotlightStateChangedListener;
 import com.takusemba.spotlight.Spotlight;
 import com.takusemba.spotlight.shape.Circle;
 import com.takusemba.spotlight.target.SimpleTarget;
@@ -71,7 +74,7 @@ import fm.jiecao.jcvideoplayer_lib.JCVideoPlayer;
 
 import static android.graphics.Color.argb;
 
-public class  MainActivity extends AppCompatActivity implements KensRecyclerViewFragment.KensRecyclerViewFragmentListener, FirebaseChangesListener, ViewKenFragment.ViewKenFragmentInterface
+public class  MainActivity extends AppCompatActivity implements KensRecyclerViewFragment.KensRecyclerViewFragmentListener, FirebaseChangesListener
 {
 
     ArrayList<Ken> kensList;
@@ -486,64 +489,69 @@ public class  MainActivity extends AppCompatActivity implements KensRecyclerView
         super.onPause();
     }
 
-    private void startSpotlight(TaskAdapter.CreateTaskViewHolder holder)
-    {
-        TextView taskDescTv = holder.itemView.findViewById(R.id.card_view_task_desc_tv);
-        TextView taskPointsTv = holder.itemView.findViewById(R.id.card_view_task_points_tv);
-        //TextView kenPointsTv = findViewById(R.id.my_ken_points_tv);
-        TextView textView = findViewById(R.id.texty_texty);
-        View hamburger = findViewById(android.R.id.home);
-
-        /*if (currentFragment instanceof ViewKenFragment)
-        {
-            View viewGroup = ((ViewKenFragment)currentFragment).getViewByPosition(0);
-            taskDescTv = viewGroup.findViewById(R.id.card_view_task_desc_tv);
-            taskPointsTv = viewGroup.findViewById(R.id.card_view_task_points_tv);
-
-        }*/
-
-        SimpleTarget taskDescTarget = new SimpleTarget.Builder(this)
-                .setPoint(getCenterPointValues(taskDescTv)[0], getCenterPointValues(taskDescTv)[1]).setShape(new Circle(300f))
-                .setTitle("המשימה").setDescription("זאת המשימה שעליכם לבצע").build();
-        SimpleTarget taskPointsTarget = new SimpleTarget.Builder(this)
-                .setPoint(taskPointsTv).setShape(new Circle(250f))
-                .setTitle("ניקוד").setDescription("כאן תראו את כמות הנקודות שתקבלו עבור המשימה").build();
-        /*SimpleTarget kenPointsTarget = new SimpleTarget.Builder(this)
-                .setPoint(kenPointsTv).setShape(new Circle(250f))
-                .setTitle("ניקוד הקן").setDescription("כאן נמצא הניקוד של הקן שלכם, כל משימה שתבצעו תוסיף ניקוד לקן!").build();*/
-
-        /*SimpleTarget texty = new SimpleTarget.Builder(this)
-                .setPoint(getCenterPointValues(textView)[0], getCenterPointValues(textView)[1]).setShape(new Circle(300f))
-                .setTitle("המשימה").setDescription("זאת המשימה שעליכם לבצע").build();*/
-
-        /*SimpleTarget hamburgerTarget = new SimpleTarget.Builder(this)
-                .setPoint(hamburger).setShape(new Circle(170f))
-                .setTitle("תפריט").setDescription("כאן תוכלו לראות את העמודים השונים: הקן שלי, קני האיזור, והקטעים החמים").build(); //Todo add more yeet*/
-
-        Spotlight.with(this)
-                .setOverlayColor(R.color.background)
-                .setDuration(500L).setAnimation(new DecelerateInterpolator(2f))
-                .setTargets(taskDescTarget)
-                .setClosedOnTouchedOutside(true).start();
-    }
-
-    @Override
-    public void firstOnBindCompleted(TaskAdapter.CreateTaskViewHolder holder)
-    {
-        if(!isAdmin && sp.getBoolean("firstOpen", true))
-        {
-            startSpotlight(holder); //Spotlightssss
-            sp.edit().putBoolean("firstOpen", false).apply();
+    public static int[] getViewCenterPoint(View view){
+        if(view != null) {
+            int[] location = new int[2];
+            view.getLocationInWindow(location);
+            location[0] = location[0] + view.getWidth() / 2;
+            location[1] = location[1] + view.getHeight() / 2;
+            return location;
+        }
+        else{
+            return new int[]{0,0};
         }
     }
 
-    public static int[] getCenterPointValues(View v)
-    {
-        int[] location = new int[2];
-        v.getLocationOnScreen(location);
-        int[] pointVals = new int[2];
-        pointVals[0] = location[0]+(v.getWidth()/2);
-        pointVals[1] = location[1]+(v.getHeight()/2);
-        return pointVals;
+    @Override
+    public void onWindowFocusChanged(boolean hasFocus) {
+        if (!isAdmin && sp.getBoolean("isFirstOpen", true)) {
+
+            //sp.edit().putBoolean("isFirstOpen", false).apply();
+
+            SimpleTarget taskTarget = new SimpleTarget.Builder(this)
+                    .setPoint(getViewCenterPoint(findViewById(R.id.task_card_view_placeholder))[0], getViewCenterPoint(findViewById(R.id.task_card_view_placeholder))[1]).setShape(new Circle(300f))
+                    .setTitle("משימות").setDescription("זאת המשימה הראשונה שלכם! עליכם לצלם את עצמכם מבצעים כמה שיותר משימות ולשלוח את הסרטונים לקומונר/ית שלכם.").build();
+            SimpleTarget kenPointsTarget = new SimpleTarget.Builder(this)
+                    .setPoint(getViewCenterPoint(findViewById(R.id.my_ken_points_placeholder_tv))[0], getViewCenterPoint(findViewById(R.id.my_ken_points_placeholder_tv))[1]).setShape(new Circle(100f))
+                    .setTitle("ניקוד הקן").setDescription("כאן נמצא הניקוד של הקן שלכם, כל משימה שתבצעו תוסיף נקודות לקן!").build();
+            SimpleTarget hamburgerTarget = new SimpleTarget.Builder(this)
+                    .setPoint(getViewCenterPoint(findViewById(R.id.home_hamburger_placeholder_tv))[0], getViewCenterPoint(findViewById(R.id.home_hamburger_placeholder_tv))[1]).setShape(new Circle(100f))
+                    .setTitle("תפריט").setDescription("כאן תוכלו לראות את העמודים השונים: הקן שלי, קני האיזור, והקטעים החמים").build();
+
+
+            Spotlight.with(this)
+                    .setOverlayColor(R.color.background)
+                    .setDuration(250L).setAnimation(new DecelerateInterpolator(2f))
+                    .setTargets(taskTarget, kenPointsTarget, hamburgerTarget)
+                    .setClosedOnTouchedOutside(true).setOnSpotlightStateListener(new OnSpotlightStateChangedListener() {
+                @Override
+                public void onStarted() {
+
+                }
+
+                @Override
+                public void onEnded() {
+                    drawer.openDrawer(GravityCompat.START);
+
+                    SimpleTarget taskTarget = new SimpleTarget.Builder(MainActivity.this)
+                            .setPoint(getViewCenterPoint(findViewById(R.id.my_ken_itemview_placeholder_tv))[0], getViewCenterPoint(findViewById(R.id.my_ken_itemview_placeholder_tv))[1]).setShape(new Circle(80f))
+                            .setTitle("משימות").setDescription("זאת המשימה הראשונה שלכם! עליכם לצלם את עצמכם מבצעים כמה שיותר משימות ולשלוח את הסרטונים לקומונר/ית שלכם.").build();
+                    SimpleTarget kenPointsTarget = new SimpleTarget.Builder(MainActivity.this)
+                            .setPoint(getViewCenterPoint(findViewById(R.id.leaderboard_itemview_placeholder_tv))[0], getViewCenterPoint(findViewById(R.id.leaderboard_itemview_placeholder_tv))[1]).setShape(new Circle(80f))
+                            .setTitle("ניקוד הקן").setDescription("כאן נמצא הניקוד של הקן שלכם, כל משימה שתבצעו תוסיף נקודות לקן!").build();
+                    SimpleTarget hamburgerTarget = new SimpleTarget.Builder(MainActivity.this)
+                            .setPoint(getViewCenterPoint(findViewById(R.id.highlights_itemview_placeholder_tv))[0], getViewCenterPoint(findViewById(R.id.highlights_itemview_placeholder_tv))[1]).setShape(new Circle(80f))
+                            .setTitle("תפריט").setDescription("כאן תוכלו לראות את העמודים השונים: הקן שלי, קני האיזור, והקטעים החמים").build();
+
+
+                    Spotlight.with(MainActivity.this)
+                            .setOverlayColor(R.color.background)
+                            .setDuration(250L).setAnimation(new DecelerateInterpolator(2f))
+                            .setTargets(taskTarget, kenPointsTarget, hamburgerTarget)
+                            .setClosedOnTouchedOutside(true).start();
+                }
+            }).start();
+            super.onWindowFocusChanged(hasFocus);
+        }
     }
 }

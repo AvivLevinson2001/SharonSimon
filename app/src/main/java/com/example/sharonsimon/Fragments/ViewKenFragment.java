@@ -18,6 +18,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 import com.bumptech.glide.Glide;
+import com.example.sharonsimon.Activities.MainActivity;
 import com.example.sharonsimon.Adapters.TaskAdapter;
 import com.example.sharonsimon.Classes.Ken;
 import com.example.sharonsimon.Classes.Task;
@@ -29,6 +30,7 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
+import java.util.concurrent.TimeUnit;
 
 public class ViewKenFragment extends Fragment {
 
@@ -46,12 +48,6 @@ public class ViewKenFragment extends Fragment {
     TaskAdapter adapter;
 
     FirebaseChangesListener firebaseChangesListener;
-    ViewKenFragmentInterface viewKenFragmentInterface;
-
-    public interface ViewKenFragmentInterface
-    {
-        void firstOnBindCompleted(TaskAdapter.CreateTaskViewHolder holder);
-    }
 
     @Override
     public void onAttach(@NonNull Context context) {
@@ -59,7 +55,6 @@ public class ViewKenFragment extends Fragment {
         Activity activity = (Activity)context;
         try{
             firebaseChangesListener = (FirebaseChangesListener) activity;
-            viewKenFragmentInterface = (ViewKenFragmentInterface)activity;
         }catch (ClassCastException e){
             throw new ClassCastException("Activity: " + activity.toString() + " must implement FirebaseChangesListener and ViewKenFragmentInterface");
         }
@@ -141,12 +136,6 @@ public class ViewKenFragment extends Fragment {
                     popupMenu.show();
                 }
             }
-
-            @Override
-            public void firstOnBindCompleted(TaskAdapter.CreateTaskViewHolder holder)
-            {
-                viewKenFragmentInterface.firstOnBindCompleted(holder);
-            }
         });
 
         Glide.with(getActivity()).load(ken.getAnimalImageUrl()).into(myKenImage);
@@ -164,6 +153,11 @@ public class ViewKenFragment extends Fragment {
     public View getViewByPosition(int position)
     {
         return this.recycler.getLayoutManager().findViewByPosition(position);
+    }
+
+    public void calculateCenter(){
+        if(myKenPointsTV != null)
+            Log.d("test",MainActivity.getViewCenterPoint(myKenPointsTV)[0] + "");
     }
 
 }

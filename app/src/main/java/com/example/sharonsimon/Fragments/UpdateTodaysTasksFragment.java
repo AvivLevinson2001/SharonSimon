@@ -131,12 +131,6 @@ public class UpdateTodaysTasksFragment extends Fragment
 
                 popupMenu.show();
             }
-
-            @Override
-            public void firstOnBindCompleted(TaskAdapter.CreateTaskViewHolder holder)
-            {
-
-            }
         });
         recyclerView.setAdapter(adapter);
 

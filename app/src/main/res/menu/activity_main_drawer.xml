@@ -10,7 +10,7 @@
             android:id="@+id/action_my_ken"
             android:icon="@drawable/ic_nest"
             android:title="הקן שלי"
-            android:checked="true"/>
+            android:checked="true" />
         <item
             android:id="@+id/action_leaderboard"
             android:icon="@drawable/ic_bull"
