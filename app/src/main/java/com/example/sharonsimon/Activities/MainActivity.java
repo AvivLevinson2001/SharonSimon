@@ -507,8 +507,7 @@ public class  MainActivity extends AppCompatActivity implements KensRecyclerView
     @Override
     public void onWindowFocusChanged(boolean hasFocus) {
         if (!isAdmin && sp.getBoolean("isFirstOpen", true)) {
-
-            //sp.edit().putBoolean("isFirstOpen", false).apply();
+            sp.edit().putBoolean("isFirstOpen", false).apply();
 
             SimpleTarget taskTarget = new SimpleTarget.Builder(this)
                     .setPoint(getViewCenterPoint(findViewById(R.id.task_card_view_placeholder))[0], getViewCenterPoint(findViewById(R.id.task_card_view_placeholder))[1]).setShape(new Circle(300f))
