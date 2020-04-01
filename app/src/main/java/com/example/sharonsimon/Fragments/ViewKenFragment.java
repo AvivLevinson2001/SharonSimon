@@ -2,7 +2,9 @@ package com.example.sharonsimon.Fragments;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -28,9 +30,14 @@ import com.google.android.material.snackbar.BaseTransientBottomBar;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.shreyaspatil.MaterialDialog.MaterialDialog;
+import com.shreyaspatil.MaterialDialog.interfaces.DialogInterface;
 
 import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
+
+import static android.content.Context.MODE_PRIVATE;
+import static java.lang.reflect.Array.getInt;
 
 public class ViewKenFragment extends Fragment {
 
@@ -146,6 +153,34 @@ public class ViewKenFragment extends Fragment {
 
         myKenNameTv.setText(ken.getName());
         myKenPointsTV.setText(ken.getPoints() + "");
+
+        ////////////////////////////////////////////////////////////
+        SharedPreferences sp = getActivity().getSharedPreferences("user",MODE_PRIVATE);
+        int oldPoints = sp.getInt("kenPoints", 0);
+        if (ken.getPoints() != oldPoints)
+        {
+            final MaterialDialog mDialog = new MaterialDialog.Builder(getActivity())
+                    .setTitle("נוספו נקודות!")
+                    .setMessage("הקן שלכם קיבל נקודות חדשות!")
+                    .setCancelable(true)
+                    .setAnimation(R.raw.trophy_new).build();
+
+            // Show Dialog
+            mDialog.show();
+
+            final Handler handler = new Handler();
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    mDialog.dismiss();
+                }
+            }, 4000);
+
+            sp.edit().putInt("kenPoints", ken.getPoints()).apply();
+        }
+        ////////////////////////////////////////////////////////////
+
+
 
         return viewGroup;
     }
