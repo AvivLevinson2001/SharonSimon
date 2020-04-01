@@ -14,6 +14,7 @@ import android.graphics.PointF;
 import android.net.Uri;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
+import android.os.Handler;
 import android.text.format.Formatter;
 import android.util.Log;
 import android.view.MenuItem;
@@ -57,6 +58,7 @@ import com.takusemba.spotlight.target.Target;
 import org.w3c.dom.Text;
 
 import java.util.ArrayList;
+import java.util.concurrent.TimeUnit;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -533,22 +535,42 @@ public class  MainActivity extends AppCompatActivity implements KensRecyclerView
                 public void onEnded() {
                     drawer.openDrawer(GravityCompat.START);
 
-                    SimpleTarget taskTarget = new SimpleTarget.Builder(MainActivity.this)
-                            .setPoint(getViewCenterPoint(findViewById(R.id.my_ken_itemview_placeholder_tv))[0], getViewCenterPoint(findViewById(R.id.my_ken_itemview_placeholder_tv))[1]).setShape(new Circle(80f))
-                            .setTitle("משימות").setDescription("זאת המשימה הראשונה שלכם! עליכם לצלם את עצמכם מבצעים כמה שיותר משימות ולשלוח את הסרטונים לקומונר/ית שלכם.").build();
-                    SimpleTarget kenPointsTarget = new SimpleTarget.Builder(MainActivity.this)
-                            .setPoint(getViewCenterPoint(findViewById(R.id.leaderboard_itemview_placeholder_tv))[0], getViewCenterPoint(findViewById(R.id.leaderboard_itemview_placeholder_tv))[1]).setShape(new Circle(80f))
-                            .setTitle("ניקוד הקן").setDescription("כאן נמצא הניקוד של הקן שלכם, כל משימה שתבצעו תוסיף נקודות לקן!").build();
-                    SimpleTarget hamburgerTarget = new SimpleTarget.Builder(MainActivity.this)
-                            .setPoint(getViewCenterPoint(findViewById(R.id.highlights_itemview_placeholder_tv))[0], getViewCenterPoint(findViewById(R.id.highlights_itemview_placeholder_tv))[1]).setShape(new Circle(80f))
-                            .setTitle("תפריט").setDescription("כאן תוכלו לראות את העמודים השונים: הקן שלי, קני האיזור, והקטעים החמים").build();
+                    drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_OPEN);
+
+                    final Handler handler = new Handler();
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            SimpleTarget myKenItemViewTarget = new SimpleTarget.Builder(MainActivity.this)
+                                    .setPoint(getViewCenterPoint(findViewById(R.id.my_ken_itemview_placeholder_tv))[0], getViewCenterPoint(findViewById(R.id.my_ken_itemview_placeholder_tv))[1]).setShape(new Circle(80f))
+                                    .setTitle("הקן שלי").setDescription("כאן תראו את המשימות של הקן שלכם.").build();
+                            SimpleTarget leaderboardItemViewTarget = new SimpleTarget.Builder(MainActivity.this)
+                                    .setPoint(getViewCenterPoint(findViewById(R.id.leaderboard_itemview_placeholder_tv))[0], getViewCenterPoint(findViewById(R.id.leaderboard_itemview_placeholder_tv))[1]).setShape(new Circle(80f))
+                                    .setTitle("קני האיזור").setDescription("פה תוכלו לראות את טבלת הניקוד של כל הקינים באזור").build();
+                            SimpleTarget highlightsItemViewTarget = new SimpleTarget.Builder(MainActivity.this)
+                                    .setPoint(getViewCenterPoint(findViewById(R.id.highlights_itemview_placeholder_tv))[0], getViewCenterPoint(findViewById(R.id.highlights_itemview_placeholder_tv))[1]).setShape(new Circle(80f))
+                                    .setTitle("קטעים חמים").setDescription("כאן תוכלו לצפות בסרטונים של הקטעים הכי טובים והכי מצחיקים מכל יום!").build();
 
 
-                    Spotlight.with(MainActivity.this)
-                            .setOverlayColor(R.color.background)
-                            .setDuration(250L).setAnimation(new DecelerateInterpolator(2f))
-                            .setTargets(taskTarget, kenPointsTarget, hamburgerTarget)
-                            .setClosedOnTouchedOutside(true).start();
+                            Spotlight.with(MainActivity.this)
+                                    .setOverlayColor(R.color.background)
+                                    .setDuration(250L).setAnimation(new DecelerateInterpolator(2f))
+                                    .setTargets(myKenItemViewTarget, leaderboardItemViewTarget, highlightsItemViewTarget)
+                                    .setClosedOnTouchedOutside(true).setOnSpotlightStateListener(new OnSpotlightStateChangedListener() {
+                                @Override
+                                public void onStarted() {
+
+                                }
+
+                                @Override
+                                public void onEnded() {
+                                    drawer.closeDrawer(GravityCompat.START);
+                                    drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
+                                }
+                            }).start();
+                        }
+                    }, 500);
+
                 }
             }).start();
             super.onWindowFocusChanged(hasFocus);
