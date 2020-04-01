@@ -535,6 +535,9 @@ public class  MainActivity extends AppCompatActivity implements KensRecyclerView
                     drawer.openDrawer(GravityCompat.START);
 
                     drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_OPEN);
+                    findViewById(R.id.drawer_cover_ll).setClickable(true);
+                    findViewById(R.id.drawer_cover_ll).setFocusable(true);
+                    findViewById(R.id.drawer_cover_ll).setVisibility(View.VISIBLE);
 
                     final Handler handler = new Handler();
                     handler.postDelayed(new Runnable() {
@@ -565,6 +568,9 @@ public class  MainActivity extends AppCompatActivity implements KensRecyclerView
                                 public void onEnded() {
                                     drawer.closeDrawer(GravityCompat.START);
                                     drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
+                                    findViewById(R.id.drawer_cover_ll).setClickable(false);
+                                    findViewById(R.id.drawer_cover_ll).setFocusable(false);
+                                    findViewById(R.id.drawer_cover_ll).setVisibility(View.INVISIBLE);
                                 }
                             }).start();
                         }
