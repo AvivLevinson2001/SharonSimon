@@ -24,20 +24,17 @@ import com.example.sharonsimon.Activities.MainActivity;
 import com.example.sharonsimon.Adapters.TaskAdapter;
 import com.example.sharonsimon.Classes.Ken;
 import com.example.sharonsimon.Classes.Task;
+import com.example.sharonsimon.Dialogs.TrophyAnimationDialog;
 import com.example.sharonsimon.Interfaces.FirebaseChangesListener;
 import com.example.sharonsimon.R;
 import com.google.android.material.snackbar.BaseTransientBottomBar;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
-import com.shreyaspatil.MaterialDialog.MaterialDialog;
-import com.shreyaspatil.MaterialDialog.interfaces.DialogInterface;
 
 import java.util.ArrayList;
-import java.util.concurrent.TimeUnit;
 
 import static android.content.Context.MODE_PRIVATE;
-import static java.lang.reflect.Array.getInt;
 
 public class ViewKenFragment extends Fragment {
 
@@ -154,33 +151,25 @@ public class ViewKenFragment extends Fragment {
         myKenNameTv.setText(ken.getName());
         myKenPointsTV.setText(ken.getPoints() + "");
 
-        ////////////////////////////////////////////////////////////
         SharedPreferences sp = getActivity().getSharedPreferences("user",MODE_PRIVATE);
-        int oldPoints = sp.getInt("kenPoints", 0);
-        if (ken.getPoints() != oldPoints)
-        {
-            final MaterialDialog mDialog = new MaterialDialog.Builder(getActivity())
-                    .setTitle("נוספו נקודות!")
-                    .setMessage("הקן שלכם קיבל נקודות חדשות!")
-                    .setCancelable(true)
-                    .setAnimation(R.raw.trophy_new).build();
+        int oldPoints = sp.getInt("kenPoints", -1); //  get the points of the last login to the ken, -1 is for first login to the ken
 
-            // Show Dialog
-            mDialog.show();
+        if(sp.getString("ken","").equals(ken.getName())) { // if im viewing my ken
+            if (oldPoints != -1 && ken.getPoints() > oldPoints) { // if the old points is not -1 (this is not first login to the ken) and current points is bigger than old points, show animation
 
-            final Handler handler = new Handler();
-            handler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    mDialog.dismiss();
-                }
-            }, 4000);
+                final TrophyAnimationDialog dialog = new TrophyAnimationDialog();
+                dialog.show(getActivity().getSupportFragmentManager(),"TrophyAnimationDialog");
 
+                final Handler handler = new Handler();
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        dialog.dismiss();
+                    }
+                },5000);
+            }
             sp.edit().putInt("kenPoints", ken.getPoints()).apply();
         }
-        ////////////////////////////////////////////////////////////
-
-
 
         return viewGroup;
     }

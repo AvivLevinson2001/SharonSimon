@@ -67,4 +67,8 @@ public class KensRecyclerViewFragment extends Fragment {
 
         return viewGroup;
     }
+
+    public void notifyAdapter(){
+        adapter.notifyDataSetChanged();
+    }
 }

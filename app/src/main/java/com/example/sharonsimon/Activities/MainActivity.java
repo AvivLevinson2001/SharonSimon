@@ -182,6 +182,7 @@ public class  MainActivity extends AppCompatActivity implements KensRecyclerView
                                     .putString("name", "")
                                     .putString("ken","")
                                     .putBoolean("isAdmin",false)
+                                    .putInt("kenPoints",-1)
                                     .apply();
                             Intent intent = new Intent(MainActivity.this, LogInActivity.class);
                             startActivity(intent);
@@ -416,6 +417,12 @@ public class  MainActivity extends AppCompatActivity implements KensRecyclerView
                     }
                 }).create().show();
             } else {
+                if(currentFragment instanceof ViewKenFragment) {
+                    Fragment kensListFragment = fragmentManager.findFragmentByTag("Leaderboard");
+                    if(kensListFragment != null)
+                    ((KensRecyclerViewFragment) kensListFragment).notifyAdapter();
+                }
+
                 super.onBackPressed();
             }
         }

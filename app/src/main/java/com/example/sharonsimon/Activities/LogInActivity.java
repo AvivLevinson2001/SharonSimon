@@ -18,6 +18,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 
 import com.example.sharonsimon.Dialogs.EnterPasswordDialog;
 import com.example.sharonsimon.R;
@@ -44,6 +45,9 @@ public class LogInActivity extends AppCompatActivity implements EnterPasswordDia
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.log_in_activity);
+
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
 
         sp = getSharedPreferences("user", MODE_PRIVATE);
 
