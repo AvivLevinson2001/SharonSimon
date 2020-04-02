@@ -49,6 +49,8 @@ public class LogInActivity extends AppCompatActivity implements EnterPasswordDia
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        getSupportActionBar().setTitle("התחברות");
+
         sp = getSharedPreferences("user", MODE_PRIVATE);
 
         if (sp.getBoolean("isLoggedIn", false))
@@ -147,17 +149,17 @@ public class LogInActivity extends AppCompatActivity implements EnterPasswordDia
                         login();
                     }
                     else{
-                        Snackbar.make(findViewById(R.id.register_root_layout),"הסיסמה שגויה", BaseTransientBottomBar.LENGTH_SHORT).show();
+                        Snackbar.make(findViewById(R.id.register_root_layout),"הסיסמה שגויה", BaseTransientBottomBar.LENGTH_LONG).show();
                     }
                 }
                 else{
-                    Snackbar.make(findViewById(R.id.register_root_layout),"משהו השתבש", BaseTransientBottomBar.LENGTH_SHORT).show();
+                    Snackbar.make(findViewById(R.id.register_root_layout),"משהו השתבש", BaseTransientBottomBar.LENGTH_LONG).show();
                 }
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-                Snackbar.make(findViewById(R.id.register_root_layout),"משהו השתבש", BaseTransientBottomBar.LENGTH_SHORT).show();
+                Snackbar.make(findViewById(R.id.register_root_layout),"משהו השתבש", BaseTransientBottomBar.LENGTH_LONG).show();
             }
         });
     }

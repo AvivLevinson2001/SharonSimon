@@ -113,10 +113,11 @@ public class UpdateTodaysTasksFragment extends Fragment
                                 @Override
                                 public void onClick(DialogInterface dialogInterface, int i) {
                                     Task taskToRemove = tasks.get(position);
+                                    int index = tasks.indexOf(taskToRemove);
                                     tasks.remove(taskToRemove);
                                     listener.removeTaskFromFirebase(taskToRemove);
-                                    recyclerView.removeViewAt(position);
-                                    Snackbar.make(container,"משימה נמחקה", BaseTransientBottomBar.LENGTH_SHORT).show();
+                                    adapter.notifyItemRemoved(index);
+                                    Snackbar.make(container,"משימה נמחקה", BaseTransientBottomBar.LENGTH_LONG).show();
                                 }
                             }).setNegativeButton("לא", new DialogInterface.OnClickListener() {
                                 @Override
@@ -157,21 +158,21 @@ public class UpdateTodaysTasksFragment extends Fragment
 
                         if (points.equals("") || desc.equals("")) //Checking for null fields
                         {
-                            Snackbar.make(container, "מלאו את כל השדות", Snackbar.LENGTH_SHORT).show();
+                            Snackbar.make(container, "מלאו את כל השדות", Snackbar.LENGTH_LONG).show();
                         }
                         else
                         {
                             for(int k = 0; k < tasks.size(); k ++) {
                                 if (tasks.get(k).getDesc().equals(desc)) {
-                                    Snackbar.make(container, "המשימה כבר קיימת", BaseTransientBottomBar.LENGTH_SHORT).show();
+                                    Snackbar.make(container, "המשימה כבר קיימת", BaseTransientBottomBar.LENGTH_LONG).show();
                                     return;
                                 }
                             }
                             Task newTask = new Task(desc, Integer.parseInt(points), false);
                             tasks.add(newTask);
                             listener.addTaskToFirebase(newTask);
-                            adapter.notifyDataSetChanged();//Updates the recycler
-                            Snackbar.make(container, "משימה נוספה", Snackbar.LENGTH_SHORT).show();
+                            adapter.notifyItemInserted(tasks.indexOf(newTask));//Updates the recycler
+                            Snackbar.make(container, "משימה נוספה", Snackbar.LENGTH_LONG).show();
                         }
 
                     }

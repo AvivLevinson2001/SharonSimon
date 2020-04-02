@@ -43,7 +43,6 @@ public class ViewKenFragment extends Fragment {
 
     Ken ken;
     boolean isAdmin;
-    ArrayList<Task> tasks;
 
     CircleImageView myKenImage;
     TextView myKenPointsTV;
@@ -82,7 +81,7 @@ public class ViewKenFragment extends Fragment {
         isAdmin = getArguments().getBoolean("isAdmin");
 
         if(ken == null){
-            Snackbar.make(container, "משהו השתבש", BaseTransientBottomBar.LENGTH_SHORT).show();
+            Snackbar.make(container, "משהו השתבש", BaseTransientBottomBar.LENGTH_LONG).show();
             return viewGroup;
         }
 
@@ -91,14 +90,20 @@ public class ViewKenFragment extends Fragment {
         myKenNameTv = viewGroup.findViewById(R.id.my_ken_name_tv);
         recycler = viewGroup.findViewById(R.id.tasks_rv);
 
-        tasks = ken.getTasks();
-        if(tasks == null) tasks = new ArrayList<>();
-        adapter = new TaskAdapter(tasks);
+        if(ken.getTasks() == null) ken.setTasks(new ArrayList<Task>());
+        adapter = new TaskAdapter(ken.getTasks());
 
         adapter.setListener(new TaskAdapter.myTaskAdapterListener() {
             @Override
             public void onTaskClick(int position, View v) {
-
+                if(!isAdmin && getActivity().getSharedPreferences("user",MODE_PRIVATE).getString("ken","").equals(ken.getName())){
+                    if(ken.getTasks().get(position).isCompleted()){
+                        Snackbar.make(container,"המשימה בוצעה!", BaseTransientBottomBar.LENGTH_LONG).show();
+                    }
+                    else{
+                        Snackbar.make(container,"סיימתם את המשימה? שלחו סרטון שלכם מבצעים את המשימה לקומונר/ית", BaseTransientBottomBar.LENGTH_LONG).show();
+                    }
+                }
             }
 
             @Override
@@ -106,34 +111,44 @@ public class ViewKenFragment extends Fragment {
                 if(isAdmin){
                     PopupMenu popupMenu = new PopupMenu(getActivity(), v);
                     popupMenu.getMenuInflater().inflate(R.menu.task_long_click_menu_admin, popupMenu.getMenu());
-                    popupMenu.getMenu().setGroupVisible(tasks.get(position).isCompleted() ? R.id.action_set_task_is_not_completed_group : R.id.action_set_task_is_completed_group, true);
+                    popupMenu.getMenu().setGroupVisible(ken.getTasks().get(position).isCompleted() ? R.id.action_set_task_is_not_completed_group : R.id.action_set_task_is_completed_group, true);
 
                     popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                         @Override
                         public boolean onMenuItemClick(MenuItem menuItem) {
+                            Task task = ken.getTasks().get(position);
                             switch (menuItem.getItemId()){
                                 case R.id.action_set_task_is_completed:
-                                    tasks.get(position).setCompleted(true);
-                                    ken.setPoints(ken.getPoints() + tasks.get(position).getPoints());
+                                    task.setCompleted(true);
+                                    ken.setPoints(ken.getPoints() + task.getPoints());
+                                    ken.sortTasks();
+                                    final int movedToPosition1 = ken.getTasks().indexOf(task);
                                     firebaseChangesListener.saveKenToFirebase(ken);
                                     myKenPointsTV.setText(ken.getPoints() + "");
+                                    adapter.setTasks(ken.getTasks());
+                                    adapter.notifyItemMoved(position,movedToPosition1);
+                                    adapter.notifyItemChanged(movedToPosition1);
                                     break;
                                 case R.id.action_set_task_is_not_completed:
-                                    tasks.get(position).setCompleted(false);
-                                    ken.setPoints(ken.getPoints() - tasks.get(position).getPoints());
+                                    task.setCompleted(false);
+                                    ken.setPoints(ken.getPoints() - task.getPoints());
+                                    ken.sortTasks();
+                                    final int movedToPosition2 = ken.getTasks().indexOf(task);
                                     firebaseChangesListener.saveKenToFirebase(ken);
                                     myKenPointsTV.setText(ken.getPoints() + "");
+                                    adapter.setTasks(ken.getTasks());
+                                    adapter.notifyItemMoved(position,movedToPosition2);
+                                    adapter.notifyItemChanged(movedToPosition2);
                                     break;
                                 case R.id.action_add_task_to_highlights:
-                                    if(tasks.get(position).isCompleted()) {
-                                        firebaseChangesListener.addTaskToHighlights(tasks.get(position).getDesc(), ken.getName());
+                                    if(ken.getTasks().get(position).isCompleted()) {
+                                        firebaseChangesListener.addTaskToHighlights(ken.getTasks().get(position).getDesc(), ken.getName());
                                     }
                                     else{
-                                        Snackbar.make(container,"המשימה לא בוצעה", BaseTransientBottomBar.LENGTH_SHORT).show();
+                                        Snackbar.make(container,"המשימה לא בוצעה", BaseTransientBottomBar.LENGTH_LONG).show();
                                     }
                                     break;
                             }
-                            adapter.notifyDataSetChanged();
                             return true;
                         }
                     });
@@ -173,15 +188,4 @@ public class ViewKenFragment extends Fragment {
 
         return viewGroup;
     }
-
-    public View getViewByPosition(int position)
-    {
-        return this.recycler.getLayoutManager().findViewByPosition(position);
-    }
-
-    public void calculateCenter(){
-        if(myKenPointsTV != null)
-            Log.d("test",MainActivity.getViewCenterPoint(myKenPointsTV)[0] + "");
-    }
-
 }

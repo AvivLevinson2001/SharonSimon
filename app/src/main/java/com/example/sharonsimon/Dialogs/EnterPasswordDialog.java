@@ -45,7 +45,7 @@ public class EnterPasswordDialog extends AppCompatDialogFragment {
         passwordET = viewGroup.findViewById(R.id.password_et);
 
         builder.setView(viewGroup)
-                .setTitle("Enter Password")
+                .setTitle("הכנס סיסמה")
                 .setNegativeButton("ביטול", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {

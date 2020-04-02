@@ -93,7 +93,7 @@ public class HighlightsFragment extends Fragment {
                     popupMenu.show();
                 }
                 else{
-                    Snackbar.make(container,"חכה שהעלאת הסרטון תסתיים", BaseTransientBottomBar.LENGTH_SHORT).show();
+                    Snackbar.make(container,"חכה שהעלאת הסרטון תסתיים", BaseTransientBottomBar.LENGTH_LONG).show();
                 }
             }
         });

@@ -18,6 +18,7 @@ import com.example.sharonsimon.Classes.Ken;
 import com.example.sharonsimon.R;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 public class KensRecyclerViewFragment extends Fragment {
 
@@ -53,6 +54,7 @@ public class KensRecyclerViewFragment extends Fragment {
         ViewGroup viewGroup = (ViewGroup) inflater.inflate(R.layout.kens_recycler_view_fragment,container,false);
 
         kensArrayList = (ArrayList<Ken>) getArguments().getSerializable("kensArrayList");
+        Collections.sort(kensArrayList);
 
         RecyclerView recyclerView = viewGroup.findViewById(R.id.kens_rv);
         adapter = new KenAdapter(kensArrayList,getActivity());
@@ -70,5 +72,9 @@ public class KensRecyclerViewFragment extends Fragment {
 
     public void notifyAdapter(){
         adapter.notifyDataSetChanged();
+    }
+
+    public void sortKens(){
+        Collections.sort(kensArrayList);
     }
 }

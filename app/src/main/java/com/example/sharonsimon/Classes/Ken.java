@@ -99,4 +99,17 @@ public class Ken implements Serializable,Comparable {
 
         return comparePoints-this.points;
     }
+
+    public void sortTasks(){
+        ArrayList<Task> completed = new ArrayList<>();
+        ArrayList<Task> notCompleted = new ArrayList<>();
+        for(Task task : tasks){
+            if(task.isCompleted)
+                completed.add(task);
+            else
+                notCompleted.add(task);
+        }
+        completed.addAll(notCompleted);
+        setTasks(completed);
+    }
 }

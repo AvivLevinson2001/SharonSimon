@@ -49,7 +49,6 @@ public class KenAdapter extends RecyclerView.Adapter<KenAdapter.CreateKenViewHol
 
     public KenAdapter(ArrayList<Ken> kens, Context context)
     {
-        Collections.sort(kens);
         this.kens = kens;
         if(this.kens == null)
             this.kens = new ArrayList<>();

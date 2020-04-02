@@ -116,7 +116,7 @@ public class  MainActivity extends AppCompatActivity implements KensRecyclerView
                     for (Highlight highlight : highlights) {
                         if (highlight.getKenName().equals(updatedHighlight.getKenName()) && highlight.getTaskDesc().equals(updatedHighlight.getTaskDesc())) {
                             highlight.setVideoURL(updatedHighlight.getVideoURL());
-                            Snackbar.make(coordinatorLayout,"העלאה הסתיימה", BaseTransientBottomBar.LENGTH_SHORT).show();
+                            Snackbar.make(coordinatorLayout,"העלאה הסתיימה", BaseTransientBottomBar.LENGTH_LONG).show();
                         }
                     }
                 }
@@ -125,7 +125,7 @@ public class  MainActivity extends AppCompatActivity implements KensRecyclerView
                     for (Highlight highlight : highlights) {
                         if(highlight.getKenName().equals(canceledHighlight.getKenName()) && highlight.getTaskDesc().equals(canceledHighlight.getTaskDesc())){
                             highlights.remove(highlight);
-                            Snackbar.make(coordinatorLayout,"העלאה התבטלה", BaseTransientBottomBar.LENGTH_SHORT).show();
+                            Snackbar.make(coordinatorLayout,"העלאה התבטלה", BaseTransientBottomBar.LENGTH_LONG).show();
                         }
                     }
                 }
@@ -138,7 +138,6 @@ public class  MainActivity extends AppCompatActivity implements KensRecyclerView
         sp = getSharedPreferences("user",MODE_PRIVATE);
         isAdmin = sp.getBoolean("isAdmin",false);
 
-
         LocalBroadcastManager.getInstance(this).registerReceiver(videoUploadedReceiver,new IntentFilter("sharon_simon.highlight_uploaded_action"));
 
         getInfoFromFirebase();
@@ -146,9 +145,10 @@ public class  MainActivity extends AppCompatActivity implements KensRecyclerView
         drawer = findViewById(R.id.drawer_layout);
         coordinatorLayout = findViewById(R.id.coordinator_layout);
         navigationView = findViewById(R.id.nav_view);
-        ActionBar actionBar = getSupportActionBar();
+        final ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setHomeAsUpIndicator(R.drawable.ic_menu_white_24dp);
+        actionBar.setTitle("");
 
         navigationView.getMenu().setGroupVisible(R.id.admin_items_group,isAdmin);
         if(isAdmin){
@@ -164,14 +164,17 @@ public class  MainActivity extends AppCompatActivity implements KensRecyclerView
                 if(item.getItemId() == R.id.action_my_ken){
                     currentFragment = ViewKenFragment.newInstance(myKen,isAdmin);
                     fragmentTag = "MyKen";
+                    actionBar.setTitle("הקן שלי");
                 }
                 else if(item.getItemId() == R.id.action_leaderboard){
                     currentFragment = KensRecyclerViewFragment.newInstance(kensList);
                     fragmentTag = "Leaderboard";
+                    actionBar.setTitle("קני האזור");
                 }
                 else if(item.getItemId() == R.id.action_highlights){
                     currentFragment = HighlightsFragment.newInstance(highlights);
                     fragmentTag = "Higlights";
+                    actionBar.setTitle("קטעים חמים");
                 }
                 else if(item.getItemId() == R.id.action_log_out){
                     AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
@@ -199,6 +202,7 @@ public class  MainActivity extends AppCompatActivity implements KensRecyclerView
                 else if(item.getItemId() == R.id.action_update_tasks){
                     currentFragment = UpdateTodaysTasksFragment.newInstance(allTasks);
                     fragmentTag = "UpdateTasks";
+                    actionBar.setTitle("עדכן משימות");
                 }
                 navigationView.setCheckedItem(item);
                 drawer.closeDrawer(GravityCompat.START);
@@ -323,6 +327,7 @@ public class  MainActivity extends AppCompatActivity implements KensRecyclerView
     public void onKenClick(Ken ken) {
         currentFragment = ViewKenFragment.newInstance(ken,isAdmin);
         fragmentManager.beginTransaction().add(R.id.main_fragments_holder, currentFragment, "ShowKen").addToBackStack("backStack").commit();
+        getSupportActionBar().setTitle(ken.getName());
     }
 
     @Override
@@ -361,11 +366,11 @@ public class  MainActivity extends AppCompatActivity implements KensRecyclerView
     public void addTaskToHighlights(String taskDesc, String kenName) {
         for(Highlight highlight : highlights){
             if(highlight.getKenName().equals(kenName) && highlight.getTaskDesc().equals(taskDesc)){
-                Snackbar.make(coordinatorLayout,"המשימה כבר נמצאת בקטעים החמים", BaseTransientBottomBar.LENGTH_SHORT).show();
+                Snackbar.make(coordinatorLayout,"המשימה כבר נמצאת בקטעים החמים", BaseTransientBottomBar.LENGTH_LONG).show();
                 return;
             }
             if(highlight.getVideoURL() == null || highlight.getVideoURL().equals("")){
-                Snackbar.make(coordinatorLayout,"חכה שההעלאה הקודמת תסתיים", BaseTransientBottomBar.LENGTH_SHORT).show();
+                Snackbar.make(coordinatorLayout,"חכה שההעלאה הקודמת תסתיים", BaseTransientBottomBar.LENGTH_LONG).show();
                 return;
             }
         }
@@ -386,7 +391,7 @@ public class  MainActivity extends AppCompatActivity implements KensRecyclerView
             firebaseStorage.getReferenceFromUrl(highlight.getVideoURL()).delete().addOnSuccessListener(new OnSuccessListener<Void>() {
                 @Override
                 public void onSuccess(Void aVoid) {
-                    Snackbar.make(coordinatorLayout, "המשימה נמחקה מהקטעים החמים", Snackbar.LENGTH_SHORT).show();
+                    Snackbar.make(coordinatorLayout, "המשימה נמחקה מהקטעים החמים", Snackbar.LENGTH_LONG).show();
                 }
             });
         }
@@ -419,8 +424,12 @@ public class  MainActivity extends AppCompatActivity implements KensRecyclerView
             } else {
                 if(currentFragment instanceof ViewKenFragment) {
                     Fragment kensListFragment = fragmentManager.findFragmentByTag("Leaderboard");
-                    if(kensListFragment != null)
-                    ((KensRecyclerViewFragment) kensListFragment).notifyAdapter();
+                    if(kensListFragment != null) {
+                        currentFragment = kensListFragment;
+                        ((KensRecyclerViewFragment) currentFragment).notifyAdapter();
+                        ((KensRecyclerViewFragment) currentFragment).sortKens();
+                        getSupportActionBar().setTitle("קני האזור");
+                    }
                 }
 
                 super.onBackPressed();
@@ -461,7 +470,7 @@ public class  MainActivity extends AppCompatActivity implements KensRecyclerView
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         highlights.remove(highlights.size() - 1);
-                        Snackbar.make(coordinatorLayout,"העלאה התבטלה", BaseTransientBottomBar.LENGTH_SHORT).show();
+                        Snackbar.make(coordinatorLayout,"העלאה התבטלה", BaseTransientBottomBar.LENGTH_LONG).show();
                     }
                 }).create().show();
             }
@@ -475,10 +484,12 @@ public class  MainActivity extends AppCompatActivity implements KensRecyclerView
         if(!isAdmin && navigationView.getCheckedItem().getItemId() == R.id.action_my_ken) {
             currentFragment = ViewKenFragment.newInstance(myKen, isAdmin);
             fragmentManager.beginTransaction().replace(R.id.main_fragments_holder, currentFragment, "MyKen").commitAllowingStateLoss();
+            getSupportActionBar().setTitle("הקן שלי");
         }
         else{
             currentFragment = KensRecyclerViewFragment.newInstance(kensList);
             fragmentManager.beginTransaction().replace(R.id.main_fragments_holder, currentFragment, "Leaderboard").commit();
+            getSupportActionBar().setTitle("קני האזור");
         }
     }
 
