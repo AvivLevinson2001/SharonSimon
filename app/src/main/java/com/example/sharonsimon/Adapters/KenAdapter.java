@@ -2,16 +2,19 @@ package com.example.sharonsimon.Adapters;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.airbnb.lottie.LottieAnimationView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.DataSource;
 import com.bumptech.glide.load.engine.GlideException;
@@ -20,11 +23,7 @@ import com.bumptech.glide.request.target.Target;
 import com.example.sharonsimon.R;
 import com.example.sharonsimon.Classes.Ken;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
 
 /**
  * Created by ronto on 18-Dec-18.
@@ -69,6 +68,9 @@ public class KenAdapter extends RecyclerView.Adapter<KenAdapter.CreateKenViewHol
         TextView pointsTv;
         ImageView kenImageIV;
         ProgressBar progressBar;
+        LottieAnimationView animationView;
+        RelativeLayout animationBackgroundRL;
+        View separationView;
 
         public CreateKenViewHolder(final View itemView)
         {
@@ -78,6 +80,9 @@ public class KenAdapter extends RecyclerView.Adapter<KenAdapter.CreateKenViewHol
             pointsTv = itemView.findViewById(R.id.card_view_ken_points_tv);
             kenImageIV = itemView.findViewById(R.id.card_view_ken_image);
             progressBar = itemView.findViewById(R.id.card_view_ken_image_progress);
+            animationView = itemView.findViewById(R.id.fireworks_animation_view);
+            animationBackgroundRL = itemView.findViewById(R.id.fireworks_animation_background_rl);
+            separationView = itemView.findViewById(R.id.separation_view);
 
             itemView.setOnClickListener(new View.OnClickListener()
             {
@@ -125,7 +130,22 @@ public class KenAdapter extends RecyclerView.Adapter<KenAdapter.CreateKenViewHol
         else{
             holder.kenImageIV.setImageResource(R.drawable.semel_hash);
         }
-
+        if(position <= 2){
+            if(position == 0)
+                holder.animationBackgroundRL.setBackgroundColor(context.getResources().getColor(R.color.colorGold));
+            else if(position == 1)
+                holder.animationBackgroundRL.setBackgroundColor(context.getResources().getColor(R.color.colorSilver));
+            else if(position == 2)
+                holder.animationBackgroundRL.setBackgroundColor(context.getResources().getColor(R.color.colorBronze));
+            holder.separationView.setVisibility(View.GONE);
+            holder.animationView.setVisibility(View.VISIBLE);
+            holder.animationView.setAnimation("fireworks_animation.json");
+        }
+        else{
+            holder.animationBackgroundRL.setBackgroundColor(context.getResources().getColor(R.color.colorWhite));
+            holder.separationView.setVisibility(View.VISIBLE);
+            holder.animationView.setVisibility(View.GONE);
+        }
     }
 
     public void setKens(ArrayList<Ken> kens) {

@@ -9,10 +9,15 @@
     <color name="colorLightGreen">#57BF5B</color>
 
     <color name="colorBackground">#F1F1F1</color>
+    <color name="colorWhite">#FFFFFF</color>
 
     <color name="home_text_color">#c8c7c7</color>
     <color name="home_symbols_color">#454545</color>
 
     <color name="colorOrange">#FF5722</color>
     <color name="colorStar">#ffc107</color>
+
+    <color name="colorGold">#FEE101</color>
+    <color name="colorSilver">#C0C0C0</color>
+    <color name="colorBronze">#D68936</color>
 </resources>
