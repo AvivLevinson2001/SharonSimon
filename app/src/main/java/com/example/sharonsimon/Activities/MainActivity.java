@@ -162,7 +162,7 @@ public class  MainActivity extends AppCompatActivity implements KensRecyclerView
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 String fragmentTag = "";
                 if(item.getItemId() == R.id.action_my_ken){
-                    currentFragment = ViewKenFragment.newInstance(myKen,isAdmin);
+                    currentFragment = ViewKenFragment.newInstance(myKen,isAdmin, false, false);
                     fragmentTag = "MyKen";
                     actionBar.setTitle("הקן שלי");
                 }
@@ -325,7 +325,7 @@ public class  MainActivity extends AppCompatActivity implements KensRecyclerView
 
     @Override
     public void onKenClick(Ken ken) {
-        currentFragment = ViewKenFragment.newInstance(ken,isAdmin);
+        currentFragment = ViewKenFragment.newInstance(ken,isAdmin, false, false);
         fragmentManager.beginTransaction().add(R.id.main_fragments_holder, currentFragment, "ShowKen").addToBackStack("backStack").commit();
         getSupportActionBar().setTitle(ken.getName());
     }
@@ -482,7 +482,7 @@ public class  MainActivity extends AppCompatActivity implements KensRecyclerView
 
     private void openFirstFragment(){
         if(!isAdmin && navigationView.getCheckedItem().getItemId() == R.id.action_my_ken) {
-            currentFragment = ViewKenFragment.newInstance(myKen, isAdmin);
+            currentFragment = ViewKenFragment.newInstance(myKen, isAdmin,pointsAddedAnimationDialog(),yourKenIsInFavoritesDialog());
             fragmentManager.beginTransaction().replace(R.id.main_fragments_holder, currentFragment, "MyKen").commitAllowingStateLoss();
             getSupportActionBar().setTitle("הקן שלי");
         }
@@ -598,5 +598,18 @@ public class  MainActivity extends AppCompatActivity implements KensRecyclerView
             }).start();
             super.onWindowFocusChanged(hasFocus);
         }
+    }
+
+    public boolean pointsAddedAnimationDialog(){
+        int oldPoints = sp.getInt("kenPoints", -1); //  get the points of the last login to the ken, -1 is for first login to the ken
+        sp.edit().putInt("kenPoints", myKen.getPoints()).apply();
+        return (oldPoints != -1 && myKen.getPoints() > oldPoints);
+    }
+
+    public boolean yourKenIsInFavoritesDialog(){
+        String serializedOldHighlights = sp.getString("serializedHighlights","");
+        String serializedCurrentHighlights = Highlight.serializeHighlightsForSharedPreferences(highlights);
+        sp.edit().putString("serializedHighlights", serializedCurrentHighlights).apply();
+        return(!serializedCurrentHighlights.equals(serializedOldHighlights) && serializedCurrentHighlights.contains(myKen.getName()));
     }
 }

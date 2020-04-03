@@ -14,4 +14,5 @@
     <color name="home_symbols_color">#454545</color>
 
     <color name="colorOrange">#FF5722</color>
+    <color name="colorStar">#ffc107</color>
 </resources>

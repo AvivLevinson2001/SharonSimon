@@ -42,7 +42,7 @@ public class ViewKenFragment extends Fragment {
     StorageReference storageReference = firebaseStorage.getReference();
 
     Ken ken;
-    boolean isAdmin;
+    boolean isAdmin, showTrophyAnimation, showStarAnimation;
 
     CircleImageView myKenImage;
     TextView myKenPointsTV;
@@ -63,11 +63,13 @@ public class ViewKenFragment extends Fragment {
         }
     }
 
-    public static ViewKenFragment newInstance(Ken ken, boolean isAdmin){
+    public static ViewKenFragment newInstance(Ken ken, boolean isAdmin, boolean showTrophyAnimation, boolean showStarAnimation){
         ViewKenFragment fragment = new ViewKenFragment();
         Bundle arguments = new Bundle();
         arguments.putSerializable("ken",ken);
         arguments.putBoolean("isAdmin",isAdmin);
+        arguments.putBoolean("showTrophyAnimation",showTrophyAnimation);
+        arguments.putBoolean("showStarAnimation",showStarAnimation);
         fragment.setArguments(arguments);
         return fragment;
     }
@@ -79,6 +81,8 @@ public class ViewKenFragment extends Fragment {
 
         ken = (Ken)getArguments().getSerializable("ken");
         isAdmin = getArguments().getBoolean("isAdmin");
+        showTrophyAnimation = getArguments().getBoolean("showTrophyAnimation");
+        showStarAnimation = getArguments().getBoolean("showStarAnimation");
 
         if(ken == null){
             Snackbar.make(container, "משהו השתבש", BaseTransientBottomBar.LENGTH_LONG).show();
@@ -166,26 +170,54 @@ public class ViewKenFragment extends Fragment {
         myKenNameTv.setText(ken.getName());
         myKenPointsTV.setText(ken.getPoints() + "");
 
-        SharedPreferences sp = getActivity().getSharedPreferences("user",MODE_PRIVATE);
-        int oldPoints = sp.getInt("kenPoints", -1); //  get the points of the last login to the ken, -1 is for first login to the ken
-
-        if(sp.getString("ken","").equals(ken.getName())) { // if im viewing my ken
-            if (oldPoints != -1 && ken.getPoints() > oldPoints) { // if the old points is not -1 (this is not first login to the ken) and current points is bigger than old points, show animation
-
-                final TrophyAnimationDialog dialog = new TrophyAnimationDialog();
-                dialog.show(getActivity().getSupportFragmentManager(),"TrophyAnimationDialog");
-
-                final Handler handler = new Handler();
-                handler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        dialog.dismiss();
-                    }
-                },5000);
-            }
-            sp.edit().putInt("kenPoints", ken.getPoints()).apply();
-        }
+        startAnimationDialogs();
 
         return viewGroup;
+    }
+
+    public void startAnimationDialogs(){
+        if(showTrophyAnimation){
+
+            final TrophyAnimationDialog trophyAnimationDialog = TrophyAnimationDialog.newInstance("trophy_animation.json", "נוספו נקודות לקן!");
+            trophyAnimationDialog.setListener(new TrophyAnimationDialog.AnimationDialogInterface() {
+                @Override
+                public void onDialogDismiss() {
+                    if (showStarAnimation){
+                        final TrophyAnimationDialog starAnimationDialog = TrophyAnimationDialog.newInstance("star_animation.json", "הקן שלך מככב בקטעים החמים!");
+                        starAnimationDialog.show(getActivity().getSupportFragmentManager(), "TrophyAnimationDialog");
+
+                        final Handler handler = new Handler();
+                        handler.postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                starAnimationDialog.dismiss();
+                            }
+                        }, 5000);
+                    }
+                }
+            });
+
+            trophyAnimationDialog.show(getActivity().getSupportFragmentManager(), "TrophyAnimationDialog");
+
+            final Handler handler = new Handler();
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    trophyAnimationDialog.dismiss();
+                }
+            }, 5000);
+        }
+        else if(showStarAnimation){
+            final TrophyAnimationDialog starAnimationDialog = TrophyAnimationDialog.newInstance("star_animation.json", "הקן שלך מככב בקטעים החמים!");
+            starAnimationDialog.show(getActivity().getSupportFragmentManager(), "TrophyAnimationDialog");
+
+            final Handler handler = new Handler();
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    starAnimationDialog.dismiss();
+                }
+            }, 5000);
+        }
     }
 }

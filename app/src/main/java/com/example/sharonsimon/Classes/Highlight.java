@@ -1,6 +1,7 @@
 package com.example.sharonsimon.Classes;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 
 public class Highlight implements Serializable
 {
@@ -58,5 +59,13 @@ public class Highlight implements Serializable
 
     public boolean isSameHighlight(Highlight highlight){
         return this.kenName.equals(highlight.kenName) && this.taskDesc.equals(highlight.taskDesc);
+    }
+
+    public static String serializeHighlightsForSharedPreferences(ArrayList<Highlight> highlights){
+        ArrayList<String> serializedHighlights = new ArrayList<>();
+        for(Highlight highlight : highlights){
+            serializedHighlights.add(highlight.kenName + "-" + highlight.taskDesc);
+        }
+        return serializedHighlights.toString();
     }
 }

@@ -1,22 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="350dp"
-    android:layout_height="600dp"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:padding="16dp"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical">
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="נוספו נקודות לקן!"
-        android:textSize="26sp"
+        android:textSize="24sp"
         android:layout_gravity="center|top"
-        android:layout_marginTop="32dp"/>
+        android:layout_marginTop="32dp"
+        android:id="@+id/title_tv"/>
 
 
     <com.airbnb.lottie.LottieAnimationView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_width="300dp"
+        android:layout_height="450dp"
         android:id="@+id/animation_view"
         app:lottie_fileName="trophy_new.json"
         app:lottie_loop="true"
