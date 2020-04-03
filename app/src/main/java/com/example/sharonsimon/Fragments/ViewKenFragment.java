@@ -189,7 +189,7 @@ public class ViewKenFragment extends Fragment {
                             public void run() {
                                 starAnimationDialog.dismiss();
                             }
-                        }, 3000);
+                        }, 4000);
                     }
                 }
             });
@@ -202,7 +202,7 @@ public class ViewKenFragment extends Fragment {
                 public void run() {
                     trophyAnimationDialog.dismiss();
                 }
-            }, 3000);
+            }, 4000);
         }
         else if(showStarAnimation){
             final AnimationDialog starAnimationDialog = AnimationDialog.newInstance("star_animation.json", "הקן שלך מככב בקטעים החמים!");
@@ -214,7 +214,7 @@ public class ViewKenFragment extends Fragment {
                 public void run() {
                     starAnimationDialog.dismiss();
                 }
-            }, 3000);
+            }, 4000);
         }
     }
 }
