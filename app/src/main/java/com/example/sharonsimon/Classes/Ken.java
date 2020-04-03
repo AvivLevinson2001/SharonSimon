@@ -109,7 +109,7 @@ public class Ken implements Serializable,Comparable {
             else
                 notCompleted.add(task);
         }
-        completed.addAll(notCompleted);
-        setTasks(completed);
+        notCompleted.addAll(completed);
+        setTasks(notCompleted);
     }
 }
