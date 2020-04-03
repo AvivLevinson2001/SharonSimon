@@ -4,12 +4,16 @@ import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.PopupMenu;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -37,6 +41,7 @@ public class HighlightsFragment extends Fragment {
     LinearLayout noHighlightsLL;
 
     ArrayList<Highlight> highlights;
+    boolean isAdmin;
 
     @Override
     public void onAttach(@NonNull Context context) {
@@ -49,13 +54,16 @@ public class HighlightsFragment extends Fragment {
         }
     }
 
-    public static HighlightsFragment newInstance(ArrayList<Highlight> highlights){
+    public static HighlightsFragment newInstance(ArrayList<Highlight> highlights, boolean isAdmin){
         HighlightsFragment fragment = new HighlightsFragment();
         Bundle arguments = new Bundle();
         arguments.putSerializable("highlights",highlights);
+        arguments.putBoolean("isAdmin", isAdmin);
         fragment.setArguments(arguments);
         return fragment;
     }
+
+
 
     @Nullable
     @Override
@@ -63,6 +71,8 @@ public class HighlightsFragment extends Fragment {
 
         ViewGroup viewGroup = (ViewGroup) inflater.inflate(R.layout.highlights_fragment,container,false);
 
+        isAdmin = getArguments().getBoolean("isAdmin", false);
+        if (isAdmin) setHasOptionsMenu(true);
         highlights = (ArrayList<Highlight>) getArguments().getSerializable("highlights");
         if (highlights == null) highlights = new ArrayList<>();
 
@@ -82,9 +92,8 @@ public class HighlightsFragment extends Fragment {
                         public boolean onMenuItemClick(MenuItem menuItem) {
                             if(menuItem.getItemId() == R.id.action_delete){
                                 Highlight highlightToRemove = highlights.get(position);
-                                highlights.remove(highlightToRemove);
                                 listener.removeTaskFromHighlights(highlightToRemove);
-                                adapter.notifyDataSetChanged();
+                                adapter.notifyItemRemoved(position);
                                 setNoHighlightsLLVisibility();
                             }
                             return true;
@@ -104,12 +113,6 @@ public class HighlightsFragment extends Fragment {
         return viewGroup;
     }
 
-    @Override
-    public void onPause() {
-        JCVideoPlayer.releaseAllVideos();
-        super.onPause();
-    }
-
     public void notifyAdapter(){
         adapter.notifyDataSetChanged();
     }
@@ -121,5 +124,34 @@ public class HighlightsFragment extends Fragment {
         else{
             noHighlightsLL.setVisibility(View.GONE);
         }
+    }
+
+    @Override
+    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater)
+    {
+        if (isAdmin)
+        {
+            inflater.inflate(R.menu.delete_highlights_menu, menu);
+
+        }
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item)
+    {
+        if (item.getItemId() == R.id.action_delete_highlights)
+        {
+            int size = highlights.size();
+
+            for (int i = 0;i <size;i++)
+            {
+                listener.removeTaskFromHighlights(highlights.get(0));
+                adapter.notifyItemRemoved(0);
+            }
+            setNoHighlightsLLVisibility();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 }

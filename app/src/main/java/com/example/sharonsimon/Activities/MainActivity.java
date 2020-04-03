@@ -12,9 +12,11 @@ import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.DecelerateInterpolator;
+import android.widget.Toast;
 
 import com.example.sharonsimon.Classes.Highlight;
 import com.example.sharonsimon.Classes.Ken;
@@ -46,6 +48,7 @@ import com.takusemba.spotlight.shape.Circle;
 import com.takusemba.spotlight.target.SimpleTarget;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -158,7 +161,7 @@ public class  MainActivity extends AppCompatActivity implements KensRecyclerView
                     actionBar.setTitle("קני האזור");
                 }
                 else if(item.getItemId() == R.id.action_highlights){
-                    currentFragment = HighlightsFragment.newInstance(highlights);
+                    currentFragment = HighlightsFragment.newInstance(highlights, isAdmin);
                     fragmentTag = "Higlights";
                     actionBar.setTitle("קטעים חמים");
                 }
@@ -200,14 +203,17 @@ public class  MainActivity extends AppCompatActivity implements KensRecyclerView
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if(item.getItemId() == android.R.id.home){
+    public boolean onOptionsItemSelected(MenuItem item)
+    {
+        if(item.getItemId() == android.R.id.home)
+        {
             drawer.openDrawer(GravityCompat.START);
         }
         return super.onOptionsItemSelected(item);
     }
 
-    public void getInfoFromFirebase(){
+    public void getInfoFromFirebase()
+    {
         loadingDialog = LoadingDialogBuilder.createLoadingDialog(this);
         loadingDialog.show();
         final String myKenName = sp.getString("ken","");
@@ -367,11 +373,14 @@ public class  MainActivity extends AppCompatActivity implements KensRecyclerView
 
     @Override
     public void removeTaskFromHighlights(Highlight highlight) {
-        for(Highlight highlight1 : highlights)
+
+        for(Iterator<Highlight> itr = highlights.iterator(); itr.hasNext();)
         {
+            Highlight highlight1 = itr.next();
             if(highlight1.isSameHighlight(highlight))
-                highlights.remove(highlight1);
+                itr.remove();
         }
+
         databaseReference.child("highlights").setValue(highlights);
         if(highlight.getVideoURL() != null && !highlight.getVideoURL().equals("")) {
             firebaseStorage.getReferenceFromUrl(highlight.getVideoURL()).delete().addOnSuccessListener(new OnSuccessListener<Void>() {
@@ -598,4 +607,5 @@ public class  MainActivity extends AppCompatActivity implements KensRecyclerView
         sp.edit().putString("serializedHighlights", serializedCurrentHighlights).apply();
         return(!serializedCurrentHighlights.equals(serializedOldHighlights) && serializedCurrentHighlights.contains(myKen.getName()));
     }
+
 }
