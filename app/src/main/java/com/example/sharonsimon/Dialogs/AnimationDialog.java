@@ -4,7 +4,6 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
@@ -15,7 +14,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatDialogFragment;
 
-public class TrophyAnimationDialog extends AppCompatDialogFragment {
+public class AnimationDialog extends AppCompatDialogFragment {
 
     private AnimationDialogInterface listener;
 
@@ -23,8 +22,8 @@ public class TrophyAnimationDialog extends AppCompatDialogFragment {
         void onDialogDismiss();
     }
 
-    public static TrophyAnimationDialog newInstance(String animationFileName, String titleText){
-        TrophyAnimationDialog dialog = new TrophyAnimationDialog();
+    public static AnimationDialog newInstance(String animationFileName, String titleText){
+        AnimationDialog dialog = new AnimationDialog();
         Bundle arguments = new Bundle();
         arguments.putString("titleText",titleText);
         arguments.putString("animationFileName",animationFileName);
@@ -35,7 +34,7 @@ public class TrophyAnimationDialog extends AppCompatDialogFragment {
     @NonNull
     @Override
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
-        View viewGroup = getActivity().getLayoutInflater().inflate(R.layout.trophy_animation_dialog,null);
+        View viewGroup = getActivity().getLayoutInflater().inflate(R.layout.animation_dialog,null);
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setView(viewGroup);
 

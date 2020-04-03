@@ -1,7 +1,6 @@
 package com.example.sharonsimon.Activities;
 
 
-import android.animation.TimeInterpolator;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.BroadcastReceiver;
@@ -10,21 +9,13 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
-import android.graphics.PointF;
 import android.net.Uri;
-import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.os.Handler;
-import android.text.format.Formatter;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewTreeObserver;
 import android.view.animation.DecelerateInterpolator;
-import android.widget.LinearLayout;
-import android.widget.TextView;
 
-import com.example.sharonsimon.Adapters.TaskAdapter;
 import com.example.sharonsimon.Classes.Highlight;
 import com.example.sharonsimon.Classes.Ken;
 import com.example.sharonsimon.Classes.Task;
@@ -53,12 +44,8 @@ import com.takusemba.spotlight.OnSpotlightStateChangedListener;
 import com.takusemba.spotlight.Spotlight;
 import com.takusemba.spotlight.shape.Circle;
 import com.takusemba.spotlight.target.SimpleTarget;
-import com.takusemba.spotlight.target.Target;
-
-import org.w3c.dom.Text;
 
 import java.util.ArrayList;
-import java.util.concurrent.TimeUnit;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -71,7 +58,6 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
-import androidx.recyclerview.widget.RecyclerView;
 import fm.jiecao.jcvideoplayer_lib.JCVideoPlayer;
 
 import static android.graphics.Color.argb;
@@ -482,7 +468,7 @@ public class  MainActivity extends AppCompatActivity implements KensRecyclerView
 
     private void openFirstFragment(){
         if(!isAdmin && navigationView.getCheckedItem().getItemId() == R.id.action_my_ken) {
-            currentFragment = ViewKenFragment.newInstance(myKen, isAdmin,pointsAddedAnimationDialog(),yourKenIsInFavoritesDialog());
+            currentFragment = ViewKenFragment.newInstance(myKen, isAdmin, shouldShowTrophyDialog(), shouldShowStarAnimation());
             fragmentManager.beginTransaction().replace(R.id.main_fragments_holder, currentFragment, "MyKen").commitAllowingStateLoss();
             getSupportActionBar().setTitle("הקן שלי");
         }
@@ -600,13 +586,13 @@ public class  MainActivity extends AppCompatActivity implements KensRecyclerView
         }
     }
 
-    public boolean pointsAddedAnimationDialog(){
+    public boolean shouldShowTrophyDialog(){
         int oldPoints = sp.getInt("kenPoints", -1); //  get the points of the last login to the ken, -1 is for first login to the ken
         sp.edit().putInt("kenPoints", myKen.getPoints()).apply();
         return (oldPoints != -1 && myKen.getPoints() > oldPoints);
     }
 
-    public boolean yourKenIsInFavoritesDialog(){
+    public boolean shouldShowStarAnimation(){
         String serializedOldHighlights = sp.getString("serializedHighlights","");
         String serializedCurrentHighlights = Highlight.serializeHighlightsForSharedPreferences(highlights);
         sp.edit().putString("serializedHighlights", serializedCurrentHighlights).apply();

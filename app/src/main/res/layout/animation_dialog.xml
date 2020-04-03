@@ -19,7 +19,6 @@
         android:layout_width="300dp"
         android:layout_height="450dp"
         android:id="@+id/animation_view"
-        app:lottie_fileName="trophy_new.json"
         app:lottie_loop="true"
         app:lottie_autoPlay="true"
         android:layout_gravity="center"/>

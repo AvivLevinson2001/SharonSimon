@@ -2,10 +2,8 @@ package com.example.sharonsimon.Fragments;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -20,11 +18,10 @@ import androidx.recyclerview.widget.RecyclerView;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 import com.bumptech.glide.Glide;
-import com.example.sharonsimon.Activities.MainActivity;
 import com.example.sharonsimon.Adapters.TaskAdapter;
 import com.example.sharonsimon.Classes.Ken;
 import com.example.sharonsimon.Classes.Task;
-import com.example.sharonsimon.Dialogs.TrophyAnimationDialog;
+import com.example.sharonsimon.Dialogs.AnimationDialog;
 import com.example.sharonsimon.Interfaces.FirebaseChangesListener;
 import com.example.sharonsimon.R;
 import com.google.android.material.snackbar.BaseTransientBottomBar;
@@ -178,12 +175,12 @@ public class ViewKenFragment extends Fragment {
     public void startAnimationDialogs(){
         if(showTrophyAnimation){
 
-            final TrophyAnimationDialog trophyAnimationDialog = TrophyAnimationDialog.newInstance("trophy_animation.json", "נוספו נקודות לקן!");
-            trophyAnimationDialog.setListener(new TrophyAnimationDialog.AnimationDialogInterface() {
+            final AnimationDialog trophyAnimationDialog = AnimationDialog.newInstance("trophy_animation.json", "נוספו נקודות לקן!");
+            trophyAnimationDialog.setListener(new AnimationDialog.AnimationDialogInterface() {
                 @Override
                 public void onDialogDismiss() {
                     if (showStarAnimation){
-                        final TrophyAnimationDialog starAnimationDialog = TrophyAnimationDialog.newInstance("star_animation.json", "הקן שלך מככב בקטעים החמים!");
+                        final AnimationDialog starAnimationDialog = AnimationDialog.newInstance("star_animation.json", "הקן שלך מככב בקטעים החמים!");
                         starAnimationDialog.show(getActivity().getSupportFragmentManager(), "TrophyAnimationDialog");
 
                         final Handler handler = new Handler();
@@ -208,7 +205,7 @@ public class ViewKenFragment extends Fragment {
             }, 5000);
         }
         else if(showStarAnimation){
-            final TrophyAnimationDialog starAnimationDialog = TrophyAnimationDialog.newInstance("star_animation.json", "הקן שלך מככב בקטעים החמים!");
+            final AnimationDialog starAnimationDialog = AnimationDialog.newInstance("star_animation.json", "הקן שלך מככב בקטעים החמים!");
             starAnimationDialog.show(getActivity().getSupportFragmentManager(), "TrophyAnimationDialog");
 
             final Handler handler = new Handler();
