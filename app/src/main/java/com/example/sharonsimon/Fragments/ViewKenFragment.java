@@ -39,7 +39,7 @@ public class ViewKenFragment extends Fragment {
     StorageReference storageReference = firebaseStorage.getReference();
 
     Ken ken;
-    boolean isAdmin, showTrophyAnimation, showStarAnimation;
+    boolean isAdmin;
 
     CircleImageView myKenImage;
     TextView myKenPointsTV;
@@ -60,13 +60,11 @@ public class ViewKenFragment extends Fragment {
         }
     }
 
-    public static ViewKenFragment newInstance(Ken ken, boolean isAdmin, boolean showTrophyAnimation, boolean showStarAnimation){
+    public static ViewKenFragment newInstance(Ken ken, boolean isAdmin){
         ViewKenFragment fragment = new ViewKenFragment();
         Bundle arguments = new Bundle();
         arguments.putSerializable("ken",ken);
         arguments.putBoolean("isAdmin",isAdmin);
-        arguments.putBoolean("showTrophyAnimation",showTrophyAnimation);
-        arguments.putBoolean("showStarAnimation",showStarAnimation);
         fragment.setArguments(arguments);
         return fragment;
     }
@@ -78,8 +76,6 @@ public class ViewKenFragment extends Fragment {
 
         ken = (Ken)getArguments().getSerializable("ken");
         isAdmin = getArguments().getBoolean("isAdmin");
-        showTrophyAnimation = getArguments().getBoolean("showTrophyAnimation");
-        showStarAnimation = getArguments().getBoolean("showStarAnimation");
 
         if(ken == null){
             Snackbar.make(container, "משהו השתבש", BaseTransientBottomBar.LENGTH_LONG).show();
@@ -167,12 +163,12 @@ public class ViewKenFragment extends Fragment {
         myKenNameTv.setText(ken.getName());
         myKenPointsTV.setText(ken.getPoints() + "");
 
-        startAnimationDialogs();
+        //startAnimationDialogs();
 
         return viewGroup;
     }
 
-    public void startAnimationDialogs(){
+    public void startAnimationDialogs(final boolean showTrophyAnimation, final boolean showStarAnimation){
         if(showTrophyAnimation){
 
             final AnimationDialog trophyAnimationDialog = AnimationDialog.newInstance("trophy_animation.json", "נוספו נקודות לקן!");

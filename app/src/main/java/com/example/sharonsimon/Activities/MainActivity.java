@@ -151,7 +151,7 @@ public class  MainActivity extends AppCompatActivity implements KensRecyclerView
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 String fragmentTag = "";
                 if(item.getItemId() == R.id.action_my_ken){
-                    currentFragment = ViewKenFragment.newInstance(myKen,isAdmin, false, false);
+                    currentFragment = ViewKenFragment.newInstance(myKen,isAdmin);
                     fragmentTag = "MyKen";
                     actionBar.setTitle("הקן שלי");
                 }
@@ -317,7 +317,7 @@ public class  MainActivity extends AppCompatActivity implements KensRecyclerView
 
     @Override
     public void onKenClick(Ken ken) {
-        currentFragment = ViewKenFragment.newInstance(ken,isAdmin, false, false);
+        currentFragment = ViewKenFragment.newInstance(ken,isAdmin);
         fragmentManager.beginTransaction().add(R.id.main_fragments_holder, currentFragment, "ShowKen").addToBackStack("backStack").commit();
         getSupportActionBar().setTitle(ken.getName());
     }
@@ -477,9 +477,12 @@ public class  MainActivity extends AppCompatActivity implements KensRecyclerView
 
     private void openFirstFragment(){
         if(!isAdmin && navigationView.getCheckedItem().getItemId() == R.id.action_my_ken) {
-            currentFragment = ViewKenFragment.newInstance(myKen, isAdmin, shouldShowTrophyDialog(), shouldShowStarAnimation());
+            currentFragment = ViewKenFragment.newInstance(myKen, isAdmin);
             fragmentManager.beginTransaction().replace(R.id.main_fragments_holder, currentFragment, "MyKen").commitAllowingStateLoss();
             getSupportActionBar().setTitle("הקן שלי");
+            if(!isAdmin && sp.getBoolean("isFirstOpen", false)){ // no spotlight and not admin
+                ((ViewKenFragment)currentFragment).startAnimationDialogs(shouldShowTrophyDialog(), shouldShowStarAnimation());
+            }
         }
         else{
             currentFragment = KensRecyclerViewFragment.newInstance(kensList);
@@ -584,6 +587,9 @@ public class  MainActivity extends AppCompatActivity implements KensRecyclerView
                                     findViewById(R.id.drawer_cover_ll).setClickable(false);
                                     findViewById(R.id.drawer_cover_ll).setFocusable(false);
                                     findViewById(R.id.drawer_cover_ll).setVisibility(View.INVISIBLE);
+                                    if(currentFragment instanceof ViewKenFragment){
+                                        ((ViewKenFragment)currentFragment).startAnimationDialogs(shouldShowTrophyDialog(), shouldShowStarAnimation());
+                                    }
                                 }
                             }).start();
                         }
@@ -602,10 +608,9 @@ public class  MainActivity extends AppCompatActivity implements KensRecyclerView
     }
 
     public boolean shouldShowStarAnimation(){
-        String serializedOldHighlights = sp.getString("serializedHighlights","");
+        String serializedOldHighlights = sp.getString("serializedHighlights",null);
         String serializedCurrentHighlights = Highlight.serializeHighlightsForSharedPreferences(highlights);
         sp.edit().putString("serializedHighlights", serializedCurrentHighlights).apply();
         return(!serializedCurrentHighlights.equals(serializedOldHighlights) && serializedCurrentHighlights.contains(myKen.getName()));
     }
-
 }
