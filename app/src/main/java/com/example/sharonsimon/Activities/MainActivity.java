@@ -12,12 +12,16 @@ import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.DecelerateInterpolator;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.example.sharonsimon.Classes.Highlight;
 import com.example.sharonsimon.Classes.Ken;
 import com.example.sharonsimon.Classes.Task;
@@ -480,7 +484,13 @@ public class  MainActivity extends AppCompatActivity implements KensRecyclerView
             currentFragment = ViewKenFragment.newInstance(myKen, isAdmin);
             fragmentManager.beginTransaction().replace(R.id.main_fragments_holder, currentFragment, "MyKen").commitAllowingStateLoss();
             getSupportActionBar().setTitle("הקן שלי");
-            if(!isAdmin && sp.getBoolean("isFirstOpen", false)){ // no spotlight and not admin
+            TextView kenNameDrawerHeadTV = navigationView.getHeaderView(0).findViewById(R.id.header_ken_name_tv);
+            TextView userNameDrawerHeadTV = navigationView.getHeaderView(0).findViewById(R.id.header_user_name_tv);
+            ImageView animalDrawerHeadIV = navigationView.getHeaderView(0).findViewById(R.id.header_animal_iv);
+            kenNameDrawerHeadTV.setText(myKen.getName());
+            userNameDrawerHeadTV.setText(sp.getString("name","שם משתמש"));
+            Glide.with(this).load(myKen.getAnimalImageUrl()).into(animalDrawerHeadIV);
+            if(sp.getBoolean("isFirstOpen", false)){ // no spotlight and not admin
                 ((ViewKenFragment)currentFragment).startAnimationDialogs(shouldShowTrophyDialog(), shouldShowStarAnimation());
             }
         }
@@ -488,6 +498,10 @@ public class  MainActivity extends AppCompatActivity implements KensRecyclerView
             currentFragment = KensRecyclerViewFragment.newInstance(kensList);
             fragmentManager.beginTransaction().replace(R.id.main_fragments_holder, currentFragment, "Leaderboard").commit();
             getSupportActionBar().setTitle("קני האזור");
+            TextView kenNameDrawerHeadTV = navigationView.getHeaderView(0).findViewById(R.id.header_ken_name_tv);
+            TextView userNameDrawerHeadTV = navigationView.getHeaderView(0).findViewById(R.id.header_user_name_tv);
+            kenNameDrawerHeadTV.setText("לא משוייך לקן");
+            userNameDrawerHeadTV.setText("חשבון מנהל");
         }
     }
 
@@ -533,7 +547,7 @@ public class  MainActivity extends AppCompatActivity implements KensRecyclerView
                     .setTitle("ניקוד הקן").setDescription("כאן נמצא הניקוד של הקן שלכם, כל משימה שתבצעו תוסיף נקודות לקן!").build();
             SimpleTarget hamburgerTarget = new SimpleTarget.Builder(this)
                     .setPoint(getViewCenterPoint(findViewById(R.id.home_hamburger_placeholder_tv))[0], getViewCenterPoint(findViewById(R.id.home_hamburger_placeholder_tv))[1]).setShape(new Circle(100f))
-                    .setTitle("תפריט").setDescription("כאן תוכלו לראות את העמודים השונים: הקן שלי, קני האיזור, והקטעים החמים").build();
+                    .setTitle("תפריט").setDescription("כאן תוכלו לעבור בין עמודים באפליקציה.").build();
 
 
             Spotlight.with(this)
@@ -561,10 +575,10 @@ public class  MainActivity extends AppCompatActivity implements KensRecyclerView
                         public void run() {
                             SimpleTarget myKenItemViewTarget = new SimpleTarget.Builder(MainActivity.this)
                                     .setPoint(getViewCenterPoint(findViewById(R.id.my_ken_itemview_placeholder_tv))[0], getViewCenterPoint(findViewById(R.id.my_ken_itemview_placeholder_tv))[1]).setShape(new Circle(80f))
-                                    .setTitle("הקן שלי").setDescription("כאן תראו את המשימות של הקן שלכם.").build();
+                                    .setTitle("הקן שלי").setDescription("כאן תראו את כל המידע על הקן שלכם.").build();
                             SimpleTarget leaderboardItemViewTarget = new SimpleTarget.Builder(MainActivity.this)
                                     .setPoint(getViewCenterPoint(findViewById(R.id.leaderboard_itemview_placeholder_tv))[0], getViewCenterPoint(findViewById(R.id.leaderboard_itemview_placeholder_tv))[1]).setShape(new Circle(80f))
-                                    .setTitle("קני האיזור").setDescription("פה תוכלו לראות את טבלת הניקוד של כל הקינים באזור").build();
+                                    .setTitle("קני האיזור").setDescription("פה תוכלו לראות את טבלת הניקוד של כל הקינים באזור.").build();
                             SimpleTarget highlightsItemViewTarget = new SimpleTarget.Builder(MainActivity.this)
                                     .setPoint(getViewCenterPoint(findViewById(R.id.highlights_itemview_placeholder_tv))[0], getViewCenterPoint(findViewById(R.id.highlights_itemview_placeholder_tv))[1]).setShape(new Circle(80f))
                                     .setTitle("קטעים חמים").setDescription("כאן תוכלו לצפות בסרטונים של הקטעים הכי טובים והכי מצחיקים מכל יום!").build();

@@ -163,8 +163,6 @@ public class ViewKenFragment extends Fragment {
         myKenNameTv.setText(ken.getName());
         myKenPointsTV.setText(ken.getPoints() + "");
 
-        //startAnimationDialogs();
-
         return viewGroup;
     }
 

@@ -1,7 +1,9 @@
 package com.example.sharonsimon.Fragments;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.util.Log;
@@ -142,14 +144,25 @@ public class HighlightsFragment extends Fragment {
     {
         if (item.getItemId() == R.id.action_delete_highlights)
         {
-            int size = highlights.size();
+            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+            builder.setTitle("מחיקה").setMessage("האם אתה בטוח שברצונך למחוק את כל הקטעים החמים?").setNegativeButton("לא", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
 
-            for (int i = 0;i <size;i++)
-            {
-                listener.removeTaskFromHighlights(highlights.get(0));
-                adapter.notifyItemRemoved(0);
-            }
-            setNoHighlightsLLVisibility();
+                }
+            }).setPositiveButton("כן", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    int size = highlights.size();
+
+                    for (int j = 0;j <size;j++)
+                    {
+                        listener.removeTaskFromHighlights(highlights.get(0));
+                        adapter.notifyItemRemoved(0);
+                    }
+                    setNoHighlightsLLVisibility();
+                }
+            }).show();
             return true;
         }
         return super.onOptionsItemSelected(item);
