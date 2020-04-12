@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -39,7 +40,7 @@ public class ViewKenFragment extends Fragment {
     StorageReference storageReference = firebaseStorage.getReference();
 
     Ken ken;
-    boolean isAdmin;
+    boolean isAdmin, showTrophyAnimation, showStarAnimation;
 
     CircleImageView myKenImage;
     TextView myKenPointsTV;
@@ -60,11 +61,13 @@ public class ViewKenFragment extends Fragment {
         }
     }
 
-    public static ViewKenFragment newInstance(Ken ken, boolean isAdmin){
+    public static ViewKenFragment newInstance(Ken ken, boolean isAdmin, boolean showTrophyAnimation, boolean showStarAnimation){
         ViewKenFragment fragment = new ViewKenFragment();
         Bundle arguments = new Bundle();
         arguments.putSerializable("ken",ken);
         arguments.putBoolean("isAdmin",isAdmin);
+        arguments.putBoolean("showTrophyAnimation",showTrophyAnimation);
+        arguments.putBoolean("showStarAnimation",showStarAnimation);
         fragment.setArguments(arguments);
         return fragment;
     }
@@ -76,6 +79,8 @@ public class ViewKenFragment extends Fragment {
 
         ken = (Ken)getArguments().getSerializable("ken");
         isAdmin = getArguments().getBoolean("isAdmin");
+        showTrophyAnimation = getArguments().getBoolean("showTrophyAnimation");
+        showStarAnimation = getArguments().getBoolean("showStarAnimation");
 
         if(ken == null){
             Snackbar.make(container, "משהו השתבש", BaseTransientBottomBar.LENGTH_LONG).show();
@@ -95,7 +100,7 @@ public class ViewKenFragment extends Fragment {
             public void onTaskClick(int position, View v) {
                 if(!isAdmin && getActivity().getSharedPreferences("user",MODE_PRIVATE).getString("ken","").equals(ken.getName())){
                     if(ken.getTasks().get(position).isCompleted()){
-                        Snackbar.make(container,"המשימה בוצעה!", BaseTransientBottomBar.LENGTH_LONG).show();
+                        Snackbar.make(container,"המשימה הושלמה!", BaseTransientBottomBar.LENGTH_LONG).show();
                     }
                     else{
                         Snackbar.make(container,"סיימתם את המשימה? שלחו סרטון שלכם מבצעים את המשימה לקומונר/ית", BaseTransientBottomBar.LENGTH_LONG).show();
@@ -163,52 +168,55 @@ public class ViewKenFragment extends Fragment {
         myKenNameTv.setText(ken.getName());
         myKenPointsTV.setText(ken.getPoints() + "");
 
+        startAnimationDialogs(showTrophyAnimation, showStarAnimation);
+
         return viewGroup;
     }
 
-    public void startAnimationDialogs(final boolean showTrophyAnimation, final boolean showStarAnimation){
-        if(showTrophyAnimation){
+    public void startAnimationDialogs(final boolean showTrophyAnimation, final boolean showStarAnimation) {
+        if (getActivity() != null) {
+            if (showTrophyAnimation) {
+                final AnimationDialog trophyAnimationDialog = AnimationDialog.newInstance("trophy_animation.json", "נוספו נקודות לקן!");
+                trophyAnimationDialog.setListener(new AnimationDialog.AnimationDialogInterface() {
+                    @Override
+                    public void onDialogDismiss() {
+                        if (showStarAnimation) {
+                            final AnimationDialog starAnimationDialog = AnimationDialog.newInstance("star_animation.json", "הקן שלך מככב בקטעים החמים!");
+                            starAnimationDialog.show(getActivity().getSupportFragmentManager(), "TrophyAnimationDialog");
 
-            final AnimationDialog trophyAnimationDialog = AnimationDialog.newInstance("trophy_animation.json", "נוספו נקודות לקן!");
-            trophyAnimationDialog.setListener(new AnimationDialog.AnimationDialogInterface() {
-                @Override
-                public void onDialogDismiss() {
-                    if (showStarAnimation){
-                        final AnimationDialog starAnimationDialog = AnimationDialog.newInstance("star_animation.json", "הקן שלך מככב בקטעים החמים!");
-                        starAnimationDialog.show(getActivity().getSupportFragmentManager(), "TrophyAnimationDialog");
-
-                        final Handler handler = new Handler();
-                        handler.postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                starAnimationDialog.dismiss();
-                            }
-                        }, 4000);
+                            final Handler handler = new Handler();
+                            handler.postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    starAnimationDialog.dismiss();
+                                }
+                            }, 4000);
+                        }
                     }
-                }
-            });
+                });
 
-            trophyAnimationDialog.show(getActivity().getSupportFragmentManager(), "TrophyAnimationDialog");
+                trophyAnimationDialog.show(getActivity().getSupportFragmentManager(), "TrophyAnimationDialog");
 
-            final Handler handler = new Handler();
-            handler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    trophyAnimationDialog.dismiss();
-                }
-            }, 4000);
-        }
-        else if(showStarAnimation){
-            final AnimationDialog starAnimationDialog = AnimationDialog.newInstance("star_animation.json", "הקן שלך מככב בקטעים החמים!");
-            starAnimationDialog.show(getActivity().getSupportFragmentManager(), "TrophyAnimationDialog");
+                final Handler handler = new Handler();
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        trophyAnimationDialog.dismiss();
+                    }
+                }, 4000);
+            } else if (showStarAnimation) {
+                Log.d("tagg", "showStarAnimation");
+                final AnimationDialog starAnimationDialog = AnimationDialog.newInstance("star_animation.json", "הקן שלך מככב בקטעים החמים!");
+                starAnimationDialog.show(getActivity().getSupportFragmentManager(), "TrophyAnimationDialog");
 
-            final Handler handler = new Handler();
-            handler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    starAnimationDialog.dismiss();
-                }
-            }, 4000);
+                final Handler handler = new Handler();
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        starAnimationDialog.dismiss();
+                    }
+                }, 4000);
+            }
         }
     }
 }

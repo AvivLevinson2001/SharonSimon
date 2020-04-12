@@ -4,9 +4,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.graphics.Bitmap;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -15,15 +13,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.PopupMenu;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import fm.jiecao.jcvideoplayer_lib.JCVideoPlayer;
 
 import com.example.sharonsimon.Adapters.HighlightAdapter;
 import com.example.sharonsimon.Classes.Highlight;
@@ -39,7 +34,7 @@ public class HighlightsFragment extends Fragment {
 
     RecyclerView recycler;
     HighlightAdapter adapter;
-    FirebaseChangesListener listener;
+    FirebaseChangesListener firebaseChangesListener;
     LinearLayout noHighlightsLL;
 
     ArrayList<Highlight> highlights;
@@ -50,7 +45,7 @@ public class HighlightsFragment extends Fragment {
         super.onAttach(context);
         Activity activity = (Activity)context;
         try{
-            listener = (FirebaseChangesListener) activity;
+            firebaseChangesListener = (FirebaseChangesListener) activity;
         }catch (ClassCastException e){
             throw new ClassCastException("Activity: " + activity.toString() + " must implement FirebaseChangesListener");
         }
@@ -94,7 +89,7 @@ public class HighlightsFragment extends Fragment {
                         public boolean onMenuItemClick(MenuItem menuItem) {
                             if(menuItem.getItemId() == R.id.action_delete){
                                 Highlight highlightToRemove = highlights.get(position);
-                                listener.removeTaskFromHighlights(highlightToRemove);
+                                firebaseChangesListener.removeTaskFromHighlights(highlightToRemove);
                                 adapter.notifyItemRemoved(position);
                                 setNoHighlightsLLVisibility();
                             }
@@ -157,7 +152,7 @@ public class HighlightsFragment extends Fragment {
 
                     for (int j = 0;j <size;j++)
                     {
-                        listener.removeTaskFromHighlights(highlights.get(0));
+                        firebaseChangesListener.removeTaskFromHighlights(highlights.get(0));
                         adapter.notifyItemRemoved(0);
                     }
                     setNoHighlightsLLVisibility();

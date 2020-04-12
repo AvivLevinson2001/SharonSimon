@@ -13,13 +13,11 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.example.sharonsimon.Classes.Highlight;
@@ -155,7 +153,7 @@ public class  MainActivity extends AppCompatActivity implements KensRecyclerView
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 String fragmentTag = "";
                 if(item.getItemId() == R.id.action_my_ken){
-                    currentFragment = ViewKenFragment.newInstance(myKen,isAdmin);
+                    currentFragment = ViewKenFragment.newInstance(myKen,isAdmin, false, false);
                     fragmentTag = "MyKen";
                     actionBar.setTitle("הקן שלי");
                 }
@@ -321,7 +319,7 @@ public class  MainActivity extends AppCompatActivity implements KensRecyclerView
 
     @Override
     public void onKenClick(Ken ken) {
-        currentFragment = ViewKenFragment.newInstance(ken,isAdmin);
+        currentFragment = ViewKenFragment.newInstance(ken,isAdmin, false, false);
         fragmentManager.beginTransaction().add(R.id.main_fragments_holder, currentFragment, "ShowKen").addToBackStack("backStack").commit();
         getSupportActionBar().setTitle(ken.getName());
     }
@@ -481,7 +479,12 @@ public class  MainActivity extends AppCompatActivity implements KensRecyclerView
 
     private void openFirstFragment(){
         if(!isAdmin && navigationView.getCheckedItem().getItemId() == R.id.action_my_ken) {
-            currentFragment = ViewKenFragment.newInstance(myKen, isAdmin);
+            if(!sp.getBoolean("isFirstOpen", false)) { // no spotlight
+                currentFragment = ViewKenFragment.newInstance(myKen, isAdmin, shouldShowTrophyDialog(), shouldShowStarAnimation());
+            }
+            else{ // spotlight is showing
+                currentFragment = ViewKenFragment.newInstance(myKen, isAdmin, false, false);
+            }
             fragmentManager.beginTransaction().replace(R.id.main_fragments_holder, currentFragment, "MyKen").commitAllowingStateLoss();
             getSupportActionBar().setTitle("הקן שלי");
             TextView kenNameDrawerHeadTV = navigationView.getHeaderView(0).findViewById(R.id.header_ken_name_tv);
@@ -490,9 +493,6 @@ public class  MainActivity extends AppCompatActivity implements KensRecyclerView
             kenNameDrawerHeadTV.setText(myKen.getName());
             userNameDrawerHeadTV.setText(sp.getString("name","שם משתמש"));
             Glide.with(this).load(myKen.getAnimalImageUrl()).into(animalDrawerHeadIV);
-            if(sp.getBoolean("isFirstOpen", false)){ // no spotlight and not admin
-                ((ViewKenFragment)currentFragment).startAnimationDialogs(shouldShowTrophyDialog(), shouldShowStarAnimation());
-            }
         }
         else{
             currentFragment = KensRecyclerViewFragment.newInstance(kensList);
