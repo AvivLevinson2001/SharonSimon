@@ -1,8 +1,11 @@
 package com.example.sharonsimon.Activities;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -19,6 +22,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
 
 import com.example.sharonsimon.Dialogs.EnterPasswordDialog;
 import com.example.sharonsimon.R;
@@ -35,6 +39,7 @@ public class LogInActivity extends AppCompatActivity implements EnterPasswordDia
     FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
     DatabaseReference databaseReference = firebaseDatabase.getReference();
 
+    CoordinatorLayout coordinator;
     EditText usernameEt;
     Spinner kenSpinner;
     Button loginBtn;
@@ -61,6 +66,7 @@ public class LogInActivity extends AppCompatActivity implements EnterPasswordDia
         usernameEt = findViewById(R.id.login_name_et);
         kenSpinner = findViewById(R.id.login_ken_spinner);
         loginBtn = findViewById(R.id.login_btn);
+        coordinator = findViewById(R.id.coordinator_layout);
 
         final String[] items = new String[]
                 {"בחר קן", "מקורות", "המעפיל", "מעיין", "העוגן", "רמות חפר", "יקום", "געש", "גן שמואל",
@@ -89,20 +95,22 @@ public class LogInActivity extends AppCompatActivity implements EnterPasswordDia
         loginBtn.setOnClickListener(new View.OnClickListener()
         {
             @Override
-            public void onClick(View view)
-            {
-                if (usernameEt != null && !usernameEt.getText().toString().equals("")
-                 && !kenSpinner.getSelectedItem().toString().equals("בחר קן"))
-                {
-                    sp.edit().putBoolean("isLoggedIn", true)
-                            .putString("name", usernameEt.getText().toString())
-                            .putString("ken", kenSpinner.getSelectedItem().toString())
-                            .putBoolean("isAdmin",false)
-                            .apply();
-                    login();
+            public void onClick(View view) {
+                if (isNetworkAvailable()) {
+                    if (usernameEt != null && !usernameEt.getText().toString().equals("")
+                            && !kenSpinner.getSelectedItem().toString().equals("בחר קן")) {
+                        sp.edit().putBoolean("isLoggedIn", true)
+                                .putString("name", usernameEt.getText().toString())
+                                .putString("ken", kenSpinner.getSelectedItem().toString())
+                                .putBoolean("isAdmin", false)
+                                .apply();
+                        login();
+                    } else {
+                        Snackbar.make(findViewById(R.id.register_root_layout), "הזן את כל הפרטים", Snackbar.LENGTH_LONG).show();
+                    }
                 }
                 else{
-                    Snackbar.make(findViewById(R.id.register_root_layout),"הזן את כל הפרטים", Snackbar.LENGTH_LONG).show();
+                    Snackbar.make(coordinator,"אין גישה לאינטרנט, בדוק את החיבור ונסה שנית.",BaseTransientBottomBar.LENGTH_LONG).show();
                 }
             }
         });
@@ -136,36 +144,46 @@ public class LogInActivity extends AppCompatActivity implements EnterPasswordDia
 
     @Override
     public void onPositiveButtonClick(final String password) {
-        databaseReference.child("admin-password").addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if(dataSnapshot.exists()){
-                    if(dataSnapshot.getValue(String.class).equals(password)){
-                        sp.edit().putBoolean("isLoggedIn", true)
-                                .putString("name", "מנהל")
-                                .putString("ken", "")
-                                .putBoolean("isAdmin",true)
-                                .apply();
-                        login();
-                    }
-                    else{
-                        Snackbar.make(findViewById(R.id.register_root_layout),"הסיסמה שגויה", BaseTransientBottomBar.LENGTH_LONG).show();
+        if(isNetworkAvailable()) {
+            databaseReference.child("admin-password").addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    if (dataSnapshot.exists()) {
+                        if (dataSnapshot.getValue(String.class).equals(password)) {
+                            sp.edit().putBoolean("isLoggedIn", true)
+                                    .putString("name", "מנהל")
+                                    .putString("ken", "")
+                                    .putBoolean("isAdmin", true)
+                                    .apply();
+                            login();
+                        } else {
+                            Snackbar.make(findViewById(R.id.register_root_layout), "הסיסמה שגויה", BaseTransientBottomBar.LENGTH_LONG).show();
+                        }
+                    } else {
+                        Snackbar.make(findViewById(R.id.register_root_layout), "משהו השתבש", BaseTransientBottomBar.LENGTH_LONG).show();
                     }
                 }
-                else{
-                    Snackbar.make(findViewById(R.id.register_root_layout),"משהו השתבש", BaseTransientBottomBar.LENGTH_LONG).show();
-                }
-            }
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-                Snackbar.make(findViewById(R.id.register_root_layout),"משהו השתבש", BaseTransientBottomBar.LENGTH_LONG).show();
-            }
-        });
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+                    Snackbar.make(findViewById(R.id.register_root_layout), "משהו השתבש", BaseTransientBottomBar.LENGTH_LONG).show();
+                }
+            });
+        }
+        else{
+            Snackbar.make(coordinator,"אין גישה לאינטרנט, בדוק את החיבור ונסה שנית.",BaseTransientBottomBar.LENGTH_LONG).show();
+        }
     }
 
     @Override
     public void onNegativeButtonClick() {
 
+    }
+
+    private boolean isNetworkAvailable() {
+        ConnectivityManager connectivityManager
+                = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
     }
 }
