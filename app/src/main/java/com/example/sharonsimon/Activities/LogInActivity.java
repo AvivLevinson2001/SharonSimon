@@ -39,7 +39,6 @@ public class LogInActivity extends AppCompatActivity implements EnterPasswordDia
     FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
     DatabaseReference databaseReference = firebaseDatabase.getReference();
 
-    CoordinatorLayout coordinator;
     EditText usernameEt;
     Spinner kenSpinner;
     Button loginBtn;
@@ -66,7 +65,6 @@ public class LogInActivity extends AppCompatActivity implements EnterPasswordDia
         usernameEt = findViewById(R.id.login_name_et);
         kenSpinner = findViewById(R.id.login_ken_spinner);
         loginBtn = findViewById(R.id.login_btn);
-        coordinator = findViewById(R.id.coordinator_layout);
 
         final String[] items = new String[]
                 {"בחר קן", "מקורות", "המעפיל", "מעיין", "העוגן", "רמות חפר", "יקום", "געש", "גן שמואל",
@@ -110,7 +108,7 @@ public class LogInActivity extends AppCompatActivity implements EnterPasswordDia
                     }
                 }
                 else{
-                    Snackbar.make(coordinator,"אין גישה לאינטרנט, בדוק את החיבור ונסה שנית.",BaseTransientBottomBar.LENGTH_LONG).show();
+                    Snackbar.make(findViewById(android.R.id.content),"אין גישה לאינטרנט, בדוק את החיבור ונסה שנית.",BaseTransientBottomBar.LENGTH_LONG).show();
                 }
             }
         });
@@ -171,7 +169,7 @@ public class LogInActivity extends AppCompatActivity implements EnterPasswordDia
             });
         }
         else{
-            Snackbar.make(coordinator,"אין גישה לאינטרנט, בדוק את החיבור ונסה שנית.",BaseTransientBottomBar.LENGTH_LONG).show();
+            Snackbar.make(findViewById(android.R.id.content),"אין גישה לאינטרנט, בדוק את החיבור ונסה שנית.",BaseTransientBottomBar.LENGTH_LONG).show();
         }
     }
 
@@ -181,8 +179,7 @@ public class LogInActivity extends AppCompatActivity implements EnterPasswordDia
     }
 
     private boolean isNetworkAvailable() {
-        ConnectivityManager connectivityManager
-                = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
         return activeNetworkInfo != null && activeNetworkInfo.isConnected();
     }
