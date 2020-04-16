@@ -205,7 +205,6 @@ public class ViewKenFragment extends Fragment {
                     }
                 }, 4000);
             } else if (showStarAnimation) {
-                Log.d("tagg", "showStarAnimation");
                 final AnimationDialog starAnimationDialog = AnimationDialog.newInstance("star_animation.json", "הקן שלך מככב בקטעים החמים!");
                 starAnimationDialog.show(getActivity().getSupportFragmentManager(), "TrophyAnimationDialog");
 

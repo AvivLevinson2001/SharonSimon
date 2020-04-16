@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -24,8 +25,11 @@ import com.example.sharonsimon.Adapters.HighlightAdapter;
 import com.example.sharonsimon.Classes.Highlight;
 import com.example.sharonsimon.Interfaces.FirebaseChangesListener;
 import com.example.sharonsimon.R;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.material.snackbar.BaseTransientBottomBar;
 import com.google.android.material.snackbar.Snackbar;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
 
@@ -75,6 +79,7 @@ public class HighlightsFragment extends Fragment {
 
         noHighlightsLL = viewGroup.findViewById(R.id.no_highlights_ll);
         setNoHighlightsLLVisibility();
+
         recycler = viewGroup.findViewById(R.id.highlights_recycler);
         adapter = new HighlightAdapter(highlights, getActivity());
         adapter.setListener(new HighlightAdapter.HighlightAdapterListener() {
@@ -103,6 +108,7 @@ public class HighlightsFragment extends Fragment {
                 }
             }
         });
+
         recycler.setAdapter(adapter);
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getActivity());
         recycler.setLayoutManager(mLayoutManager);

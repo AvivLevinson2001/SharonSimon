@@ -5,6 +5,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.media.Image;
 import android.media.ThumbnailUtils;
 import android.net.Uri;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,9 +18,14 @@ import com.bumptech.glide.request.RequestOptions;
 import com.example.sharonsimon.Activities.MainActivity;
 import com.example.sharonsimon.Classes.Highlight;
 import com.example.sharonsimon.R;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
 
+import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import fm.jiecao.jcvideoplayer_lib.JCVideoPlayerStandard;
 
@@ -91,9 +97,9 @@ public class HighlightAdapter extends RecyclerView.Adapter<HighlightAdapter.Crea
     }
 
     @Override
-    public void onBindViewHolder(final CreateHighlightViewHolder holder, int position)
+    public void onBindViewHolder(final CreateHighlightViewHolder holder, final int position)
     {
-        Highlight highlight = highlights.get(position);
+        final Highlight highlight = highlights.get(position);
         holder.taskDescTV.setText(highlight.getTaskDesc());
         holder.kenNameTV.setText(highlight.getKenName());
 
@@ -101,7 +107,6 @@ public class HighlightAdapter extends RecyclerView.Adapter<HighlightAdapter.Crea
                 JCVideoPlayerStandard.SCREEN_LAYOUT_NORMAL);
 
         Glide.with(context).load(highlight.getVideoURL()).apply(new RequestOptions()).into(holder.video.thumbImageView);
-
     }
 
     public void setHighlights(ArrayList<Highlight> highlights) {
