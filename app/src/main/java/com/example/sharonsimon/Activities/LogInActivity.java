@@ -108,7 +108,7 @@ public class LogInActivity extends AppCompatActivity implements EnterPasswordDia
                     }
                 }
                 else{
-                    Snackbar.make(findViewById(android.R.id.content),"אין גישה לאינטרנט, בדוק את החיבור ונסה שנית",BaseTransientBottomBar.LENGTH_LONG).show();
+                    Snackbar.make(findViewById(android.R.id.content),"אין גישה לאינטרנט, בדוק את החיבור ונסה שנית.",BaseTransientBottomBar.LENGTH_LONG).show();
                 }
             }
         });
@@ -169,7 +169,7 @@ public class LogInActivity extends AppCompatActivity implements EnterPasswordDia
             });
         }
         else{
-            Snackbar.make(findViewById(android.R.id.content),"אין גישה לאינטרנט, בדוק את החיבור ונסה שנית",BaseTransientBottomBar.LENGTH_LONG).show();
+            Snackbar.make(findViewById(android.R.id.content),"אין גישה לאינטרנט, בדוק את החיבור ונסה שנית.",BaseTransientBottomBar.LENGTH_LONG).show();
         }
     }
 
