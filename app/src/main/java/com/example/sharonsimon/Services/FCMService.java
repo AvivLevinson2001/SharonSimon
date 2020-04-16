@@ -27,7 +27,7 @@ public class FCMService extends FirebaseMessagingService {
                     .setSmallIcon(R.drawable.semel_hash)
                     .setColor(getColor(R.color.colorPrimary))
                     .setContentTitle(remoteMessage.getNotification().getTitle())
-                            .setContentText(remoteMessage.getNotification().getBody() + "\nפתח מחדש את האפליקציה");
+                            .setContentText(remoteMessage.getNotification().getBody());
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 NotificationChannel channel = new NotificationChannel("Updates", "עדכונים", NotificationManager.IMPORTANCE_HIGH);
