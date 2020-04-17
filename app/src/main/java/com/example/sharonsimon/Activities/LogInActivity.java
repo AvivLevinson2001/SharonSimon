@@ -57,10 +57,10 @@ public class LogInActivity extends AppCompatActivity implements EnterPasswordDia
 
         sp = getSharedPreferences("user", MODE_PRIVATE);
 
-        if (sp.getBoolean("isLoggedIn", false))
+        /*if (sp.getBoolean("isLoggedIn", false))
         {
             login();
-        }
+        }*/
 
         usernameEt = findViewById(R.id.login_name_et);
         kenSpinner = findViewById(R.id.login_ken_spinner);
@@ -130,7 +130,7 @@ public class LogInActivity extends AppCompatActivity implements EnterPasswordDia
 
     public void login()
     {
-        Intent intent = new Intent(LogInActivity.this, MainActivity.class);
+        Intent intent = new Intent(LogInActivity.this, SplashScreenActivity.class);
         startActivity(intent);
         finish();
     }

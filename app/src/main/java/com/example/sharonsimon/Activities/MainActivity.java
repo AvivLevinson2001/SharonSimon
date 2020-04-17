@@ -131,7 +131,14 @@ public class  MainActivity extends AppCompatActivity implements KensRecyclerView
 
         LocalBroadcastManager.getInstance(this).registerReceiver(videoUploadedReceiver,new IntentFilter("sharon_simon.highlight_uploaded_action"));
 
-        getInfoFromFirebase();
+        if(getIntent().getExtras() != null) {
+            myKen = (Ken) getIntent().getExtras().get("myKen");
+            kensList = (ArrayList<Ken>) getIntent().getExtras().get("kensList");
+            allTasks = (ArrayList<Task>) getIntent().getExtras().get("allTasks");
+            if (allTasks == null) allTasks = new ArrayList<>();
+            highlights = (ArrayList<Highlight>) getIntent().getExtras().get("hilights");
+            if (highlights == null) highlights = new ArrayList<>();
+        }
 
         drawer = findViewById(R.id.drawer_layout);
         coordinatorLayout = findViewById(R.id.coordinator_layout);
@@ -202,6 +209,9 @@ public class  MainActivity extends AppCompatActivity implements KensRecyclerView
                 return false;
             }
         });
+
+        //getInfoFromFirebase();
+        openFirstFragment();
     }
 
     @Override
@@ -214,7 +224,7 @@ public class  MainActivity extends AppCompatActivity implements KensRecyclerView
         return super.onOptionsItemSelected(item);
     }
 
-    public void getInfoFromFirebase()
+    /*public void getInfoFromFirebase()
     {
         loadingDialog = LoadingDialogBuilder.createLoadingDialog(this);
         loadingDialog.show();
@@ -315,7 +325,7 @@ public class  MainActivity extends AppCompatActivity implements KensRecyclerView
 
             }
         });
-    }
+    }*/
 
     @Override
     public void onKenClick(Ken ken) {

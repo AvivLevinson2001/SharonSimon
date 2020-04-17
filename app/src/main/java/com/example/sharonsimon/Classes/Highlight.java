@@ -1,5 +1,7 @@
 package com.example.sharonsimon.Classes;
 
+import android.util.Log;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 
