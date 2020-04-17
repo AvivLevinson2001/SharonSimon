@@ -38,7 +38,7 @@ import androidx.appcompat.app.AppCompatActivity;
 public class SplashScreenActivity extends AppCompatActivity {
 
     SharedPreferences sp;
-    final int MIM_SPLASH_TIME_MILLISECONDS = 850;
+    final int MIM_SPLASH_TIME_MILLISECONDS = 1000;
     DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
     StorageReference storageReference = FirebaseStorage.getInstance().getReference();
     Ken myKen;
