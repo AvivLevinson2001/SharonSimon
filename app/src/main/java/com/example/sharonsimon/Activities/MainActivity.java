@@ -136,7 +136,7 @@ public class  MainActivity extends AppCompatActivity implements KensRecyclerView
             kensList = (ArrayList<Ken>) getIntent().getExtras().get("kensList");
             allTasks = (ArrayList<Task>) getIntent().getExtras().get("allTasks");
             if (allTasks == null) allTasks = new ArrayList<>();
-            highlights = (ArrayList<Highlight>) getIntent().getExtras().get("hilights");
+            highlights = (ArrayList<Highlight>) getIntent().getExtras().get("highlights");
             if (highlights == null) highlights = new ArrayList<>();
         }
 
