@@ -9,8 +9,8 @@
         android:layout_height="248dp"
         android:layout_marginTop="16dp"
         android:id="@+id/animation_view"
-        app:lottie_fileName="icon_animation.json"
-        app:lottie_loop="false"
+        app:lottie_fileName="sharon_loop.json"
+        app:lottie_loop="true"
         app:lottie_autoPlay="true"
         android:layout_centerInParent="true"/>
 
